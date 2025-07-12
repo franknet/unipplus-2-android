@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">UNIP Plus</string>
+
+    <string name="sign_in_button_title">Entrar</string>
+    <string name="sign_in_id_place_holder">RA</string>
+    <string name="sign_in_password_place_holder">Senha</string>
+
+</resources>
