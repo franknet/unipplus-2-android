@@ -53,7 +53,9 @@ private fun android.webkit.CookieManager.add(uri: URI?, cookie: HttpCookie?) {
     cookie?.let {
         if (it.name == "ASP.NET_SessionId") {
             setCookie("https://sec2.unip.br", "$it; path=/; HttpOnly; SameSite=Lax")
-            setCookie("https://www.unip.br", "$it; path=/;")
+        }
+        if (it.name == "SESSION") {
+            setCookie("https://sec2.unip.br", "$it; path=/; HttpOnly; SameSite=Lax")
         }
     }
 }

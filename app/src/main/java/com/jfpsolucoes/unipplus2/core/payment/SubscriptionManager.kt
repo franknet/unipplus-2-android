@@ -68,6 +68,8 @@ object SubscriptionManagerInstance: SubscriptionManager {
     }
 
     fun initialize(context: Context) {
+        if (mBillingClient != null) return
+
         mBillingClient = BillingClient
             .newBuilder(context)
             .enablePendingPurchases(mPendingPurchasesParams)

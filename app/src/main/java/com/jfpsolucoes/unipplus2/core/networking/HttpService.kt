@@ -24,9 +24,11 @@ object HttpService {
 
     private const val CACHE_SIZE = (5 * 1024 * 1024).toLong()
 
-    private const val CACHE_DIR_NAME = "UnipPlus2"
+    private const val CACHE_DIR_NAME = "unip_plus_2"
 
     fun initialize(context: Context) {
+        if (mRetrofit != null) return
+
         val cacheDir = File(context.cacheDir, CACHE_DIR_NAME)
         val cache = Cache(cacheDir, CACHE_SIZE)
 

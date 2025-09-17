@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.viewinterop.NoOpUpdate
 import com.jfpsolucoes.unipplus2.core.networking.UPWebViewClient
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ScreenOrientation
 import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
@@ -21,7 +22,7 @@ fun PortalWebView(
     modifier: Modifier = Modifier,
     url: String
 ) = Scaffold {
-    (LocalContext.current as ComponentActivity).requestScreenOrientation(ScreenOrientation.UNSPECIFIED)
+
     AndroidView(
         modifier = modifier.fillMaxSize(),
         factory = {
@@ -34,7 +35,6 @@ fun PortalWebView(
                 webViewClient = UPWebViewClient()
                 loadUrl(url)
             }
-        },
-        update = { },
+        }
     )
 }

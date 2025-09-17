@@ -3,16 +3,18 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
     namespace = "com.jfpsolucoes.unipplus2"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.jfpsolucoes.unipplus2"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -29,10 +31,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001/unip-plus-2-a3fa1/southamerica-east1/api/\"")
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
+            buildConfigField("String", "API_LOCATION", "\"/unip-plus-2-a3fa1/southamerica-east1\"")
         }
         debug {
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001/unip-plus-2-a3fa1/southamerica-east1/api/\"")
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
+            buildConfigField("String", "API_LOCATION", "\"/unip-plus-2-a3fa1/southamerica-east1\"")
         }
 
     }
@@ -71,10 +75,10 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
-    implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.window)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.fragment.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
     // RETROFIT
     implementation(libs.retrofit)
@@ -92,12 +96,13 @@ dependencies {
     // BILLING
     implementation(libs.billing)
 
-    // MARKDOWN
-    implementation(libs.markdown)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
+    // FIREBASE
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.play.services.ads)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
+    // TESTING
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

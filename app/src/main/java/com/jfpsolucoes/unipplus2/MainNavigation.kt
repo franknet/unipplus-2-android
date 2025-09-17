@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.jfpsolucoes.unipplus2.modules.home.ui.homeNavigation
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -17,8 +16,6 @@ fun MainNavigation() {
         navController = LocalNavController.current,
         startDestination = LOGIN_ROUTE
     ) {
-        composable(LOGIN_ROUTE) {  }
 
-        homeNavigation(HOME_NAVIGATION_ROUTE)
     }
 }

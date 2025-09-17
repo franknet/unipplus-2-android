@@ -7,5 +7,5 @@ import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationIt
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 
 fun <T> ThreePaneScaffoldNavigator<T>.navigateTo(item: ThreePaneScaffoldDestinationItem<T>) {
-    navigateTo(item.pane, item.content)
+
 }
