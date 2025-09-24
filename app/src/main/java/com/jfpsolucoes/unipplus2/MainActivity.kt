@@ -1,10 +1,11 @@
 package com.jfpsolucoes.unipplus2
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -21,15 +22,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         UPAppSession.initialize(this)
-
         enableEdgeToEdge()
         setContent {
             UNIPPlus2Theme {
-                UPNavigationHost(modifier = Modifier.fillMaxSize())
+                UPNavigationHost()
             }
         }
     }
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     private fun UPNavigationHost(
         modifier: Modifier = Modifier,
@@ -38,12 +39,13 @@ class MainActivity : ComponentActivity() {
         CompositionLocalProvider(
             LocalNavController provides navController
         ) {
-            NavHost(
-                modifier = modifier,
-                navController = navController,
-                startDestination = "/auth"
-            ) {
-                signInNavigation()
+            Scaffold {
+                NavHost(
+                    navController = navController,
+                    startDestination = "/auth"
+                ) {
+                    signInNavigation()
+                }
             }
         }
     }

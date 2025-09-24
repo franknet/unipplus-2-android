@@ -11,11 +11,20 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.compose.ForEachIndexed
+import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableState
+import com.jfpsolucoes.unipplus2.core.utils.extensions.rememberState
+import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
+import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
@@ -29,30 +38,41 @@ fun UPHomeNavigationRail(
     onClickSettings: () -> Unit = {},
     onClickExit: () -> Unit = {}
 ) {
+    var selectedIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
     NavigationRail(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.onPrimary,
+        modifier = modifier
     ) {
         ForEachIndexed(data?.feature) { feature, index ->
             NavigationRailItem(
-                selected = false,
+                selected = selectedIndex == 0,
                 onClick = { onSelectFeature(feature) },
-                icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = null
+                    )
+                },
                 label = { Text(feature.description.value ) }
             )
         }
 
-        if (!data?.web.isNullOrEmpty()) {
-            NavigationRailItem(
-                selected = false,
-                onClick = { onClickSystems(data.web) },
-                icon = { Icon(painter = painterResource(R.drawable.ic_outline_globe_24), contentDescription = null) },
-                label = { Text("Sistemas") }
-            )
-        }
+        NavigationRailItem(
+            selected = selectedIndex == 1,
+            onClick = { onClickSystems(data?.web) },
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_outline_globe_24),
+                    contentDescription = null
+                )
+            },
+            label = { Text("Sistemas") }
+        )
 
         NavigationRailItem(
-            selected = false,
+            selected = selectedIndex == 2,
             onClick = onClickSettings,
             icon = {
                 Icon(
@@ -68,7 +88,12 @@ fun UPHomeNavigationRail(
         NavigationRailItem(
             selected = false,
             onClick = onClickExit,
-            icon = { Icon(imageVector = Icons.AutoMirrored.Default.ExitToApp, contentDescription = null) },
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ExitToApp,
+                    contentDescription = null
+                )
+            },
             label = { Text("Sair") }
         )
     }

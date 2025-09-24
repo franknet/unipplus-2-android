@@ -13,7 +13,7 @@ class UPPostSignInUseCase(
     private val repository: UPSingInRepository = UPSignInRepositoryImpl(),
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    operator fun invoke(credentials: UPCredentials) = flow {
+    operator fun invoke(credentials: UPCredentials) = flow<String> {
         val data = withContext(dispatcher) {
             repository.signIn(credentials)
         }

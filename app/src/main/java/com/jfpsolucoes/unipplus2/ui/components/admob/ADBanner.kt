@@ -10,7 +10,7 @@ import com.google.android.gms.ads.AdView
 import com.jfpsolucoes.unipplus2.R
 
 @Composable
-fun AdMobBanner(modifier: Modifier = Modifier) {
+fun ADBanner(modifier: Modifier = Modifier) {
     val adUnitId = stringResource(R.string.admob_banner_id)
     AndroidView(
         modifier = modifier,

@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -5,6 +6,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -31,14 +33,21 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
-            buildConfigField("String", "API_LOCATION", "\"/unip-plus-2-a3fa1/southamerica-east1\"")
+            buildConfigField("String", "BASE_URL", "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\"")
+            buildConfigField("String", "API_AUTH", "\"/auth\"")
+            buildConfigField("String", "API_SECRETARY", "\"/secretary\"")
         }
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
-            buildConfigField("String", "API_LOCATION", "\"/unip-plus-2-a3fa1/southamerica-east1\"")
+            buildConfigField("String", "API_AUTH", "\"/unip-plus-2-a3fa1/southamerica-east1/auth\"")
+            buildConfigField("String", "API_SECRETARY", "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\"")
         }
-
+        create("local") {
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
+            buildConfigField("String", "API_AUTH", "\"/unip-plus-2-a3fa1/southamerica-east1/auth\"")
+            buildConfigField("String", "API_SECRETARY", "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\"")
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -110,4 +119,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // SVG Parser
+    implementation(libs.android.svg)
 }

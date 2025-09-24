@@ -36,7 +36,7 @@ fun UPHomeNavigationSuite(
                     UPHomeNavigationDrawer(
                         data = systems,
                         onSelectSystem = onSelectSystem,
-                        onExitClick = onClickExit
+                        onClickExit = onClickExit
                     )
                 }
                 else -> {

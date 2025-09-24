@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.modules.home.domain.models
 
+
 data class UPHomeSystemsResponse(
     val feature: List<UPSystem>?,
     val web: List<UPSystem>?

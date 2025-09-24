@@ -2,12 +2,14 @@ package com.jfpsolucoes.unipplus2.ui.components.discipline
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,11 +29,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jfpsolucoes.unipplus2.ui.components.ColumnScopeLambda
 import com.jfpsolucoes.unipplus2.ui.components.progressindicator.UPVerticalLinearProgressIndicatorView
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 import kotlin.random.Random
 
 private typealias LazyListScopeLambda = LazyListScope.() -> Unit
+
+private typealias ListScopeLambda = LazyListScope.() -> Unit
+
+enum class UPDisciplineItemAlignment {
+    Vertical, Horizontal
+}
 
 interface UPDisciplineItemScope {
     fun item(content: @Composable () -> Unit)
@@ -40,6 +49,7 @@ interface UPDisciplineItemScope {
         modifier: Modifier = Modifier,
         label: String = "",
         description: String = "",
+        alignment: UPDisciplineItemAlignment = UPDisciplineItemAlignment.Vertical,
         fraction: Float = 0f
     )
 }
@@ -49,6 +59,7 @@ class UPDisciplineItemScopeImpl : UPDisciplineItemScope {
         val modifier: Modifier,
         val label: String,
         val description: String,
+        val alignment: UPDisciplineItemAlignment,
         val fraction: Float
     )
 
@@ -60,8 +71,8 @@ class UPDisciplineItemScopeImpl : UPDisciplineItemScope {
         itemContent = content
     }
 
-    override fun item(modifier: Modifier, label: String, description: String, fraction: Float) {
-        items.add(Item(modifier, label, description, fraction))
+    override fun item(modifier: Modifier, label: String, description: String, alignment: UPDisciplineItemAlignment, fraction: Float) {
+        items.add(Item(modifier, label, description, alignment, fraction))
     }
 }
 
@@ -72,18 +83,6 @@ private fun rememberScope(
     val lastScope = rememberUpdatedState(content)
     return remember {
         derivedStateOf { UPDisciplineItemScopeImpl().apply(lastScope.value) }
-    }
-}
-
-@Composable
-private fun infoItemFor(scope: UPDisciplineItemScopeImpl): LazyListScopeLambda = {
-    items(scope.items) {
-        UPDisciplineItemInfoView(
-            modifier = it.modifier,
-            label = it.label,
-            description = it.description,
-            fraction = it.fraction
-        )
     }
 }
 
@@ -108,37 +107,60 @@ private fun UPDisciplineItemHeaderView(
 }
 
 @Composable
-private fun UPDisciplineItemInfoView(
+fun UPDisciplineItemInfoView(
     modifier: Modifier = Modifier,
     label: String,
     description: String,
-    fraction: Float
+    alignment: UPDisciplineItemAlignment = UPDisciplineItemAlignment.Horizontal,
+    fraction: Float = 0.0f
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
-    ) {
-        UPVerticalLinearProgressIndicatorView(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .size(width = 6.dp, height = 48.dp),
-            indicatorText = description,
-            percentage = fraction
-        )
+    if (alignment == UPDisciplineItemAlignment.Vertical) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            )
 
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-        )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+    } else {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = description,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+            )
+        }
     }
+
 }
 
 @Composable
 fun UPDisciplineItemView(
     modifier: Modifier = Modifier,
     title: String = "",
+    trailingContent: (@Composable () -> Unit)? = null,
+    alignment: UPDisciplineItemAlignment,
     message: String? = null,
     content: UPDisciplineItemScope.() -> Unit
 ) = Card(
@@ -148,7 +170,10 @@ fun UPDisciplineItemView(
         modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UPDisciplineItemHeaderView(title = title)
+        UPDisciplineItemHeaderView(
+            title = title,
+            trailingContent = trailingContent
+        )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -157,12 +182,37 @@ fun UPDisciplineItemView(
         scope.itemContent?.invoke()
 
         if (scope.items.isNotEmpty())
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                content = infoItemFor(scope)
-            )
-
+            if (alignment == UPDisciplineItemAlignment.Vertical) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    scope.items.forEach {
+                        UPDisciplineItemInfoView(
+                            modifier = it.modifier,
+                            label = it.label,
+                            description = it.description,
+                            alignment = it.alignment,
+                            fraction = it.fraction
+                        )
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    scope.items.forEach {
+                        UPDisciplineItemInfoView(
+                            modifier = it.modifier,
+                            label = it.label,
+                            description = it.description,
+                            alignment = it.alignment,
+                            fraction = it.fraction
+                        )
+                    }
+                }
+            }
         if (message != null)
             Text(
                 text = message,
@@ -175,16 +225,19 @@ fun UPDisciplineItemView(
 @Preview(showBackground = true)
 @Composable
 private fun UPDisciplineItemViewPreview() {
+    val alignment = UPDisciplineItemAlignment.Horizontal
+
     UNIPPlus2Theme {
         UPDisciplineItemView(
             title = "Disciplina",
+            alignment = alignment,
             message = "Clique para ver mais"
         ) {
-            (1..5).forEach {
+            (1..5).forEach { _ ->
                 item(
                     label = "NP1",
                     description = "10",
-                    fraction = Random.nextFloat()
+                    alignment = alignment,
                 )
             }
         }

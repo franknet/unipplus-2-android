@@ -1,7 +1,7 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.data
 
-import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryResponse
+import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeaturesResponse
 
 interface UPSecretaryRepository {
-    suspend fun getSecretaryFeatures(): UPSecretaryResponse
+    suspend fun getSecretaryFeatures(): UPSecretaryFeaturesResponse
 }

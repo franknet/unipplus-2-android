@@ -52,9 +52,11 @@ class HttpServiceCookieStore(
 private fun android.webkit.CookieManager.add(uri: URI?, cookie: HttpCookie?) {
     cookie?.let {
         if (it.name == "ASP.NET_SessionId") {
+            Log.i(WEB_VIEW_TAG, "add: $cookie")
             setCookie("https://sec2.unip.br", "$it; path=/; HttpOnly; SameSite=Lax")
         }
         if (it.name == "SESSION") {
+            Log.i(WEB_VIEW_TAG, "add: $cookie")
             setCookie("https://sec2.unip.br", "$it; path=/; HttpOnly; SameSite=Lax")
         }
     }

@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 class UPHomeViewModel(
     private val getSystemsUseCase: UPHomeGetSystemsUseCase = UPHomeGetSystemsUseCase()
 ): ViewModel() {
-
     private val _systemsState = MutableStateFlow<UIState<UPHomeSystemsResponse>>(UIState.UIStateNone())
     val systemsState = _systemsState.asStateFlow()
 

@@ -39,6 +39,7 @@ class HttpServiceRequestInterceptor: Interceptor {
         mHeadersStore[HEADER_X_COURSE_TYPE]?.let { requestBuilder.addHeader(HEADER_X_COURSE_TYPE, it) }
         mHeadersStore[HEADER_X_TOKEN]?.let { requestBuilder.addHeader(HEADER_X_TOKEN, it) }
         mHeadersStore[HEADER_X_REFRESH_TOKEN]?.let { requestBuilder.addHeader(HEADER_X_REFRESH_TOKEN, it) }
+
         return requestBuilder.build()
     }
 

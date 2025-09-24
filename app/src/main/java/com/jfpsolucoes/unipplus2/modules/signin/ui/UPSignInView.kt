@@ -36,16 +36,13 @@ fun UPSignInView(
     val navController = LocalNavController.current
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(viewModel.snackbarState) {
                 Snackbar(it)
             }
         }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
+        Column {
             val idText by viewModel.idText.collectAsState()
             val passwordText by viewModel.passwordText.collectAsState()
             val signInUIState by viewModel.signInState.collectAsState()
