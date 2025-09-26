@@ -2,13 +2,23 @@ package com.jfpsolucoes.unipplus2.ui.components.error
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 
 @Composable
@@ -27,11 +37,22 @@ fun UPErrorView(
         onClickTryAgain?.let {
             VerticalSpacer()
 
-            TextButton(
+            Button(
                 onClick = it
             ) {
+                Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
+
+                Spacer(Modifier.width(4.dp))
+
                 Text("Tentar novamente")
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun UPErrorViewPreview() {
+    UPErrorView {}
+
 }

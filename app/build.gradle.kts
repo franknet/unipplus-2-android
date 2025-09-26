@@ -36,6 +36,7 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\"")
             buildConfigField("String", "API_AUTH", "\"/auth\"")
             buildConfigField("String", "API_SECRETARY", "\"/secretary\"")
+            signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
@@ -122,4 +123,5 @@ dependencies {
 
     // SVG Parser
     implementation(libs.android.svg)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }

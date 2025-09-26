@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.compose.ForEach
 import com.jfpsolucoes.unipplus2.core.compose.ForEachIndexed
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.rememberState
@@ -28,27 +30,26 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
+import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 
 @Composable
 fun UPHomeNavigationRail(
     modifier: Modifier = Modifier,
     data: UPHomeSystemsResponse? = null,
-    onSelectFeature: (UPSystem) -> Unit = {},
+    onSelectSystem: (UPSystem) -> Unit = {},
     onClickSystems: (List<UPSystem>?) -> Unit = {},
-    onClickSettings: () -> Unit = {},
     onClickExit: () -> Unit = {}
 ) {
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(0)
-    }
+    var selectedId by 0.saveableMutableState
 
     NavigationRail(
         modifier = modifier
     ) {
-        ForEachIndexed(data?.feature) { feature, index ->
+        ForEach(data?.feature) { feature ->
             NavigationRailItem(
-                selected = selectedIndex == 0,
-                onClick = { onSelectFeature(feature) },
+                selected = selectedId == feature.id,
+                enabled = feature.isEnabled,
+                onClick = { onSelectSystem(feature) },
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Home,
@@ -59,31 +60,7 @@ fun UPHomeNavigationRail(
             )
         }
 
-        NavigationRailItem(
-            selected = selectedIndex == 1,
-            onClick = { onClickSystems(data?.web) },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_outline_globe_24),
-                    contentDescription = null
-                )
-            },
-            label = { Text("Sistemas") }
-        )
-
-        NavigationRailItem(
-            selected = selectedIndex == 2,
-            onClick = onClickSettings,
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = null
-                )
-            },
-            label = { Text("Config.") }
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(Modifier.weight(1f))
 
         NavigationRailItem(
             selected = false,

@@ -2,5 +2,7 @@
 <resources>
     <string name="admob_app_id">ca-app-pub-5422259815391452~6448536467</string>
     <string name="admob_banner_id">ca-app-pub-5422259815391452/2589182503</string>
+    <string name="admob_test_banner_id">ca-app-pub-3940256099942544/9214589741</string>
     <string name="admob_interstitial_id">ca-app-pub-5422259815391452/7698076949</string>
+    <string name="admob_test_interstitial_id">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

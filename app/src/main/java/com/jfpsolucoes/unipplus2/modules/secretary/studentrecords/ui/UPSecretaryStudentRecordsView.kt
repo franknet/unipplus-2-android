@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeature
+import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.UPStudentRecordsDisciplinesResponse
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
 import com.jfpsolucoes.unipplus2.ui.UPIcons
@@ -42,8 +43,10 @@ import com.jfpsolucoes.unipplus2.ui.components.discipline.UPDisciplineItemView
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
+import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
 import kotlinx.coroutines.launch
+import kotlin.collections.forEach
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -94,38 +97,15 @@ fun UPSecretaryStudentRecordsView(
             UPErrorView(error = error) { viewModel.getDisciplines() }
         },
         content = { padding, data ->
-            LazyColumn(
+            UPStudentRecordsContent(
                 modifier = Modifier.padding(
                     top = padding.calculateTopPadding(),
                     start = 16.dp,
                     end = 16.dp,
                     bottom = if (navigationLayoutType != NavigationSuiteType.NavigationBar) padding.calculateBottomPadding() else 0.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val itemViewAlignment = if (data.courseType == "on_site")
-                    UPDisciplineItemAlignment.Horizontal else UPDisciplineItemAlignment.Vertical
-
-                data.groups?.value?.forEach { group ->
-                    item { Text(group.label.value, color = MaterialTheme.colorScheme.onBackground) }
-
-                    items(items = group.disciplines.value) { discipline ->
-                        UPDisciplineItemView(
-                            title = discipline.name.value,
-                            alignment = itemViewAlignment
-                        ) {
-                            (discipline.items.value).forEach { item ->
-                                item(
-                                    label = item.label.value,
-                                    description = item.grade.value,
-                                    alignment = itemViewAlignment,
-                                    fraction = Random.nextFloat()
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+                data = data
+            )
         }
     )
 }
@@ -153,4 +133,42 @@ private fun UPStudentRecordsTopBar(
             }
         }
     )
+}
+
+@Composable
+fun UPStudentRecordsContent(
+    modifier: Modifier = Modifier,
+    data: UPStudentRecordsDisciplinesResponse
+) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        val itemViewAlignment = if (data.courseType == "on_site")
+            UPDisciplineItemAlignment.Horizontal else UPDisciplineItemAlignment.Vertical
+
+        item { VerticalSpacer() }
+
+        data.groups?.value?.forEach { group ->
+            item { Text(group.label.value, color = MaterialTheme.colorScheme.onBackground) }
+
+            items(items = group.disciplines.value) { discipline ->
+                UPDisciplineItemView(
+                    title = discipline.name.value,
+                    alignment = itemViewAlignment
+                ) {
+                    discipline.items.value.forEach { item ->
+                        item(
+                            label = item.label.value,
+                            description = item.grade.value,
+                            alignment = itemViewAlignment,
+                            fraction = Random.nextFloat()
+                        )
+                    }
+                }
+            }
+        }
+
+        item { VerticalSpacer() }
+    }
 }

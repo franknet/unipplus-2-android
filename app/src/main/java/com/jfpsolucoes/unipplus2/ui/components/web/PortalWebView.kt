@@ -2,7 +2,6 @@ package com.jfpsolucoes.unipplus2.ui.components.web
 
 import android.annotation.SuppressLint
 import android.webkit.WebView
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
@@ -19,10 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.viewinterop.NoOpUpdate
 import com.jfpsolucoes.unipplus2.core.networking.UPWebViewClient
+import com.jfpsolucoes.unipplus2.core.networking.WebViewClientListener
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableState
+import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 
 const val TAG = "PortalWebView"
 
@@ -34,50 +37,74 @@ fun PortalWebView(
     webSettings: PortalWebViewSettings,
     onClickBack: (() -> Unit)? = null
 ) {
-    var webView: WebView? = null
+    var isLoading by false.mutableState
+
+    val webView = WebView(LocalContext.current).apply {
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.setSupportZoom(true)
+        settings.displayZoomControls = false
+        webViewClient = UPWebViewClient(object : WebViewClientListener {
+            override fun onLoadingStarted() {
+                isLoading = true
+            }
+
+            override fun onLoadingFinished() {
+                isLoading = false
+            }
+
+        })
+        loadUrl(webSettings.url)
+    }
+
     Scaffold(
         modifier = modifier.safeDrawingPadding(),
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    onClickBack?.let {
-                        IconButton(onClick = it) {
-                            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null)
-                        }
-                    }
-                },
-                title = {
-                    Text(
-                        webSettings.url,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { webView?.reload() }) {
-                        Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
-                    }
-                }
+            PortalWebViewTopBar(
+                url = webSettings.url,
+                onClickBack = onClickBack,
+                onClickRefreshPage = webView::reload
             )
         }
     ) { padding ->
-        AndroidView(
-            modifier = Modifier.padding(top = padding.calculateTopPadding()),
-            factory = {
-                WebView(it).apply {
-
-                    settings.javaScriptEnabled = true
-                    settings.domStorageEnabled = true
-                    settings.setSupportZoom(true)
-                    settings.displayZoomControls = false
-                    webViewClient = UPWebViewClient()
-                }
-            },
-            update = {
-                webView = it
-                it.loadUrl(webSettings.url)
-            }
-        )
+        if (isLoading) {
+            UPLoadingView()
+        } else {
+            AndroidView(
+                modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                factory = { webView }
+            )
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PortalWebViewTopBar(
+    url: String,
+    onClickBack: (() -> Unit)? = null,
+    onClickRefreshPage: () -> Unit
+) {
+    TopAppBar(
+        navigationIcon = {
+            onClickBack?.let {
+                IconButton(onClick = it) {
+                    Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null)
+                }
+            }
+        },
+        title = {
+            Text(
+                url,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        actions = {
+            IconButton(onClick = onClickRefreshPage) {
+                Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
+            }
+        }
+    )
 }

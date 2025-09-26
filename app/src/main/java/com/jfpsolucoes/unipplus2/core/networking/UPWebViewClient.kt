@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.core.networking
 
+import android.graphics.Bitmap
 import android.util.Log
 import android.webkit.CookieManager
 import android.webkit.WebView
@@ -8,7 +9,14 @@ import androidx.core.net.toUri
 
 private const val TAG = "UPWebViewClient"
 
-class UPWebViewClient: WebViewClient() {
+interface WebViewClientListener {
+    fun onLoadingStarted()
+    fun onLoadingFinished()
+}
+
+class UPWebViewClient(
+    val listener: WebViewClientListener? = null
+): WebViewClient() {
     override fun onLoadResource(view: WebView?, url: String?) {
         super.onLoadResource(view, url)
         url?.toUri()?.let {
@@ -17,6 +25,17 @@ class UPWebViewClient: WebViewClient() {
                 Log.i(TAG, "onLoadResource: $cookie")
             }
         }
-
     }
+
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        super.onPageStarted(view, url, favicon)
+        listener?.onLoadingStarted()
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        listener?.onLoadingFinished()
+    }
+
+
 }

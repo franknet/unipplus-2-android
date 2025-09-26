@@ -38,6 +38,7 @@ admob = "24.6.0"
 firebaseAnalytics = "23.0.0"
 firebaseCrashlytics = "20.0.1"
 googleFirebaseCrashlytics = "3.0.6"
+uiTooling = "1.9.1"
 
 
 [libraries]
@@ -95,6 +96,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "admob" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -3,21 +3,27 @@ package com.jfpsolucoes.unipplus2.modules.home.ui
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
+import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
 import com.jfpsolucoes.unipplus2.core.utils.extensions.rememberState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
+import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemType
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeFeatureDestination
@@ -41,6 +47,8 @@ fun UPHomeView(
     var hasFetchedData by rememberSaveable { mutableStateOf(false) }
     val systemsState by viewModel.systemsState.collectAsState()
 
+//    ShowInterstitialAd()
+
     LaunchedEffect(Unit) {
         if (hasFetchedData) return@LaunchedEffect
         viewModel.fetchSystems()
@@ -52,12 +60,12 @@ fun UPHomeView(
         state = systemsState,
         loadingContent = {
             UPLoadingView()
-                         },
+        },
         errorContent = { _, error ->
             UPErrorView(error = error) { viewModel.fetchSystems() }
         },
         content = { _, data ->
-            SuccessContent(systems = data)
+            SuccessContent(data = data)
         }
     )
 }
@@ -66,28 +74,41 @@ fun UPHomeView(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 private fun SuccessContent(
-    systems: UPHomeSystemsResponse? = null
+    data: UPHomeSystemsResponse? = null
 ) {
-    var selectedSystem by systems?.feature?.first().rememberState
+    val coroutineScope = rememberCoroutineScope()
+    var selectedSystem by data?.feature?.first().saveableMutableState
     val navController = LocalNavController.current
-    var navigationLayoutType = suiteLayoutTypeFromAdaptiveInfo()
+    val navigationLayoutType = suiteLayoutTypeFromAdaptiveInfo()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     UPHomeNavigationSuite(
+        drawerState = drawerState,
         layoutType = navigationLayoutType,
-        systems = systems,
+        data = data,
         onSelectSystem = { selectedSystem = it },
-        onClickExit = { navController.popBackStack() }
+        onClickExit = { navController.popBackStack() },
+        onClickOpenDrawer = {
+            coroutineScope.perform(drawerState::open)
+        }
     ) {
         CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
-            when (selectedSystem?.type) {
-                UPSystemType.FEATURE -> {
-                    UPHomeFeatureDestination(system = selectedSystem)
+            coroutineScope.perform(drawerState::close)
+
+            selectedSystem?.let { system ->
+                if (system.type == UPSystemType.FEATURE) {
+                    if (system.isEnabled) {
+                        UPHomeFeatureDestination(system = selectedSystem)
+                    } else {
+                        val settings = PortalWebViewSettings(url = selectedSystem?.url.value)
+                        PortalWebView(webSettings = settings)
+                    }
                 }
-                UPSystemType.WEB -> {
-                    val settings = PortalWebViewSettings(url = selectedSystem?.url ?: "")
+
+                if (system.type == UPSystemType.WEB) {
+                    val settings = PortalWebViewSettings(url = selectedSystem?.url.value)
                     PortalWebView(webSettings = settings)
                 }
-                else -> {}
             }
         }
     }

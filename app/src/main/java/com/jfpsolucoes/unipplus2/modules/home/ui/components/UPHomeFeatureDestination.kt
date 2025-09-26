@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
 import com.jfpsolucoes.unipplus2.modules.secretary.ui.UPSecretaryView
+import com.jfpsolucoes.unipplus2.modules.subscriptions.ui.UPSubscriptionView
 
 @Composable
 fun UPHomeFeatureDestination(
@@ -14,8 +15,17 @@ fun UPHomeFeatureDestination(
     if (system == null) return
 
     when (system.deeplink) {
-        UPSystemDeeplink.SECRETARY  -> {
+        UPSystemDeeplink.SECRETARY -> {
             UPSecretaryView()
+        }
+        UPSystemDeeplink.REMOTE_CLASSES -> {
+            UPSecretaryView()
+        }
+        UPSystemDeeplink.SETTINGS -> {
+
+        }
+        UPSystemDeeplink.SUBSCRIPTION -> {
+            UPSubscriptionView()
         }
         else -> {}
     }
