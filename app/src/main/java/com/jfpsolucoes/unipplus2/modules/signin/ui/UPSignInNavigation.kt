@@ -7,11 +7,10 @@ import com.jfpsolucoes.unipplus2.LOGIN_ROUTE
 import com.jfpsolucoes.unipplus2.modules.home.ui.homeNavigation
 
 fun NavGraphBuilder.signInNavigation() {
-    navigation(LOGIN_ROUTE, route = "/auth") {
+    navigation(LOGIN_ROUTE, route = "/") {
         composable(route = LOGIN_ROUTE) {
             UPSignInView()
         }
-
         homeNavigation()
     }
 }

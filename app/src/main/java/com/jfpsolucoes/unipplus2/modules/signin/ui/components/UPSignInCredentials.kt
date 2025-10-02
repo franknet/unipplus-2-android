@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.modules.signin.domain.models.UPSignInCredentialsProperties
@@ -32,33 +34,42 @@ import com.jfpsolucoes.unipplus2.ui.components.button.LoadingButton
 @Composable
 fun SignInCredentials(
     modifier: Modifier = Modifier,
-    properties: UPSignInCredentialsProperties
+    onLoading: Boolean = false,
+    raText: String,
+    onEditRa: (String) -> Unit,
+    passwordText: String,
+    onEditPassword: (String) -> Unit,
+    onClickSignIn: () -> Unit,
 ) = Box(
-    modifier = modifier,
+    modifier,
     contentAlignment = Alignment.Center
-) {
+)  {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val fraction = when {
+        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> 0.5f
+        else -> 1f
+    }
+
     Column(
-        modifier = Modifier
-            .fillMaxWidth(properties.contentWidthFraction)
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth(fraction).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RaTextField(
-            text = properties.idText,
-            onEdit = properties.onEditId
+            text = raText,
+            onEdit = onEditRa
         )
 
         PasswordTextField(
-            text = properties.passwordText,
-            onEdit = properties.onEditPassword
+            text = passwordText,
+            onEdit = onEditPassword
         )
 
         LoadingButton(
             modifier = Modifier.height(60.dp),
             title = stringResource(id = R.string.sign_in_button_title),
-            isLoading = properties.isLoading,
-            onClick = properties.onClickSignIn
+            isLoading = onLoading,
+            onClick = onClickSignIn
         )
     }
 }
@@ -88,7 +99,9 @@ private fun PasswordTextField(text: String, onEdit: (String) -> Unit) {
     val setPasswordVisibility: (Boolean) -> Unit = { isPasswordVisible = it }
     TextField(
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { PasswordTextFieldPlaceHolder() },
+        placeholder = {
+            Text(text = stringResource(id = R.string.sign_in_password_place_holder))
+        },
         value = text,
         onValueChange = onEdit,
         trailingIcon = {
@@ -98,17 +111,11 @@ private fun PasswordTextField(text: String, onEdit: (String) -> Unit) {
             )
         },
         visualTransformation = passwordVisualTransformation(isPasswordVisible),
-        shape = CircleShape,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         )
     )
-}
-
-@Composable
-private fun PasswordTextFieldPlaceHolder() {
-    Text(text = stringResource(id = R.string.sign_in_password_place_holder))
 }
 
 @Composable
@@ -142,9 +149,10 @@ private fun passwordVisualTransformation(isVisible: Boolean): VisualTransformati
 private fun SignInBottomSheetViewPreview() {
     SignInCredentials(
         modifier = Modifier.fillMaxWidth(),
-        properties = UPSignInCredentialsProperties(
-            idText = "",
-            passwordText = ""
-        )
+        raText = "",
+        onEditRa = {},
+        passwordText = "",
+        onEditPassword = {},
+        onClickSignIn = {}
     )
 }

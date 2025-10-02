@@ -1,61 +1,49 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.jfpsolucoes.unipplus2.core.compose.ForEachIndexed
-import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
-import com.jfpsolucoes.unipplus2.core.utils.extensions.value
-import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
-import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
-import com.jfpsolucoes.unipplus2.ui.ICON_HEADSET
-import com.jfpsolucoes.unipplus2.ui.UPIcons
+import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
+import com.jfpsolucoes.unipplus2.ui.theme.primaryBackgroundLow
 
 @Composable
 fun UPHomeNavigationBar(
-    data: UPHomeSystemsResponse? = null,
-    onSelectFeature: (UPSystem) -> Unit = {},
     onClickMenu: () -> Unit = {},
 ) {
-    NavigationBar {
-
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primaryBackgroundLow,
+        contentColor = Color.White
+    ) {
         Spacer(Modifier.weight(1f))
 
-        NavigationBarItem(
-            selected = false,
-            onClick = onClickMenu,
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.Menu,
-                    contentDescription = null
-                )
-            },
-            label = { }
-        )
-
+        IconButton(onClickMenu) {
+            Icon(
+                painter = painterResource(R.drawable.ic_outline_menu_24),
+                contentDescription = null
+            )
+        }
+        HorizontalSpacer()
     }
 }
 
 @Preview
 @Composable
 private fun UPHomeNavigationBarPreview() {
-    UPHomeNavigationBar(
-        data = UPHomeSystemsResponse(
-            feature = listOf(
-                UPSystem(id = 0)
-            ),
-            web = listOf(
-                UPSystem(id = 0)
-            )
-        )
-    )
+    UPHomeNavigationBar()
 }

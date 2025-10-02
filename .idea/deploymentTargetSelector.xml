@@ -7,7 +7,7 @@
       </SelectionState>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-09-25T17:55:55.869514Z">
+        <DropdownSelection timestamp="2025-10-02T20:48:34.829773Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/Franklin/.android/avd/Pixel_9.avd" />
@@ -31,6 +31,17 @@
       </SelectionState>
       <SelectionState runConfigName="PortalWebViewPreview">
         <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="SVGPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-09-29T19:37:27.957657Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/Franklin/.android/avd/Pixel_9.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>

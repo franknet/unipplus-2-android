@@ -15,11 +15,9 @@ import com.jfpsolucoes.unipplus2.R
 
 @Composable
 fun ADBanner(modifier: Modifier = Modifier) {
-    val adUnitId = stringResource(R.string.admob_banner_id)
+    if (LocalInspectionMode.current) { return }
 
-    if (LocalInspectionMode.current) {
-        return
-    }
+    val adUnitId = stringResource(R.string.admob_banner_id)
 
     val adView = AdView(LocalContext.current).also { view ->
         view.adUnitId = adUnitId
@@ -33,5 +31,4 @@ fun ADBanner(modifier: Modifier = Modifier) {
         adView.resume()
         onPauseOrDispose { adView.pause() }
     }
-
 }

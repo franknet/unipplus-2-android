@@ -18,7 +18,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -28,6 +28,7 @@ android {
 
     buildTypes {
         release {
+            isDebuggable = true
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -121,7 +122,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // SVG Parser
-    implementation(libs.android.svg)
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

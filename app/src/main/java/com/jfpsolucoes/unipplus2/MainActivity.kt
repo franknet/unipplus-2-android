@@ -5,7 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeGesturesPadding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -39,10 +42,10 @@ class MainActivity : ComponentActivity() {
         CompositionLocalProvider(
             LocalNavController provides navController
         ) {
-            Scaffold {
+            Surface {
                 NavHost(
                     navController = navController,
-                    startDestination = "/auth"
+                    startDestination = "/"
                 ) {
                     signInNavigation()
                 }

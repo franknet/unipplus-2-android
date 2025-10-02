@@ -1,32 +1,31 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.AnimatedPane
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
-import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
-import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
+import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.SupportingPane
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isMainPaneExpanded
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isSupportingPaneExpanded
+import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
+import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.SECRETARY_FINANCIAL_DEEPLINK
+import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.SECRETARY_STUDENT_RECORDS_DEEPLINK
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeature
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeaturesResponse
-import com.jfpsolucoes.unipplus2.modules.secretary.ui.components.UPSecretaryFeatureDestination
+import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPSecretaryStudentRecordsView
 import com.jfpsolucoes.unipplus2.modules.secretary.ui.dashboard.UPSecretaryDashboardView
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
@@ -71,33 +70,38 @@ private fun ContentView(
     modifier: Modifier = Modifier,
     data: UPSecretaryFeaturesResponse?
 ) {
-    val coroutine = rememberCoroutineScope()
-    val navigator = rememberListDetailPaneScaffoldNavigator<UPSecretaryFeature>()
-    val isDetailPaneHidden = navigator.scaffoldValue[ListDetailPaneScaffoldRole.Detail] == PaneAdaptedValue.Hidden
+    val coroutineScope = rememberCoroutineScope()
+    val navigator = rememberSupportingPaneScaffoldNavigator<UPSecretaryFeature>()
 
-    if (!isDetailPaneHidden) {
+    if (navigator.scaffoldValue.isSupportingPaneExpanded) {
         LaunchedEffect(Unit) {
-            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, data?.features?.first())
+            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, data?.features?.first())
         }
     }
 
-    ListDetailPaneScaffold(
-        modifier = modifier,
+    SupportingPaneScaffold(
         directive = navigator.scaffoldDirective,
         scaffoldState = navigator.scaffoldState,
-        listPane = {
+        mainPane = {
             UPSecretaryDashboardView(features = data?.features) { feature ->
-                coroutine.launch {
-                    navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, feature)
+                coroutineScope.launch {
+                    navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, feature)
                 }
             }
         },
-        detailPane = {
-            if (navigator.currentDestination?.pane == ListDetailPaneScaffoldRole.Detail) {
-                UPSecretaryFeatureDestination(
-                    navigator = navigator,
-                    feature = navigator.currentDestination?.contentKey
-                )
+        supportingPane = {
+            if (navigator.currentDestination?.pane == SupportingPaneScaffoldRole.Supporting) {
+                navigator.currentDestination?.contentKey?.let { system ->
+                    when (system.deeplink) {
+                        SECRETARY_STUDENT_RECORDS_DEEPLINK -> UPSecretaryStudentRecordsView(
+                            feature = system,
+                            navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
+                            onClickBack = { coroutineScope.perform(navigator::navigateBack) }
+                        )
+                        SECRETARY_FINANCIAL_DEEPLINK -> {}
+                        else -> {}
+                    }
+                }
             }
         },
     )

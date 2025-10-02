@@ -14,7 +14,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.jfpsolucoes.unipplus2.BuildConfig
@@ -26,7 +29,9 @@ val activity: ComponentActivity
  get() = LocalContext.current as ComponentActivity
 
 @Composable
-fun ShowInterstitialAd() {
+fun ShowInterstitialAd(
+    onAdDismissed: () -> Unit = {}
+) {
     var hasShowed by rememberSaveable { mutableStateOf(false) }
     if (hasShowed) return
 
@@ -41,9 +46,25 @@ fun ShowInterstitialAd() {
         stringResource(unitId),
         request,
         object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                super.onAdFailedToLoad(p0)
+                onAdDismissed()
+            }
+
             override fun onAdLoaded(ad: InterstitialAd) {
                 super.onAdLoaded(ad)
                 ad.show(activity)
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        super.onAdDismissedFullScreenContent()
+                        onAdDismissed()
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                        super.onAdFailedToShowFullScreenContent(p0)
+                        onAdDismissed()
+                    }
+                }
 
                 hasShowed = true
             }

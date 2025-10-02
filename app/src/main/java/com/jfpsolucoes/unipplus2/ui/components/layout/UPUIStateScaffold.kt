@@ -14,18 +14,35 @@ fun <T> UPUIStateScaffold(
     modifier: Modifier = Modifier,
     state: UIState<T>,
     topBar: @Composable () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
     loadingContent: @Composable (PaddingValues) -> Unit,
     errorContent: @Composable (PaddingValues, Throwable) -> Unit,
     content: @Composable (PaddingValues, T) -> Unit
 ) = Scaffold(
     modifier = modifier,
     topBar = topBar,
+    bottomBar = bottomBar,
     containerColor = Color.Transparent
 ) {  padding ->
     when (state) {
         is UIState.UIStateLoading -> loadingContent.invoke(padding)
         is UIState.UIStateError -> { state.error?.let { errorContent.invoke(padding, it) } }
         is UIState.UIStateSuccess -> { state.data?.let { content.invoke(padding, it) } }
+        else -> {}
+    }
+}
+
+@Composable
+fun <T> UPUIStateView(
+    state: UIState<T>,
+    loadingContent: @Composable () -> Unit,
+    errorContent: @Composable (Throwable) -> Unit,
+    content: @Composable (T) -> Unit
+) {
+    when (state) {
+        is UIState.UIStateLoading -> loadingContent.invoke()
+        is UIState.UIStateError -> { state.error?.let { errorContent.invoke(it) } }
+        is UIState.UIStateSuccess -> { state.data?.let { content.invoke(it) } }
         else -> {}
     }
 }

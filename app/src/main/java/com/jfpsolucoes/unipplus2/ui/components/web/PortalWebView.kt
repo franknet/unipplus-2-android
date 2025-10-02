@@ -2,11 +2,9 @@ package com.jfpsolucoes.unipplus2.ui.components.web
 
 import android.annotation.SuppressLint
 import android.webkit.WebView
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,12 +17,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.viewinterop.NoOpUpdate
+import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.networking.UPWebViewClient
 import com.jfpsolucoes.unipplus2.core.networking.WebViewClientListener
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableState
+import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 
 const val TAG = "PortalWebView"
@@ -45,14 +45,8 @@ fun PortalWebView(
         settings.setSupportZoom(true)
         settings.displayZoomControls = false
         webViewClient = UPWebViewClient(object : WebViewClientListener {
-            override fun onLoadingStarted() {
-                isLoading = true
-            }
-
-            override fun onLoadingFinished() {
-                isLoading = false
-            }
-
+            override fun onLoadingStarted() { isLoading = true }
+            override fun onLoadingFinished() { isLoading = false }
         })
         loadUrl(webSettings.url)
     }
@@ -65,13 +59,17 @@ fun PortalWebView(
                 onClickBack = onClickBack,
                 onClickRefreshPage = webView::reload
             )
-        }
+        },
+        bottomBar = { ADBanner(Modifier.fillMaxWidth()) }
     ) { padding ->
         if (isLoading) {
             UPLoadingView()
         } else {
             AndroidView(
-                modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                modifier = Modifier.padding(
+                    top = padding.calculateTopPadding(),
+                    bottom = padding.calculateBottomPadding()
+                ),
                 factory = { webView }
             )
         }
@@ -89,7 +87,7 @@ private fun PortalWebViewTopBar(
         navigationIcon = {
             onClickBack?.let {
                 IconButton(onClick = it) {
-                    Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null)
+                    Icon(painter = painterResource(R.drawable.ic_outline_arrow_back_24), contentDescription = null)
                 }
             }
         },
@@ -103,7 +101,7 @@ private fun PortalWebViewTopBar(
         },
         actions = {
             IconButton(onClick = onClickRefreshPage) {
-                Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
+                Icon(painter = painterResource(R.drawable.ic_outline_refresh_24), contentDescription = null)
             }
         }
     )

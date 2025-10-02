@@ -39,4 +39,5 @@ data class UPSystem(
     val url: String? = null,
     val isEnabled: Boolean = false,
     val message: String? = null,
+    val iconSVG: String? = null
 ): Parcelable

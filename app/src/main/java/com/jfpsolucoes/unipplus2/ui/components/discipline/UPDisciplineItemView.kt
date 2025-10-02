@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -99,7 +100,7 @@ private fun UPDisciplineItemHeaderView(
         modifier = modifier.weight(1f),
         text = title,
         style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Bold,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1
     )
@@ -122,14 +123,12 @@ fun UPDisciplineItemInfoView(
             Text(
                 modifier = Modifier.weight(1f),
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                style = MaterialTheme.typography.labelMedium
             )
 
             Text(
                 text = description,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                style = MaterialTheme.typography.labelLarge
             )
         }
 
@@ -141,14 +140,12 @@ fun UPDisciplineItemInfoView(
         ) {
             Text(
                 text = description,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                style = MaterialTheme.typography.labelLarge
             )
 
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }

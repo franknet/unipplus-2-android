@@ -1,10 +1,20 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
+import android.view.View.LAYOUT_DIRECTION_RTL
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
@@ -18,20 +28,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
-import com.jfpsolucoes.unipplus2.core.utils.extensions.rememberState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
+import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemType
-import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeFeatureDestination
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeNavigationSuite
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.suiteLayoutTypeFromAdaptiveInfo
+import com.jfpsolucoes.unipplus2.modules.secretary.ui.UPSecretaryView
+import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
+import com.jfpsolucoes.unipplus2.modules.subscriptions.ui.UPSubscriptionView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
-import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
@@ -41,13 +54,12 @@ import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun UPHomeView(
-    modifier: Modifier = Modifier,
-    viewModel: UPHomeViewModel = viewModel()
+    viewModel: UPHomeViewModel = viewModel(),
 ) {
     var hasFetchedData by rememberSaveable { mutableStateOf(false) }
     val systemsState by viewModel.systemsState.collectAsState()
 
-//    ShowInterstitialAd()
+    ShowInterstitialAd()
 
     LaunchedEffect(Unit) {
         if (hasFetchedData) return@LaunchedEffect
@@ -56,11 +68,8 @@ fun UPHomeView(
     }
 
     UPUIStateScaffold(
-        modifier = modifier,
         state = systemsState,
-        loadingContent = {
-            UPLoadingView()
-        },
+        loadingContent = { UPLoadingView() },
         errorContent = { _, error ->
             UPErrorView(error = error) { viewModel.fetchSystems() }
         },
@@ -86,28 +95,38 @@ private fun SuccessContent(
         drawerState = drawerState,
         layoutType = navigationLayoutType,
         data = data,
+        selectedSystem = selectedSystem,
         onSelectSystem = { selectedSystem = it },
         onClickExit = { navController.popBackStack() },
-        onClickOpenDrawer = {
-            coroutineScope.perform(drawerState::open)
-        }
+        onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
     ) {
-        CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
-            coroutineScope.perform(drawerState::close)
+        val surfaceModifier = when (navigationLayoutType) {
+            NavigationSuiteType.NavigationBar -> {
+                val windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+                Modifier.windowInsetsPadding(windowInsets)
+            }
+            else -> Modifier.systemBarsPadding()
+        }
 
-            selectedSystem?.let { system ->
-                if (system.type == UPSystemType.FEATURE) {
-                    if (system.isEnabled) {
-                        UPHomeFeatureDestination(system = selectedSystem)
-                    } else {
-                        val settings = PortalWebViewSettings(url = selectedSystem?.url.value)
+        Surface(surfaceModifier) {
+            CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
+                coroutineScope.perform(drawerState::close)
+                selectedSystem?.let { system ->
+                    if (system.type == UPSystemType.WEB) {
+                        val settings = PortalWebViewSettings(url = system.url.value)
                         PortalWebView(webSettings = settings)
                     }
-                }
-
-                if (system.type == UPSystemType.WEB) {
-                    val settings = PortalWebViewSettings(url = selectedSystem?.url.value)
-                    PortalWebView(webSettings = settings)
+                    else {
+                        when (system.deeplink) {
+                            UPSystemDeeplink.SECRETARY -> {
+                                UPSecretaryView()
+                            }
+                            UPSystemDeeplink.SETTINGS -> {
+                                UPSettingsView(title = system.description.value)
+                            }
+                            else -> {}
+                        }
+                    }
                 }
             }
         }

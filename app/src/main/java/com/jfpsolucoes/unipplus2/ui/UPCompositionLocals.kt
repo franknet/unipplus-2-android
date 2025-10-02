@@ -1,6 +1,5 @@
 package com.jfpsolucoes.unipplus2.ui
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -12,3 +11,6 @@ val LocalNavController = compositionLocalOf<NavHostController> { error("") }
 val LocalFoldingFeatures = compositionLocalOf<List<FoldingFeature>?> { error("") }
 
 val LocalNavigationLayoutType = compositionLocalOf<NavigationSuiteType> { error("") }
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+val LocalThreePaneScaffoldIntNavigator = compositionLocalOf<ThreePaneScaffoldNavigator<Int>> { error("") }

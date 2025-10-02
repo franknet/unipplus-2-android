@@ -1,16 +1,8 @@
 package com.jfpsolucoes.unipplus2.ui
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.caverock.androidsvg.SVG
 import com.jfpsolucoes.unipplus2.R
 
 const val ICON_GLOBE = "ic_globe"

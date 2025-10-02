@@ -3,12 +3,10 @@ package com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,37 +14,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
-import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeature
 import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.UPStudentRecordsDisciplinesResponse
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
-import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
 import com.jfpsolucoes.unipplus2.ui.UPIcons
+import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
 import com.jfpsolucoes.unipplus2.ui.components.discipline.UPDisciplineItemAlignment
-import com.jfpsolucoes.unipplus2.ui.components.discipline.UPDisciplineItemInfoView
 import com.jfpsolucoes.unipplus2.ui.components.discipline.UPDisciplineItemView
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
-import kotlinx.coroutines.launch
-import kotlin.collections.forEach
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -55,25 +44,19 @@ import kotlin.random.Random
 fun UPSecretaryStudentRecordsView(
     modifier: Modifier = Modifier,
     viewModel: UPStudentRecordsViewModel = viewModel(),
-    navigator: ThreePaneScaffoldNavigator<UPSecretaryFeature>,
-    feature: UPSecretaryFeature
+    feature: UPSecretaryFeature,
+    navigationButtonEnabled: Boolean = true,
+    onClickBack: () -> Unit
 ) {
     val disciplinesUIState by viewModel.disciplinesUIState.collectAsState()
-    var hasFetchedDisciplines by rememberSaveable { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val isListPaneHidden = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Hidden
     val mainNavigator = LocalNavController.current
-    val navigationLayoutType = LocalNavigationLayoutType.current
 
     LaunchedEffect(Unit) {
-//        if (hasFetchedDisciplines) { return@LaunchedEffect }
-//        hasFetchedDisciplines = true
         viewModel.getDisciplines()
     }
 
-    BackHandler {
-        if (!navigator.canNavigateBack()) { return@BackHandler }
-        coroutineScope.launch { navigator.navigateBack() }
+    BackHandler(enabled = navigationButtonEnabled) {
+        onClickBack()
     }
 
     UPUIStateScaffold(
@@ -82,13 +65,16 @@ fun UPSecretaryStudentRecordsView(
         topBar = {
             UPStudentRecordsTopBar(
                 title = feature.description.value,
-                isNavigableBack = isListPaneHidden,
-                onClickBack = { coroutineScope.launch { navigator.navigateBack() } },
+                onClickBack = onClickBack,
+                navigationButtonEnabled = navigationButtonEnabled,
                 onClickOpenUrl = {
                     val settings = PortalWebViewSettings(url = feature.portalUrl.value)
                     mainNavigator.navigate(route = settings)
                 }
             )
+        },
+        bottomBar = {
+            ADBanner(Modifier.fillMaxWidth())
         },
         loadingContent = {
             UPLoadingView()
@@ -102,7 +88,7 @@ fun UPSecretaryStudentRecordsView(
                     top = padding.calculateTopPadding(),
                     start = 16.dp,
                     end = 16.dp,
-                    bottom = if (navigationLayoutType != NavigationSuiteType.NavigationBar) padding.calculateBottomPadding() else 0.dp
+                    bottom = padding.calculateBottomPadding()
                 ),
                 data = data
             )
@@ -114,16 +100,16 @@ fun UPSecretaryStudentRecordsView(
 @Composable
 private fun UPStudentRecordsTopBar(
     title: String?,
-    isNavigableBack: Boolean = true,
+    navigationButtonEnabled: Boolean = true,
     onClickBack: () -> Unit = {},
     onClickOpenUrl: () -> Unit = {},
 ) {
     TopAppBar(
         title = { Text(title.value) },
         navigationIcon = {
-            if (isNavigableBack) {
+            if (navigationButtonEnabled) {
                 IconButton(onClick = onClickBack) {
-                    Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "")
+                    Icon(painter = painterResource(R.drawable.ic_outline_arrow_back_24), contentDescription = "")
                 }
             }
         },
@@ -146,8 +132,6 @@ fun UPStudentRecordsContent(
     ) {
         val itemViewAlignment = if (data.courseType == "on_site")
             UPDisciplineItemAlignment.Horizontal else UPDisciplineItemAlignment.Vertical
-
-        item { VerticalSpacer() }
 
         data.groups?.value?.forEach { group ->
             item { Text(group.label.value, color = MaterialTheme.colorScheme.onBackground) }

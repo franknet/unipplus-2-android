@@ -1,6 +1,6 @@
 package com.jfpsolucoes.unipplus2.modules.signin.domain.models
 
-data class SignInResponse(
+data class UPSignInResponse(
     val academic: Academic?,
     val user: User?
 )
