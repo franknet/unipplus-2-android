@@ -3,7 +3,6 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -17,14 +16,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
-import com.jfpsolucoes.unipplus2.core.common.model.UPAppInfo
-import com.jfpsolucoes.unipplus2.core.database.SHARED_KEY_APP_INFO
-import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
-import com.jfpsolucoes.unipplus2.modules.signin.domain.models.UPSignInCredentialsProperties
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInCredentials
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
@@ -56,8 +50,6 @@ fun UPSignInView(
 
             if (signInUIState is UIState.UIStateSuccess) {
                 viewModel.resetLoginState()
-                val session = UPAppInfo(signInUIState.data)
-                SharedPreferencesManager.saveObject(SHARED_KEY_APP_INFO, session)
                 navController.navigate(route = HOME_NAVIGATION_ROUTE)
             }
 

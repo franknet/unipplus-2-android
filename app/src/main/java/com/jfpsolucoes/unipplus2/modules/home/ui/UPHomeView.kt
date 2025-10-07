@@ -1,21 +1,10 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui
 
 import android.annotation.SuppressLint
-import android.view.View.LAYOUT_DIRECTION_RTL
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -27,11 +16,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
@@ -42,9 +33,9 @@ import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeNavigationSuit
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.suiteLayoutTypeFromAdaptiveInfo
 import com.jfpsolucoes.unipplus2.modules.secretary.ui.UPSecretaryView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
-import com.jfpsolucoes.unipplus2.modules.subscriptions.ui.UPSubscriptionView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
+import com.jfpsolucoes.unipplus2.ui.components.appshare.ShareAppDialog
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
@@ -60,6 +51,8 @@ fun UPHomeView(
     val systemsState by viewModel.systemsState.collectAsState()
 
     ShowInterstitialAd()
+
+    ShareAppDialog()
 
     LaunchedEffect(Unit) {
         if (hasFetchedData) return@LaunchedEffect
@@ -88,8 +81,13 @@ private fun SuccessContent(
     val coroutineScope = rememberCoroutineScope()
     var selectedSystem by data?.feature?.first().saveableMutableState
     val navController = LocalNavController.current
-    val navigationLayoutType = suiteLayoutTypeFromAdaptiveInfo()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val navigationLayoutType = when {
+        windowSizeClass.isWidthLargeLowerBound || windowSizeClass.isWidthExtraLargeLowerBound -> NavigationSuiteType.NavigationDrawer
+        windowSizeClass.isWidthMediumLowerBound || windowSizeClass.isWidthExpandedLowerBound -> NavigationSuiteType.NavigationRail
+        else -> suiteLayoutTypeFromAdaptiveInfo()
+    }
 
     UPHomeNavigationSuite(
         drawerState = drawerState,
@@ -100,15 +98,7 @@ private fun SuccessContent(
         onClickExit = { navController.popBackStack() },
         onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
     ) {
-        val surfaceModifier = when (navigationLayoutType) {
-            NavigationSuiteType.NavigationBar -> {
-                val windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-                Modifier.windowInsetsPadding(windowInsets)
-            }
-            else -> Modifier.systemBarsPadding()
-        }
-
-        Surface(surfaceModifier) {
+        Surface {
             CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
                 coroutineScope.perform(drawerState::close)
                 selectedSystem?.let { system ->

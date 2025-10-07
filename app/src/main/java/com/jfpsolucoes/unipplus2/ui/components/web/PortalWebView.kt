@@ -42,6 +42,7 @@ fun PortalWebView(
     val webView = WebView(LocalContext.current).apply {
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
+        settings.javaScriptCanOpenWindowsAutomatically = true
         settings.setSupportZoom(true)
         settings.displayZoomControls = false
         webViewClient = UPWebViewClient(object : WebViewClientListener {
@@ -60,7 +61,9 @@ fun PortalWebView(
                 onClickRefreshPage = webView::reload
             )
         },
-        bottomBar = { ADBanner(Modifier.fillMaxWidth()) }
+        bottomBar = {
+            ADBanner(Modifier.fillMaxWidth())
+        }
     ) { padding ->
         if (isLoading) {
             UPLoadingView()

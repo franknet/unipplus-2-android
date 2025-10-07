@@ -107,11 +107,18 @@ dependencies {
     // BILLING
     implementation(libs.billing)
 
+    implementation(libs.play.services.location)
+
     // FIREBASE
     implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.ads)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.remoteconfig)
+    implementation(libs.firebase.inappmessaging.display)
+
+    // Play Store
+    implementation(libs.app.update.ktx)
 
     // TESTING
     testImplementation(libs.junit)

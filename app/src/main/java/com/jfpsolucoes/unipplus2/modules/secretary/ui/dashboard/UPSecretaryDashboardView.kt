@@ -44,18 +44,12 @@ fun UPSecretaryDashboardView(
             ADBanner(Modifier.fillMaxWidth())
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = modifier.padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding()
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item { VerticalSpacer(space = 0.dp) }
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            item { VerticalSpacer(0.dp) }
 
             item {
                 UPStudentInfoCard(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     name = session?.user?.name.value,
                     course = session?.academic?.course?.name.value
                 )
@@ -63,7 +57,7 @@ fun UPSecretaryDashboardView(
 
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    item { HorizontalSpacer(space = 0.dp) }
+                    item { HorizontalSpacer(0.dp) }
 
                     items(features.value) { feature ->
                         UPFeatureCard(
@@ -81,8 +75,12 @@ fun UPSecretaryDashboardView(
                         )
                     }
 
-                    item { HorizontalSpacer(space = 0.dp) }
+                    item { HorizontalSpacer(0.dp) }
                 }
+            }
+
+            item {
+                VerticalSpacer(0.dp)
             }
         }
     }

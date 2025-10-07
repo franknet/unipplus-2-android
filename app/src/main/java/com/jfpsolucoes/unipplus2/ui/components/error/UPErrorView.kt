@@ -29,7 +29,11 @@ fun UPErrorView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(error?.message ?: "Erro desconhecido")
+        Text(
+            error?.message ?: "Erro desconhecido",
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
 
         onClickTryAgain?.let {
             VerticalSpacer()
@@ -44,11 +48,7 @@ fun UPErrorView(
 
                 Spacer(Modifier.width(4.dp))
 
-                Text(
-                    "Tentar novamente",
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Text("Tentar novamente")
             }
         }
     }

@@ -60,13 +60,13 @@ fun UPSecretaryStudentRecordsView(
     }
 
     UPUIStateScaffold(
-        modifier = modifier,
         state = disciplinesUIState,
         topBar = {
             UPStudentRecordsTopBar(
                 title = feature.description.value,
                 onClickBack = onClickBack,
                 navigationButtonEnabled = navigationButtonEnabled,
+                webViewButtonEnabled = !feature.portalUrl.isNullOrEmpty(),
                 onClickOpenUrl = {
                     val settings = PortalWebViewSettings(url = feature.portalUrl.value)
                     mainNavigator.navigate(route = settings)
@@ -84,7 +84,7 @@ fun UPSecretaryStudentRecordsView(
         },
         content = { padding, data ->
             UPStudentRecordsContent(
-                modifier = Modifier.padding(
+                modifier = modifier.padding(
                     top = padding.calculateTopPadding(),
                     start = 16.dp,
                     end = 16.dp,
@@ -101,6 +101,7 @@ fun UPSecretaryStudentRecordsView(
 private fun UPStudentRecordsTopBar(
     title: String?,
     navigationButtonEnabled: Boolean = true,
+    webViewButtonEnabled: Boolean = true,
     onClickBack: () -> Unit = {},
     onClickOpenUrl: () -> Unit = {},
 ) {
@@ -114,8 +115,10 @@ private fun UPStudentRecordsTopBar(
             }
         },
         actions = {
-            IconButton(onClick = onClickOpenUrl) {
-                Icon(painter = UPIcons.Outlined.of("ic_globe"), contentDescription = "")
+            if (webViewButtonEnabled) {
+                IconButton(onClick = onClickOpenUrl) {
+                    Icon(painter = UPIcons.Outlined.of("ic_globe"), contentDescription = "")
+                }
             }
         }
     )

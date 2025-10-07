@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 
 const val SHARED_KEY_APP_INFO = "appInfo"
+const val SHARED_KEY_APP_SHARE_ALERT_COUNT = "shareAlertCount"
 
 object SharedPreferencesManager {
 
@@ -25,4 +26,13 @@ object SharedPreferencesManager {
         val jsonStr = editor?.getString(key, null)
         return Gson().fromJson(jsonStr, T::class.java)
     }
+
+    fun setInt(key: String, value: Int) {
+        editor?.edit { putInt(key, value) }
+    }
+
+    fun getInt(key: String, defaultValue: Int = 0): Int {
+        return editor?.getInt(key, defaultValue) ?: defaultValue
+    }
+
 }

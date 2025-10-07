@@ -59,7 +59,6 @@ fun UPHomeNavigationDrawer(
         Column(Modifier
             .width(320.dp)
             .fillMaxHeight()
-            .safeDrawingPadding()
         ) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 item { VerticalSpacer() }
