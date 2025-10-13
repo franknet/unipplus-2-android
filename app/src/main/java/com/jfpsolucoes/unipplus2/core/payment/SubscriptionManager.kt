@@ -20,18 +20,20 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 
 interface UPSubscriptionManager {
     var subscriptions: Flow<UIState<List<UPSubscription>>>
-
-    var hasPurchasedPlan: Flow<Boolean>
 }
 
 object SubscriptionManagerInstance: UPSubscriptionManager {
     private var mBillingClient: BillingClient? = null
+
+    private val mBillingResult = MutableStateFlow<BillingResult?>(null)
 
     private val mPurchasesList = emptyList<Purchase>().mutableStateFlow
 
@@ -61,46 +63,41 @@ object SubscriptionManagerInstance: UPSubscriptionManager {
         .build()
 
     private val mPurchasesResponseListener = PurchasesResponseListener { billingResult, purchases ->
+        mBillingResult.value = billingResult
         if (billingResult.responseCode == BillingResponseCode.OK) {
             mPurchasesList.value = purchases.value
         }
     }
 
     private val mPurchaseUpdateListener = PurchasesUpdatedListener { billingResult, purchases ->
+        mBillingResult.value = billingResult
         if (billingResult.responseCode == BillingResponseCode.OK) {
             mPurchasesList.value = purchases.value
         }
     }
     private val mQueryProductDetailsListener = ProductDetailsResponseListener { billingResult, productsResult ->
+        mBillingResult.value = billingResult
         if (billingResult.responseCode == BillingResponseCode.OK) {
             mProductsList.value = productsResult.productDetailsList
         }
     }
 
-    val purchasesList = mPurchasesList.asStateFlow()
-    val productsList = mProductsList.asStateFlow()
+    override var subscriptions = combine(mBillingResult, mPurchasesList, mProductsList) { result, purchases, products ->
+        if (result?.responseCode == BillingResponseCode.OK) {  }
 
-    override var subscriptions = productsList.combine(purchasesList) { products, purchases ->
-        products.map { product ->
-            var sub = UPSubscription(
-                product.productId,
-                product.name,
-                product.description,
-                product.subscriptionOfferDetails?.last()?.pricingPhases?.pricingPhaseList?.last()?.formattedPrice.value
+        val subsList = products.map { product ->
+            var subs = UPSubscription(
+                id = product.productId,
+                title = product.name,
+                description = product.description,
+                price = product.subscriptionOfferDetails?.last()?.pricingPhases?.pricingPhaseList?.last()?.formattedPrice.value,
+                status = UPSubscriptionStatus.None,
+                googlePayProductDetails = product
             )
-            purchases.find { it.products.last() == product.productId }?.let {
-                when (it.purchaseState) {
-
-                }
-                sub.status = UPSubscriptionStatus.OK
-            }
-            sub
+            subs
         }
+        subsList
     }.toUIStateFlow()
-
-    override var hasPurchasedPlan = subscriptions.map { subsState ->
-        subsState.data?.find { it.status == UPSubscriptionStatus.OK } != null
-    }
 
     fun initialize(context: Context) {
         if (mBillingClient != null) return
@@ -111,41 +108,25 @@ object SubscriptionManagerInstance: UPSubscriptionManager {
             .enableAutoServiceReconnection()
             .setListener(mPurchaseUpdateListener)
             .build()
-    }
 
-    private fun startConnection(onConnected: (() -> Unit)? = null) {
-        mBillingClient?.startConnection(object : BillingClientStateListener {
-            override fun onBillingServiceDisconnected() {}
-
-            override fun onBillingSetupFinished(result: BillingResult) {
-                if (result.responseCode == BillingResponseCode.OK) {
-                    onConnected?.invoke()
-                }
-            }
-        })
-    }
-
-    fun queryProductDetails() {
         mBillingClient?.queryProductDetailsAsync(
             mProductDetailsParams,
             mQueryProductDetailsListener
         )
     }
 
-    fun queryPurchases() {
-        mBillingClient?.queryPurchasesAsync(
-            mPurchaseParams,
-            mPurchasesResponseListener
-        )
-    }
-
-    fun launchBillingFlow(context: Activity, productDetails: List<ProductDetails>) {
+    fun launchBillingFlow(
+        context: Activity,
+        productDetails: List<ProductDetails>,
+        onError: ((Throwable) -> Unit)? = null
+    ) {
         val billingFlowParams = productDetails.map {
             BillingFlowParams.ProductDetailsParams.newBuilder()
                 .setProductDetails(it)
+                .setOfferToken(it.subscriptionOfferDetails?.last()?.offerToken.value)
                 .build()
         }
-        mBillingClient?.launchBillingFlow(
+        val result = mBillingClient?.launchBillingFlow(
             context, BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(billingFlowParams)
                 .build()

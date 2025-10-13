@@ -33,3 +33,5 @@ val <T> T.saveableMutableState: MutableState<T>
 fun <T> T.saveableState(value: T?): MutableState<T?> = rememberSaveable { mutableStateOf(value) }
 
 fun <T> value(value: T?): T? = value
+
+fun <T> MutableState<T>.onEdit(value: T) { this.value = value }

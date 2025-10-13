@@ -1,7 +1,7 @@
 package com.jfpsolucoes.unipplus2.core.utils.extensions
 
 import android.annotation.SuppressLint
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,14 +15,13 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.jfpsolucoes.unipplus2.BuildConfig
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigKeys
 import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigManager
 
-val activity: ComponentActivity
+val activity: AppCompatActivity
  @SuppressLint("ContextCastToActivity") @Composable
- get() = LocalContext.current as ComponentActivity
+ get() = LocalContext.current as AppCompatActivity
 
 @Composable
 fun ShowInterstitialAd(

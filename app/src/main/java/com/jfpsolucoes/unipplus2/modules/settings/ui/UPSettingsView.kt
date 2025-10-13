@@ -2,20 +2,13 @@ package com.jfpsolucoes.unipplus2.modules.settings.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
@@ -24,40 +17,63 @@ import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.BuildConfig
 import com.jfpsolucoes.unipplus2.R
-import com.jfpsolucoes.unipplus2.core.common.model.UPAppInfo
-import com.jfpsolucoes.unipplus2.core.database.SHARED_KEY_APP_INFO
-import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
-import com.jfpsolucoes.unipplus2.core.payment.SubscriptionManagerInstance
-import com.jfpsolucoes.unipplus2.core.payment.ui.UPSubscriptionsView
-import com.jfpsolucoes.unipplus2.core.utils.extensions.value
+import com.jfpsolucoes.unipplus2.core.security.UPBiometricManager
+import com.jfpsolucoes.unipplus2.core.security.UPBiometricManagerImpl
+import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
+import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableState
 import com.jfpsolucoes.unipplus2.modules.profile.ui.UPProfileView
+import com.jfpsolucoes.unipplus2.modules.settings.ui.components.UPSettingsBiometricItemView
+import com.jfpsolucoes.unipplus2.modules.settings.ui.components.UPSettingsProfileItemView
+import com.jfpsolucoes.unipplus2.ui.components.dialogs.UPAlertDialog
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun UPSettingsView(
     modifier: Modifier = Modifier,
-    title: String
+    title: String,
+    viewModel: UPSettingsViewModel = viewModel(),
+    biometricManager: UPBiometricManager = UPBiometricManagerImpl
 ) {
-    val session = SharedPreferencesManager.getObject<UPAppInfo>(SHARED_KEY_APP_INFO)?.session
     val navigator = rememberSupportingPaneScaffoldNavigator<Int>()
     val isMainPaneHidden = navigator.scaffoldValue[SupportingPaneScaffoldRole.Main] == PaneAdaptedValue.Hidden
     val isSupportingPaneHidden = navigator.scaffoldValue[SupportingPaneScaffoldRole.Supporting] == PaneAdaptedValue.Hidden
     val coroutineScope = rememberCoroutineScope()
+    var biometricSwitchChecked by viewModel.biometricEnabled
+    var biometricLaunchCount by viewModel.biometricLaunchCount
+    val activity = activity
 
     if (!isSupportingPaneHidden) {
         LaunchedEffect(Unit) {
             navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
         }
+    }
+
+    LaunchedEffect(biometricLaunchCount) {
+        if (biometricLaunchCount == 0) {
+            return@LaunchedEffect
+        }
+        biometricManager.authenticate(
+            activity,
+            subtitle = activity.getString(R.string.biometric_toggle_subtitle_text),
+            onSuccess = {
+                viewModel.updateBiometricSettings(true)
+            },
+            onError = { _, message -> },
+            onFailed = { }
+        )
     }
 
     SupportingPaneScaffold(
@@ -72,7 +88,10 @@ fun UPSettingsView(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("Versão ${BuildConfig.VERSION_NAME}")
+                        Text(
+                            modifier = Modifier.padding(16.dp),
+                            text = "Versão ${BuildConfig.VERSION_NAME}"
+                        )
                     }
                 }
             ) { padding ->
@@ -85,30 +104,22 @@ fun UPSettingsView(
                 ) {
                     // Student info
                     item {
-                        Card(onClick = {
+                        UPSettingsProfileItemView(viewModel.userName) {
                             coroutineScope.launch {
                                 navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
                             }
-                        }) {
-                            Row(
-                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(40.dp),
-                                    painter = painterResource(R.drawable.ic_outline_account_circle_24),
-                                    contentDescription = ""
-                                )
-                                Text(
-                                    session?.user?.name.value,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                            }
                         }
                     }
+
+                    if (biometricManager.isBiometricAvailable) {
+                        item {
+                            UPSettingsBiometricItemView(
+                                checked = biometricSwitchChecked,
+                                onCheckedChange = viewModel::onBiometricToggle
+                            )
+                        }
+                    }
+
                 }
             }
         },

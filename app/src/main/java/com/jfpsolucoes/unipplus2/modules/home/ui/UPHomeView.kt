@@ -36,6 +36,7 @@ import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
 import com.jfpsolucoes.unipplus2.ui.components.appshare.ShareAppDialog
+import com.jfpsolucoes.unipplus2.ui.components.dialogs.UPBiometricAlertDialog
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
@@ -67,7 +68,10 @@ fun UPHomeView(
             UPErrorView(error = error) { viewModel.fetchSystems() }
         },
         content = { _, data ->
-            SuccessContent(data = data)
+            SuccessContent(
+                data = data,
+                viewModel = viewModel
+            )
         }
     )
 }
@@ -76,7 +80,8 @@ fun UPHomeView(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 private fun SuccessContent(
-    data: UPHomeSystemsResponse? = null
+    data: UPHomeSystemsResponse? = null,
+    viewModel: UPHomeViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     var selectedSystem by data?.feature?.first().saveableMutableState
@@ -87,6 +92,22 @@ private fun SuccessContent(
         windowSizeClass.isWidthLargeLowerBound || windowSizeClass.isWidthExtraLargeLowerBound -> NavigationSuiteType.NavigationDrawer
         windowSizeClass.isWidthMediumLowerBound || windowSizeClass.isWidthExpandedLowerBound -> NavigationSuiteType.NavigationRail
         else -> suiteLayoutTypeFromAdaptiveInfo()
+    }
+    var biometricDialogShowed by viewModel.biometricDialogShowed
+
+    if (!biometricDialogShowed) {
+        UPBiometricAlertDialog(
+            onClickOk = {
+                viewModel.updateSettings()
+
+                biometricDialogShowed = true
+                data?.feature?.first {
+                    it.deeplink == UPSystemDeeplink.SETTINGS
+                }?.let { settings ->
+                    selectedSystem = settings
+                }
+            }
+        )
     }
 
     UPHomeNavigationSuite(

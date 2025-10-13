@@ -5,8 +5,12 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 
-const val SHARED_KEY_APP_INFO = "appInfo"
-const val SHARED_KEY_APP_SHARE_ALERT_COUNT = "shareAlertCount"
+class SharedPreferencesKeys {
+    companion object {
+        const val APP_SETTINGS = "appSettings"
+        const val APP_SHARE_ALERT_COUNT = "shareAlertCount"
+    }
+}
 
 object SharedPreferencesManager {
 

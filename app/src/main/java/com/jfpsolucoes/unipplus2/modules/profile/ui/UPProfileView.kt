@@ -27,11 +27,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import com.jfpsolucoes.unipplus2.R
-import com.jfpsolucoes.unipplus2.core.common.model.UPAppInfo
-import com.jfpsolucoes.unipplus2.core.database.SHARED_KEY_APP_INFO
-import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
+import com.jfpsolucoes.unipplus2.core.common.model.UPAppSession
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
 
@@ -41,9 +38,9 @@ import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
 fun UPProfileView(
     modifier: Modifier = Modifier,
     navigationIconEnabled: Boolean = true,
-    onBackPressed: () -> Unit = {},
+    onBackPressed: () -> Unit = {}
 ) {
-    val session = SharedPreferencesManager.getObject<UPAppInfo>(SHARED_KEY_APP_INFO)?.session
+    val session = UPAppSession.data
 
     BackHandler {
         onBackPressed()

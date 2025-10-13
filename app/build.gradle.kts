@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
 }
 
@@ -17,7 +18,7 @@ android {
         applicationId = "com.jfpsolucoes.unipplus2"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
+        versionCode = 102
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -26,29 +27,36 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../apkkey/unipplus2_keystore.jks")
+            storePassword = "Fr@544566"
+            keyAlias = "unippluskey"
+            keyPassword = "Fr@544566"
+        }
+    }
+
     buildTypes {
         release {
-            isDebuggable = true
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+
             buildConfigField("String", "BASE_URL", "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\"")
             buildConfigField("String", "API_AUTH", "\"/auth\"")
             buildConfigField("String", "API_SECRETARY", "\"/secretary\"")
-            signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
             buildConfigField("String", "API_AUTH", "\"/unip-plus-2-a3fa1/southamerica-east1/auth\"")
             buildConfigField("String", "API_SECRETARY", "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\"")
-        }
-        create("local") {
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
-            buildConfigField("String", "API_AUTH", "\"/unip-plus-2-a3fa1/southamerica-east1/auth\"")
-            buildConfigField("String", "API_SECRETARY", "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\"")
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -90,6 +98,16 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    // Biometric
+    implementation(libs.androidx.biometric)
+
+    // Room Database with encryption
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.sqlite.ktx)
+    implementation(libs.sqlcipher)
+    ksp(libs.androidx.room.compiler)
 
     // RETROFIT
     implementation(libs.retrofit)
@@ -133,5 +151,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
 
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.tooling.preview)
 }

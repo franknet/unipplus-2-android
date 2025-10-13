@@ -61,6 +61,7 @@ fun SignInCredentials(
         )
 
         PasswordTextField(
+            enabled = !onLoading,
             text = passwordText,
             onEdit = onEditPassword
         )
@@ -94,11 +95,16 @@ private fun RaTextFieldPlaceHolder() {
 }
 
 @Composable
-private fun PasswordTextField(text: String, onEdit: (String) -> Unit) {
+private fun PasswordTextField(
+    enabled: Boolean,
+    text: String,
+    onEdit: (String) -> Unit
+) {
     var isPasswordVisible by false.saveableMutableState
     val setPasswordVisibility: (Boolean) -> Unit = { isPasswordVisible = it }
     TextField(
         modifier = Modifier.fillMaxWidth(),
+        enabled = enabled,
         placeholder = {
             Text(text = stringResource(id = R.string.sign_in_password_place_holder))
         },
@@ -127,7 +133,9 @@ private fun PasswordTextFieldTrailingIcon(isVisible: Boolean, onClick: (Boolean)
 }
 
 @Composable
-private fun PasswordTrailingIcon(isVisible: Boolean, onClick: () -> Unit = {}) {
+private fun PasswordTrailingIcon(
+    isVisible: Boolean, onClick: () -> Unit = {}
+) {
     val drawableId = when {
         isVisible -> R.drawable.ic_outline_visibility_24
         else -> R.drawable.ic_outline_visibility_off_24

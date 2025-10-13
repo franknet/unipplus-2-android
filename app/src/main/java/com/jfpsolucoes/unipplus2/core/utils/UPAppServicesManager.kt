@@ -1,26 +1,23 @@
 package com.jfpsolucoes.unipplus2.core.utils
 
-import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.firebase.Firebase
-import com.google.firebase.inappmessaging.FirebaseInAppMessaging
 import com.google.firebase.initialize
+import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
 import com.jfpsolucoes.unipplus2.core.networking.HttpService
 import com.jfpsolucoes.unipplus2.core.payment.SubscriptionManagerInstance
 import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigManager
+import com.jfpsolucoes.unipplus2.core.security.UPBiometricManagerImpl
 
-object UPAppSession {
+object UPAppServicesManager {
     private var initialized = false
 
-    lateinit var appBuildVersion: Pair<Int, String>
-
-    suspend fun initialize(context: Context) {
+    suspend fun initialize(context: AppCompatActivity) {
         if (initialized) return
         initialized = true
-
-        appBuildVersion = getAppVersion(context)
 
         HttpService.initialize(context)
 
@@ -31,6 +28,10 @@ object UPAppSession {
         RemoteConfigManager.initialize()
 
         SharedPreferencesManager.initialize(context)
+
+        EncryptedDataBase.initialize(context)
+
+        UPBiometricManagerImpl.initialize(context)
 
         val adReqConfig = RequestConfiguration.Builder()
             .setTestDeviceIds(listOf("791E913ACCAEBE4D038A0AB99E7C7112")).build()

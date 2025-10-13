@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.core.payment.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import com.jfpsolucoes.unipplus2.core.payment.SubscriptionManagerInstance
 import com.jfpsolucoes.unipplus2.core.payment.UPSubscription
 import com.jfpsolucoes.unipplus2.core.payment.UPSubscriptionManager
 import com.jfpsolucoes.unipplus2.core.payment.UPSubscriptionStatus
+import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateView
@@ -32,11 +34,9 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun UPSubscriptionsView(
-    modifier: Modifier = Modifier,
     manager: UPSubscriptionManager = SubscriptionManagerInstance
 ) {
     val subsUIState by manager.subscriptions.collectAsState(UIState.UIStateLoading())
-    val hasPurchasedPlan by manager.hasPurchasedPlan.collectAsState(false)
     Card {
         UPUIStateView(
             state = subsUIState,
@@ -45,13 +45,16 @@ fun UPSubscriptionsView(
                 UPErrorView(error = error)
             },
             content = { subs ->
+                val activity = activity
                 Column(
                     Modifier.padding(16.dp),
                     Arrangement.spacedBy(8.dp)
                 ) {
                     ForEachIndexed(subs) { sub, index ->
                         if (index > 0 ) { HorizontalDivider() }
-                        Row {
+                        Row(Modifier.clickable {
+                            sub.purchase(activity)
+                        }) {
                             Text(
                                 modifier = Modifier.weight(1f),
                                 text = sub.title,
@@ -89,12 +92,11 @@ class UPSubscriptionManagerMock(
         ))
     ),
 
-    override var hasPurchasedPlan: Flow<Boolean> = flowOf(false)
 ) : UPSubscriptionManager
 
 
 @Preview
 @Composable
 private fun UPSubscriptionsViewPreview() {
-    UPSubscriptionsView(Modifier.fillMaxWidth(), UPSubscriptionManagerMock())
+    UPSubscriptionsView(UPSubscriptionManagerMock())
 }

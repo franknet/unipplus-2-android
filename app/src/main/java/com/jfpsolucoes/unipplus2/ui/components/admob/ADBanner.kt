@@ -22,7 +22,7 @@ fun ADBanner(
     val enabled = RemoteConfigManager.getBoolean(RemoteConfigKeys.AD_ENABLED)
     if (!enabled) return
 
-    if (LocalInspectionMode.current) { return }
+    if (LocalInspectionMode.current) return
 
     val adUnitId = stringResource(R.string.admob_banner_id)
 

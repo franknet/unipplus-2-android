@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="biometric_title_text">Autenticação com Biometria</string>
+    <string name="biometric_subtitle_text">Use a impressão digital para acessar o app</string>
+    <string name="biometric_toggle_subtitle_text">Habilite a autenticação com biometria</string>
+    <string name="biometric_description_text">Posicione seu dedo no sensor de impressão digital</string>
+    <string name="biometric_failure_text">Falha na autenticação com a biometria</string>
+    <string name="biometric_enable_text">Habilitar Biometria</string>
+    <string name="biometric_enable_warning_text">Aproveite e habilite a autenticação com biometria para acessar o app</string>
+</resources>

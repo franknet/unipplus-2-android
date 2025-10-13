@@ -10,13 +10,13 @@ junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
-composeBom = "2025.09.01"
+composeBom = "2025.10.00"
 appcompat = "1.7.1"
 material = "1.13.0"
 playServicesLocation = "21.3.0"
 playServicesWearable = "19.0.0"
-composeMaterial = "1.5.2"
-composeFoundation = "1.5.2"
+composeMaterial = "1.5.3"
+composeFoundation = "1.5.3"
 composeNavigation = "2.9.5"
 coreSplashscreen = "1.0.1"
 tiles = "1.5.0"
@@ -28,20 +28,25 @@ adaptiveLayout = "1.1.0"
 adaptiveNavigationSuite = "1.4.0"
 window = "1.5.0"
 retrofit = "3.0.0"
-okhttp = "5.1.0"
+okhttp = "5.2.0"
 billingVersion = "8.0.0"
 markdown = "4.6.2"
 activity = "1.11.0"
 constraintlayout = "2.2.1"
-googleGmsGoogleServices = "4.4.3"
-firebase = "34.3.0"
+googleGmsGoogleServices = "4.4.4"
+firebase = "34.4.0"
 admob = "24.6.0"
 firebaseAnalytics = "23.0.0"
-firebaseCrashlytics = "20.0.2"
+firebaseCrashlytics = "20.0.3"
 googleFirebaseCrashlytics = "3.0.6"
-uiTooling = "1.9.2"
+uiTooling = "1.9.3"
 coreKtxVersion = "1.10.3"
 appUpdateKtx = "2.1.0"
+biometric = "1.1.0"
+room = "2.8.2"
+sqlcipher = "4.11.0"
+sqliteKtx = "2.6.1"
+ksp = "2.2.20-2.0.4"
 
 
 [libraries]
@@ -97,6 +102,14 @@ billing = { group = "com.android.billingclient", name = "billing-ktx", version.r
 markdown = { group = "io.noties.markwon", name = "core", version.ref = "markdown" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+
+# Room Database
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "sqliteKtx" }
+sqlcipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqlcipher" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "admob" }
@@ -118,6 +131,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 
 

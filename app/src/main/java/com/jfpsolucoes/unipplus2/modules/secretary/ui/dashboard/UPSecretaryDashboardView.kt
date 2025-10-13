@@ -2,11 +2,8 @@ package com.jfpsolucoes.unipplus2.modules.secretary.ui.dashboard
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,10 +13,8 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jfpsolucoes.unipplus2.core.common.model.UPAppInfo
-import com.jfpsolucoes.unipplus2.core.database.SHARED_KEY_APP_INFO
+import com.jfpsolucoes.unipplus2.core.common.model.UPAppSession
 import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeature
@@ -33,11 +28,11 @@ import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCar
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UPSecretaryDashboardView(
-    modifier: Modifier = Modifier,
     features: List<UPSecretaryFeature>?,
+    sharedPreferences: SharedPreferencesManager = SharedPreferencesManager,
     onSelectFeature: (UPSecretaryFeature) -> Unit = {}
 ) {
-    val session = SharedPreferencesManager.getObject<UPAppInfo>(SHARED_KEY_APP_INFO)?.session
+    val session = UPAppSession.data
 
     Scaffold(
         bottomBar = {

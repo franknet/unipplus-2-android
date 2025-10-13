@@ -2,9 +2,9 @@ package com.jfpsolucoes.unipplus2
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,24 +15,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.jfpsolucoes.unipplus2.core.utils.UPAppSession
+import com.jfpsolucoes.unipplus2.core.utils.UPAppServicesManager
 import com.jfpsolucoes.unipplus2.modules.signin.ui.signInNavigation
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 import com.jfpsolucoes.unipplus2.ui.theme.primaryBackgroundLow
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         lifecycleScope.launch {
-            UPAppSession.initialize(this@MainActivity)
+            UPAppServicesManager.initialize(this@MainActivity)
         }
         setContent {
-
             UNIPPlus2Theme {
                 UPNavigationHost()
             }

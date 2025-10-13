@@ -14,8 +14,30 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# SQLCipher rules
+-keep class net.zetetic.database.sqlcipher.** { *; }
+-dontwarn net.zetetic.database.sqlcipher.**
+
+# RoomDatabase rules
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.room.paging.**
+
+# GSON rules
+-keepattributes Signature
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+-keepclassmembers class * {
+    <init>();
+}
+-keep class com.jfpsolucoes.unipplus2.modules.signin.domain.models.** { *; }
+-keep class com.jfpsolucoes.unipplus2.modules.home.domain.models.** { *; }
+-keep class com.jfpsolucoes.unipplus2.modules.secretary.domain.models.** { *; }
+-keep class com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.** { *; }
