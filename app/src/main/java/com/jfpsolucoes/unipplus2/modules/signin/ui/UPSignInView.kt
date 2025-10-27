@@ -11,19 +11,20 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
 import com.jfpsolucoes.unipplus2.core.security.UPBiometricManager
 import com.jfpsolucoes.unipplus2.core.security.UPBiometricManagerImpl
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
+import com.jfpsolucoes.unipplus2.core.utils.extensions.isHeightMediumLowerBound
+import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInCredentials
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
@@ -36,27 +37,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun UPSignInView(
     modifier: Modifier = Modifier,
-    viewModel: SignInViewModel = viewModel(),
-    biometricManager: UPBiometricManager = UPBiometricManagerImpl
+    viewModel: SignInViewModel = viewModel()
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val navController = LocalNavController.current
-    var rgText by viewModel.rgText
-    var passwordText by viewModel.passwordText
+    val rgText by viewModel.rgText.collectAsState()
+    val passwordText by viewModel.passwordText.collectAsState()
+    var passwordTextVisible by true.saveableMutableState
     val signInUIState by viewModel.signInState.collectAsState()
-    val activity = activity
-    val biometricEnabled by viewModel.biometricEnabled
+    val biometricEnabled by viewModel.biometricEnabled.collectAsStateWithLifecycle()
 
     if (biometricEnabled) {
-        biometricManager.authenticate(
-            activity,
-            onSuccess = viewModel::performSignIn,
-            onError = { _, _ -> },
-            onFailed = { }
-        )
+        viewModel.requestBiometricAuthentication(activity)
     }
-
 
     Scaffold(
         modifier = modifier,
@@ -85,7 +78,7 @@ fun UPSignInView(
                 }
             }
 
-            if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)) {
+            if (windowSizeClass.isHeightMediumLowerBound) {
                 SignInLogo(modifier = Modifier.weight(1f).fillMaxWidth())
             }
 
@@ -95,6 +88,7 @@ fun UPSignInView(
                 raText = rgText,
                 onEditRa = viewModel::onEditRg,
                 passwordText = passwordText,
+                passwordTextVisible = passwordTextVisible,
                 onEditPassword = viewModel::onEditPassword,
                 onClickSignIn = viewModel::performSignIn,
             )

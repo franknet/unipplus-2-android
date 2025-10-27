@@ -18,8 +18,8 @@ android {
         applicationId = "com.jfpsolucoes.unipplus2"
         minSdk = 24
         targetSdk = 36
-        versionCode = 102
-        versionName = "1.0.0"
+        versionCode = 104
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -46,7 +46,7 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "FULL"
+                debugSymbolLevel = "full"
             }
 
             buildConfigField("String", "BASE_URL", "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\"")

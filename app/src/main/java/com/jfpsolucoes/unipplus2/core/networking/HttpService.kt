@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.core.networking
 
 import android.content.Context
 import com.jfpsolucoes.unipplus2.BuildConfig
+import com.jfpsolucoes.unipplus2.core.networking.api.UPApiEndpoints
 import okhttp3.Cache
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
@@ -42,7 +43,7 @@ object HttpService {
             .build()
 
         mRetrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(UPApiEndpoints.BASE_URL)
             .client(mClient ?: throw IllegalStateException("Client not initialized"))
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())

@@ -38,6 +38,7 @@ fun SignInCredentials(
     raText: String,
     onEditRa: (String) -> Unit,
     passwordText: String,
+    passwordTextVisible: Boolean = true,
     onEditPassword: (String) -> Unit,
     onClickSignIn: () -> Unit,
 ) = Box(
@@ -60,11 +61,13 @@ fun SignInCredentials(
             onEdit = onEditRa
         )
 
-        PasswordTextField(
-            enabled = !onLoading,
-            text = passwordText,
-            onEdit = onEditPassword
-        )
+        if (passwordTextVisible) {
+            PasswordTextField(
+                enabled = !onLoading,
+                text = passwordText,
+                onEdit = onEditPassword
+            )
+        }
 
         LoadingButton(
             modifier = Modifier.height(60.dp),

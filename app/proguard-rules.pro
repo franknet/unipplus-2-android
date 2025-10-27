@@ -28,6 +28,8 @@
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
 -dontwarn androidx.room.paging.**
+-keep class com.jfpsolucoes.unipplus2.core.database.dao.** { *; }
+-keep class com.jfpsolucoes.unipplus2.core.database.entities.** { *; }
 
 # GSON rules
 -keepattributes Signature

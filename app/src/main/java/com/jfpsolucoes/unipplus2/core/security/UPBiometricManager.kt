@@ -16,7 +16,8 @@ interface UPBiometricManager {
         negativeButtonText: String = activity.getString(R.string.common_cancel_text),
         onSuccess: () -> Unit,
         onError: (errorCode: Int, errorMessage: String) -> Unit,
-        onFailed: () -> Unit
+        onFailed: () -> Unit,
+        onCancel: () -> Unit
     )
 }
 object UPBiometricManagerImpl: UPBiometricManager {
@@ -39,14 +40,18 @@ object UPBiometricManagerImpl: UPBiometricManager {
         negativeButtonText: String,
         onSuccess: () -> Unit,
         onError: (errorCode: Int, errorMessage: String) -> Unit,
-        onFailed: () -> Unit
+        onFailed: () -> Unit,
+        onCancel: () -> Unit
     ) {
         val biometricPrompt = BiometricPrompt(
             activity,
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
-                    onError(errorCode, errString.toString())
+                    when (errorCode) {
+                        BiometricPrompt.ERROR_USER_CANCELED -> onCancel()
+                        else -> onError(errorCode, errString.toString())
+                    }
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {

@@ -8,5 +8,5 @@ data class UPSettingsEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
     val biometricEnabled: Boolean = false,
-    val biometricDialogShowed: Boolean = false
+    val biometricDialogEnabled: Boolean = true
 )

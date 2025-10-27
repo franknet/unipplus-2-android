@@ -83,7 +83,9 @@ object SubscriptionManagerInstance: UPSubscriptionManager {
     }
 
     override var subscriptions = combine(mBillingResult, mPurchasesList, mProductsList) { result, purchases, products ->
-        if (result?.responseCode == BillingResponseCode.OK) {  }
+        if (result?.responseCode == BillingResponseCode.OK) {
+            throw Error(result.debugMessage)
+        }
 
         val subsList = products.map { product ->
             var subs = UPSubscription(

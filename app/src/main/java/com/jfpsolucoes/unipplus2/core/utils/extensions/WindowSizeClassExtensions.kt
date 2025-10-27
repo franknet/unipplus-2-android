@@ -13,3 +13,9 @@ val WindowSizeClass.isWidthExtraLargeLowerBound: Boolean
 
 val WindowSizeClass.isWidthExpandedLowerBound: Boolean
     get() = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+
+val WindowSizeClass.isHeightMediumLowerBound: Boolean
+    get() = isWidthAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+
+val WindowSizeClass.isHeightExpandedLowerBound: Boolean
+    get() = isWidthAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND)

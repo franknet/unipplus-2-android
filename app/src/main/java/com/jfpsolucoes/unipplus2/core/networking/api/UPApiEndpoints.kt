@@ -1,22 +1,32 @@
 package com.jfpsolucoes.unipplus2.core.networking.api
 
-import com.jfpsolucoes.unipplus2.BuildConfig
-
-object UPApiEndpoints {
-    object Auth {
-        const val SIGN_IN = BuildConfig.API_AUTH + "/v1/sign-in"
-        const val SYSTEMS = BuildConfig.API_AUTH + "/v1/systems"
+class UPApiEndpoints {
+    companion object {
+        const val BASE_URL = "https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net"
     }
 
-    object Secretary {
-        const val FEATURES = BuildConfig.API_SECRETARY + "/v1/features"
+    class Auth {
+        companion object {
+            const val SIGN_IN = "/auth/v1/sign-in"
+            const val SYSTEMS = "/auth/v1/systems"
+        }
+    }
 
-        object StudentRecords {
-            const val DISCIPLINES = BuildConfig.API_SECRETARY + "/student-records/v1/disciplines"
+    class Secretary {
+        companion object {
+            const val FEATURES = "/secretary/v1/features"
         }
 
-        object Finance {
+        class StudentRecords {
+            companion object {
+                const val DISCIPLINES = "/secretary/student-records/v1/disciplines"
+            }
+        }
 
+        class Finance {
+            companion object {
+
+            }
         }
 
     }
