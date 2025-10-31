@@ -15,6 +15,7 @@ fun <T> UPUIStateScaffold(
     state: UIState<T>,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
     loadingContent: @Composable (PaddingValues) -> Unit,
     errorContent: @Composable (PaddingValues, Throwable) -> Unit,
     content: @Composable (PaddingValues, T) -> Unit
@@ -22,6 +23,7 @@ fun <T> UPUIStateScaffold(
     modifier = modifier,
     topBar = topBar,
     bottomBar = bottomBar,
+    snackbarHost = snackbarHost,
     containerColor = Color.Transparent
 ) {  padding ->
     when (state) {

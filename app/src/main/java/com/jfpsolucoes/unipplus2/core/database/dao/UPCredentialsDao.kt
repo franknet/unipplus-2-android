@@ -14,6 +14,9 @@ interface UPCredentialsDao {
     @Query("SELECT * FROM credentials_table")
     fun getAll(): Flow<List<UPCredentialsEntity>>
 
+    @Query("SELECT * FROM credentials_table WHERE id= :id LIMIT 1")
+    fun get(id: Long = 0): Flow<UPCredentialsEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: UPCredentialsEntity): Long
 

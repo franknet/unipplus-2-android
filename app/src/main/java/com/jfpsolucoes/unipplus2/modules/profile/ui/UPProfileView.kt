@@ -21,15 +21,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.common.model.UPAppSession
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
+import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
+import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
+import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -37,16 +43,18 @@ import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
 @Composable
 fun UPProfileView(
     modifier: Modifier = Modifier,
+    viewModel: UPProfileViewModel = viewModel(),
     navigationIconEnabled: Boolean = true,
     onBackPressed: () -> Unit = {}
 ) {
-    val session = UPAppSession.data
+    val userProfileState by viewModel.userProfileState.collectAsStateWithLifecycle()
 
     BackHandler {
         onBackPressed()
     }
 
-    Scaffold(
+    UPUIStateScaffold(
+        state = userProfileState,
         topBar = {
             TopAppBar(title = {  }, navigationIcon = {
                 if (navigationIconEnabled) {
@@ -55,8 +63,14 @@ fun UPProfileView(
                     }
                 }
             })
+        },
+        loadingContent = {
+            UPLoadingView()
+        },
+        errorContent = { _, error ->
+            UPErrorView(error = error)
         }
-    ) { padding ->
+    ) { padding, userProfile ->
         LazyColumn(
             modifier = modifier
                 .padding(
@@ -78,23 +92,23 @@ fun UPProfileView(
                         contentDescription = ""
                     )
 
-                    Text(session?.user?.rg.value, style = MaterialTheme.typography.titleSmall)
+                    Text(userProfile.user?.rg.value, style = MaterialTheme.typography.titleSmall)
 
-                    Text(session?.user?.name.value, style = MaterialTheme.typography.titleMedium)
+                    Text(userProfile.user?.name.value, style = MaterialTheme.typography.titleMedium)
                 }
 
             }
 
             item {
                 UPProfileInfoCard(title = "Campus") {
-                    session?.academic?.institution?.let {
+                    userProfile.academic?.institution?.let {
                         UPProfileInfoRow(
                             "Instituição:",
                             it
                         )
                     }
 
-                    session?.academic?.campus?.name?.let {
+                    userProfile.academic?.campus?.name?.let {
                         UPProfileInfoRow(
                             "Unidade:",
                             it
@@ -106,7 +120,7 @@ fun UPProfileView(
             item {
                 UPProfileInfoCard(title = "Curso") {
                     Text(
-                        session?.academic?.course?.name.value,
+                        userProfile.academic?.course?.name.value,
                         style = MaterialTheme.typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -114,14 +128,14 @@ fun UPProfileView(
 
                     HorizontalDivider()
 
-                    session?.academic?.course?.shift?.let {
+                    userProfile.academic?.course?.shift?.let {
                         UPProfileInfoRow(
                             "Turno:",
                             it
                         )
                     }
 
-                    session?.academic?.course?.mainClass?.let {
+                    userProfile.academic?.course?.mainClass?.let {
                         UPProfileInfoRow(
                             "Turma:",
                             it

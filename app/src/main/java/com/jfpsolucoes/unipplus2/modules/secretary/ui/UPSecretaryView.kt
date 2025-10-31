@@ -1,12 +1,6 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
@@ -27,7 +21,6 @@ import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeat
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeaturesResponse
 import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPSecretaryStudentRecordsView
 import com.jfpsolucoes.unipplus2.modules.secretary.ui.dashboard.UPSecretaryDashboardView
-import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
@@ -40,13 +33,6 @@ fun UPSecretaryView(
     viewModel: UPSecretaryViewModel = viewModel()
 ) {
     val featuresUIState by viewModel.featuresState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        when (featuresUIState) {
-            is UIState.UIStateNone -> { viewModel.fetchSecretaryFeatures()  }
-            else -> { return@LaunchedEffect }
-        }
-    }
 
     UPUIStateScaffold(
         state = featuresUIState,
@@ -68,14 +54,14 @@ fun UPSecretaryView(
 @Composable
 private fun ContentView(
     modifier: Modifier = Modifier,
-    data: UPSecretaryFeaturesResponse?
+    data: UPSecretaryFeaturesResponse
 ) {
     val coroutineScope = rememberCoroutineScope()
     val navigator = rememberSupportingPaneScaffoldNavigator<UPSecretaryFeature>()
 
     if (navigator.scaffoldValue.isSupportingPaneExpanded) {
         LaunchedEffect(Unit) {
-            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, data?.features?.first())
+            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, data.features?.first())
         }
     }
 
@@ -83,7 +69,7 @@ private fun ContentView(
         directive = navigator.scaffoldDirective,
         scaffoldState = navigator.scaffoldState,
         mainPane = {
-            UPSecretaryDashboardView(features = data?.features) { feature ->
+            UPSecretaryDashboardView(features = data.features) { feature ->
                 coroutineScope.launch {
                     navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, feature)
                 }

@@ -36,7 +36,7 @@ object HttpService {
         mClient = OkHttpClient.Builder()
             .readTimeout(1, TimeUnit.MINUTES)
             .connectTimeout(1, TimeUnit.MINUTES)
-//            .cache(cache)
+            .cache(cache)
             .cookieJar(mCookiejar)
             .addInterceptor(HttpServiceRequestInterceptor())
             .addInterceptor(HttpServiceLoggingInterceptor)

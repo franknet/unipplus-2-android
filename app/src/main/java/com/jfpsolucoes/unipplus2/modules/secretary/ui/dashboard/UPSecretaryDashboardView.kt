@@ -12,8 +12,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.core.common.model.UPAppSession
 import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
@@ -28,11 +31,11 @@ import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCar
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UPSecretaryDashboardView(
+    viewModel: UPSecretaryDashboardViewModel = viewModel(),
     features: List<UPSecretaryFeature>?,
-    sharedPreferences: SharedPreferencesManager = SharedPreferencesManager,
     onSelectFeature: (UPSecretaryFeature) -> Unit = {}
 ) {
-    val session = UPAppSession.data
+    val userProfile by viewModel.userProfile.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -45,8 +48,8 @@ fun UPSecretaryDashboardView(
             item {
                 UPStudentInfoCard(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    name = session?.user?.name.value,
-                    course = session?.academic?.course?.name.value
+                    name = userProfile.user?.name.value,
+                    course = userProfile.academic?.course?.name.value
                 )
             }
 

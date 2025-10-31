@@ -15,7 +15,7 @@ interface UPSettingsDao {
     fun getAll(): Flow<List<UPSettingsEntity>>
 
     @Query("SELECT * FROM settings_table WHERE id = :id")
-    fun get(id: Long): Flow<UPSettingsEntity?>
+    fun get(id: Long = 0): Flow<UPSettingsEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: UPSettingsEntity): Long

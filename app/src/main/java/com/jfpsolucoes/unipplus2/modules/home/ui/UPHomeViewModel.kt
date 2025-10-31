@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.UPEntityTransformers
 import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
+import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
+import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.modules.home.domain.UPHomeGetSystemsUseCase
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
@@ -14,54 +16,43 @@ import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 
 class UPHomeViewModel(
     private val getSystemsUseCase: UPHomeGetSystemsUseCase = UPHomeGetSystemsUseCase(),
     private val database: EncryptedDataBase = EncryptedDataBase.shared
 ): ViewModel() {
-    private val _storedSettings = database.settingsDao().getAll().map(UPEntityTransformers::settings)
+    private val _settings = database.settingsDao().get()
+        .map { it ?: UPSettingsEntity() }
+        .collectAsMutableStateFlow(viewModelScope, UPSettingsEntity())
 
-    private val _settings = UPSettingsEntity().mutableStateFlow
+    private val _systemsState = getSystemsUseCase()
+        .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
 
-    private val _systems = MutableStateFlow<UIState<UPHomeSystemsResponse>>(UIState.UIStateNone())
+    private val _biometricDialogEnabled = _settings
+        .map { it.biometricDialogEnabled }
+        .collectAsMutableStateFlow(viewModelScope, false)
 
-    private val _systemSelected = MutableStateFlow<UPSystem?>(null)
+    private val _systemSelected = _systemsState
+        .map { it.data }
+        .filterNotNull()
+        .map { it.feature }
+        .filterNotNull()
+        .map { it.firstOrNull() }
+        .collectAsMutableStateFlow(viewModelScope, null)
 
-    private val _biometricDialogEnabled = false.mutableStateFlow
-
-    val systems = _systems.asStateFlow()
+    val systems = _systemsState.asStateFlow()
 
     val systemSelected = _systemSelected.asStateFlow()
 
     val biometricDialogEnabled = _biometricDialogEnabled.asStateFlow()
 
-    init {
-        getSettings()
-        getSystems()
-    }
-
-    private fun getSettings() = viewModelScope.launch {
-        _storedSettings.onEach { settings ->
-            _settings.value = settings
-            _biometricDialogEnabled.value = settings.biometricDialogEnabled
-        }.collect()
-    }
-
-    private fun setSystemSelected(systemsState: UIState<UPHomeSystemsResponse>) {
-        if (systemsState !is UIState.UIStateSuccess) { return }
-        val data = systemsState.data ?: return
-        val features = data.feature ?: return
-        _systemSelected.value = features.firstOrNull()
-    }
-
-    fun getSystems() = viewModelScope.launch {
-        getSystemsUseCase().onEach {
-            _systems.value = it
-            setSystemSelected(it)
-        }.collect()
+    fun getSystems() {
+        getSystemsUseCase().collectToFlow(_systemsState, viewModelScope)
     }
 
     fun updateSettings() = viewModelScope.launch {
@@ -70,7 +61,7 @@ class UPHomeViewModel(
     }
 
     fun onClickOKBiometricDialog() = viewModelScope.launch {
-        val data = _systems.value.data ?: return@launch
+        val data = _systemsState.value.data ?: return@launch
         val features = data.feature ?: return@launch
         val settings = features.firstOrNull {
             it.deeplink ==  UPSystemDeeplink.SETTINGS

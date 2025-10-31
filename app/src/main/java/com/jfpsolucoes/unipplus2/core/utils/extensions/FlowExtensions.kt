@@ -24,30 +24,14 @@ fun <T> Flow<T>.toUIStateFlow(): Flow<UIState<T>> {
         .catch { emit(UIState.UIStateError(error = it)) }
 }
 
-fun <T> Flow<T>.asMutableStateFlow(scope: CoroutineScope, initialValue: T): MutableStateFlow<T> {
-    val mStateFlow = MutableStateFlow(initialValue)
-    this.collectToFlow(mStateFlow, scope)
-    return mStateFlow
-}
-
-fun <T> Flow<T>.asSharedFlow(scope: CoroutineScope): SharedFlow<T> {
-    return this.shareIn(
-        scope = scope,
-        started = SharingStarted.Eagerly
-    )
-}
-
 fun <T> Flow<T>.collectToFlow(flow: MutableStateFlow<T>, scope: CoroutineScope) = scope.launch {
     collect { flow.emit(it) }
 }
 
-fun <T> Flow<T>.bindTo(flow: MutableStateFlow<T>): Flow<T> {
-    return onEach { flow.value = it }
-}
-
-inline fun <T, R> Flow<T>.bindTo(flow: MutableStateFlow<R>, crossinline transform: suspend (T) -> R): Flow<T> {
-    map(transform).onEach { flow.value = it }
-    return this
+fun <T> Flow<T>.collectAsMutableStateFlow(scope: CoroutineScope, initialValue: T): MutableStateFlow<T> {
+    val mutableFlow = MutableStateFlow(value = initialValue)
+    collectToFlow(mutableFlow, scope)
+    return mutableFlow
 }
 
 fun <T> Flow<T>.debugPrint(tag: String): Flow<T> {

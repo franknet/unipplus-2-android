@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -27,18 +26,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
-import com.jfpsolucoes.unipplus2.modules.signin.domain.models.UPSignInCredentialsProperties
+import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.components.button.LoadingButton
+import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCard
 
 @Composable
 fun SignInCredentials(
     modifier: Modifier = Modifier,
     onLoading: Boolean = false,
+    userProfile: UPUserProfileEntity = UPUserProfileEntity(),
     raText: String,
     onEditRa: (String) -> Unit,
     passwordText: String,
-    passwordTextVisible: Boolean = true,
+    passwordSupportingText: String? = null,
+    passwordFieldVisible: Boolean = true,
     onEditPassword: (String) -> Unit,
     onClickSignIn: () -> Unit,
 ) = Box(
@@ -56,16 +59,25 @@ fun SignInCredentials(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RaTextField(
-            text = raText,
-            onEdit = onEditRa
-        )
+        if (userProfile.user != null) {
+            UPStudentInfoCard(
+                name = userProfile.user.name.value,
+                course = userProfile.academic?.course?.name.value
+            )
 
-        if (passwordTextVisible) {
+        } else {
+            RaTextField(
+                text = raText,
+                onEdit = onEditRa
+            )
+        }
+
+        if (passwordFieldVisible) {
             PasswordTextField(
                 enabled = !onLoading,
                 text = passwordText,
-                onEdit = onEditPassword
+                onEdit = onEditPassword,
+                supportingText = passwordSupportingText
             )
         }
 
@@ -101,6 +113,7 @@ private fun RaTextFieldPlaceHolder() {
 private fun PasswordTextField(
     enabled: Boolean,
     text: String,
+    supportingText: String? = null,
     onEdit: (String) -> Unit
 ) {
     var isPasswordVisible by false.saveableMutableState
@@ -119,10 +132,17 @@ private fun PasswordTextField(
                 onClick = setPasswordVisibility
             )
         },
+        supportingText = {
+            supportingText?.let {
+                Text(it)
+            }
+        },
+        isError = supportingText != null,
         visualTransformation = passwordVisualTransformation(isPasswordVisible),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
         )
     )
 }

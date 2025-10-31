@@ -23,12 +23,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.BuildConfig
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
+import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.profile.ui.UPProfileView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.components.UPSettingsBiometricItemView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.components.UPSettingsProfileItemView
+import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
+import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
+import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
@@ -43,8 +48,10 @@ fun UPSettingsView(
     val isMainPaneHidden = navigator.scaffoldValue[SupportingPaneScaffoldRole.Main] == PaneAdaptedValue.Hidden
     val isSupportingPaneHidden = navigator.scaffoldValue[SupportingPaneScaffoldRole.Supporting] == PaneAdaptedValue.Hidden
     val coroutineScope = rememberCoroutineScope()
-    val biometricSwitchChecked by viewModel.biometricEnabled.collectAsState()
-    val biometricAvailable by viewModel.biometricAvailable.collectAsState()
+
+    val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
+    val biometricSwitchChecked by viewModel.biometricEnabled.collectAsStateWithLifecycle()
+    val biometricAvailable by viewModel.biometricAvailable.collectAsStateWithLifecycle()
 
     if (!isSupportingPaneHidden) {
         LaunchedEffect(Unit) {
@@ -52,68 +59,78 @@ fun UPSettingsView(
         }
     }
 
-    SupportingPaneScaffold(
-        modifier = modifier,
-        directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
-        mainPane = {
-            Scaffold(
-                topBar = { TopAppBar(title = { Text(title) }) },
-                bottomBar = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = "Versão ${BuildConfig.VERSION_NAME}"
-                        )
-                    }
-                }
-            ) { padding ->
-                LazyColumn(modifier = Modifier.padding(
-                    top = padding.calculateTopPadding(),
-                    start = 16.dp,
-                    end = 16.dp
-                ),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Student info
-                    item {
-                        UPSettingsProfileItemView(viewModel.userName) {
-                            coroutineScope.launch {
-                                navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
-                            }
-                        }
-                    }
-
-                    if (biometricAvailable) {
-                        item {
-                            UPSettingsBiometricItemView(
-                                checked = biometricSwitchChecked,
-                                onCheckedChange = {
-                                    viewModel.updateBiometricSettings(it, activity)
-                                }
+    UPUIStateScaffold(
+        state = userProfile,
+        loadingContent = {
+            UPLoadingView()
+        },
+        errorContent = { _, error ->
+            UPErrorView(error = error)
+        }
+    ) { _, userProfile ->
+        SupportingPaneScaffold(
+            modifier = modifier,
+            directive = navigator.scaffoldDirective,
+            scaffoldState = navigator.scaffoldState,
+            mainPane = {
+                Scaffold(
+                    topBar = { TopAppBar(title = { Text(title) }) },
+                    bottomBar = {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = "Versão ${BuildConfig.VERSION_NAME}"
                             )
                         }
                     }
+                ) { padding ->
+                    LazyColumn(modifier = Modifier.padding(
+                        top = padding.calculateTopPadding(),
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Student info
+                        item {
+                            UPSettingsProfileItemView(userProfile.user?.name.value) {
+                                coroutineScope.launch {
+                                    navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
+                                }
+                            }
+                        }
 
+                        if (biometricAvailable) {
+                            item {
+                                UPSettingsBiometricItemView(
+                                    checked = biometricSwitchChecked,
+                                    onCheckedChange = {
+                                        viewModel.updateBiometricSettings(it, activity)
+                                    }
+                                )
+                            }
+                        }
+
+                    }
+                }
+            },
+            supportingPane = {
+                navigator.currentDestination?.contentKey?.let {
+                    when (it) {
+                        0 -> UPProfileView(
+                            navigationIconEnabled = isMainPaneHidden
+                        ) { coroutineScope.launch {
+                            navigator.navigateBack()
+                        } }
+                        else -> {}
+                    }
                 }
             }
-        },
-        supportingPane = {
-            navigator.currentDestination?.contentKey?.let {
-                when (it) {
-                    0 -> UPProfileView(
-                        navigationIconEnabled = isMainPaneHidden
-                    ) { coroutineScope.launch {
-                        navigator.navigateBack()
-                    } }
-                    else -> {}
-                }
-            }
-        }
-    )
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)

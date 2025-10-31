@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.core.security
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -8,7 +9,7 @@ import com.jfpsolucoes.unipplus2.R
 interface UPBiometricManager {
     val isBiometricAvailable: Boolean
     fun initialize(context: AppCompatActivity)
-     fun authenticate(
+    fun authenticate(
         activity: AppCompatActivity,
         title: String = activity.getString(R.string.biometric_title_text),
         subtitle: String = activity.getString(R.string.biometric_subtitle_text),
@@ -19,9 +20,14 @@ interface UPBiometricManager {
         onFailed: () -> Unit,
         onCancel: () -> Unit
     )
+
+    fun cancel()
 }
-object UPBiometricManagerImpl: UPBiometricManager {
+
+object UPBiometricManagerImpl : UPBiometricManager {
     private lateinit var biometricManager: BiometricManager
+
+    private lateinit var biometricPrompt: BiometricPrompt
     override fun initialize(context: AppCompatActivity) {
         biometricManager = BiometricManager.from(context)
     }
@@ -43,14 +49,16 @@ object UPBiometricManagerImpl: UPBiometricManager {
         onFailed: () -> Unit,
         onCancel: () -> Unit
     ) {
-        val biometricPrompt = BiometricPrompt(
+        biometricPrompt = BiometricPrompt(
             activity,
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
                     when (errorCode) {
-                        BiometricPrompt.ERROR_USER_CANCELED -> onCancel()
-                        else -> onError(errorCode, errString.toString())
+                        BiometricPrompt.ERROR_USER_CANCELED,
+                        BiometricPrompt.ERROR_CANCELED,
+                        BiometricPrompt.ERROR_NEGATIVE_BUTTON -> onCancel()
+                        else -> onError(errorCode, activity.getString(R.string.biometric_error_text))
                     }
                 }
 
@@ -77,5 +85,9 @@ object UPBiometricManagerImpl: UPBiometricManager {
             .build()
 
         biometricPrompt.authenticate(promptInfo)
+    }
+
+    override fun cancel() {
+        biometricPrompt.cancelAuthentication()
     }
 }

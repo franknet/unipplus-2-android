@@ -12,13 +12,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
+import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
+import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
@@ -54,6 +57,8 @@ fun UPHomeView(
 ) {
     val systemsState by viewModel.systems.collectAsState()
 
+    activity.requestScreenOrientation()
+
     ShareAppDialog()
 
     ShowInterstitialAd()
@@ -87,8 +92,8 @@ private fun SuccessContent(
     val navigationLayoutType = calculateNavigationTypeByWindowClass()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    val selectedSystem by viewModel.systemSelected.collectAsState()
-    val biometricDialogEnabled by viewModel.biometricDialogEnabled.collectAsState()
+    val selectedSystem by viewModel.systemSelected.collectAsStateWithLifecycle()
+    val biometricDialogEnabled by viewModel.biometricDialogEnabled.collectAsStateWithLifecycle()
 
     if (biometricDialogEnabled) {
         UPBiometricAlertDialog(
