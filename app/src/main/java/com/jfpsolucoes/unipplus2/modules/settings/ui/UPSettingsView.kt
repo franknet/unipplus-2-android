@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -61,60 +63,64 @@ fun UPSettingsView(
 
     UPUIStateScaffold(
         state = userProfile,
+        snackbarHost = {
+            SnackbarHost(viewModel.snackbarState) {
+                Snackbar(it)
+            }
+        },
+        topBar = {
+            TopAppBar(title = { Text(title) })
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    modifier = Modifier.padding(16.dp),
+                    text = "Versão ${BuildConfig.VERSION_NAME}"
+                )
+            }
+        },
         loadingContent = {
             UPLoadingView()
         },
         errorContent = { _, error ->
             UPErrorView(error = error)
         }
-    ) { _, userProfile ->
+    ) { padding, userProfile ->
         SupportingPaneScaffold(
             modifier = modifier,
             directive = navigator.scaffoldDirective,
             scaffoldState = navigator.scaffoldState,
             mainPane = {
-                Scaffold(
-                    topBar = { TopAppBar(title = { Text(title) }) },
-                    bottomBar = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = "Versão ${BuildConfig.VERSION_NAME}"
+                LazyColumn(modifier = Modifier.padding(
+                    top = padding.calculateTopPadding(),
+                    start = 16.dp,
+                    end = 16.dp
+                ),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Student info
+                    item {
+                        UPSettingsProfileItemView(userProfile.user?.name.value) {
+                            coroutineScope.launch {
+                                navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
+                            }
+                        }
+                    }
+
+                    if (biometricAvailable) {
+                        item {
+                            UPSettingsBiometricItemView(
+                                checked = biometricSwitchChecked,
+                                onCheckedChange = {
+                                    viewModel.updateBiometricSettings(it, activity)
+                                }
                             )
                         }
                     }
-                ) { padding ->
-                    LazyColumn(modifier = Modifier.padding(
-                        top = padding.calculateTopPadding(),
-                        start = 16.dp,
-                        end = 16.dp
-                    ),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Student info
-                        item {
-                            UPSettingsProfileItemView(userProfile.user?.name.value) {
-                                coroutineScope.launch {
-                                    navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
-                                }
-                            }
-                        }
 
-                        if (biometricAvailable) {
-                            item {
-                                UPSettingsBiometricItemView(
-                                    checked = biometricSwitchChecked,
-                                    onCheckedChange = {
-                                        viewModel.updateBiometricSettings(it, activity)
-                                    }
-                                )
-                            }
-                        }
-
-                    }
                 }
             },
             supportingPane = {

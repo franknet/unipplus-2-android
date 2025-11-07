@@ -18,8 +18,8 @@ android {
         applicationId = "com.jfpsolucoes.unipplus2"
         minSdk = 24
         targetSdk = 36
-        versionCode = 105
-        versionName = "1.0.5"
+        versionCode = 100
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -137,6 +137,7 @@ dependencies {
 
     // Play Store
     implementation(libs.playstore.app.update.ktx)
+    implementation(libs.playstore.app.review.ktx)
 
     // TESTING
     testImplementation(libs.junit)

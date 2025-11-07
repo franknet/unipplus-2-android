@@ -1,10 +1,9 @@
-package com.jfpsolucoes.unipplus2.core.payment
+package com.jfpsolucoes.unipplus2.core.store.payment
 
 import android.app.Activity
 import android.content.Context
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClient.BillingResponseCode
-import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.PendingPurchasesParams
@@ -16,18 +15,13 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
-import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
-import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 
 interface UPSubscriptionManager {
-    var subscriptions: Flow<UIState<List<UPSubscription>>>
+    var subscriptions: Flow<List<UPSubscription>>
 }
 
 object SubscriptionManagerInstance: UPSubscriptionManager {
@@ -82,13 +76,16 @@ object SubscriptionManagerInstance: UPSubscriptionManager {
         }
     }
 
-    override var subscriptions = combine(mBillingResult, mPurchasesList, mProductsList) { result, purchases, products ->
+    override var subscriptions = combine(
+        mBillingResult,
+        mPurchasesList,
+        mProductsList
+    ) { result, purchases, products ->
         if (result?.responseCode == BillingResponseCode.OK) {
             throw Error(result.debugMessage)
         }
-
-        val subsList = products.map { product ->
-            var subs = UPSubscription(
+        products.map { product ->
+            UPSubscription(
                 id = product.productId,
                 title = product.name,
                 description = product.description,
@@ -96,10 +93,8 @@ object SubscriptionManagerInstance: UPSubscriptionManager {
                 status = UPSubscriptionStatus.None,
                 googlePayProductDetails = product
             )
-            subs
         }
-        subsList
-    }.toUIStateFlow()
+    }
 
     fun initialize(context: Context) {
         if (mBillingClient != null) return

@@ -34,7 +34,7 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
         UPSettingsEntity::class,
         UPUserProfileEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class EncryptedDataBase : RoomDatabase() {

@@ -1,6 +1,7 @@
 package com.jfpsolucoes.unipplus2.modules.settings.ui
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jfpsolucoes.unipplus2.R
@@ -16,6 +17,7 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.UIState
+import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -41,6 +43,8 @@ class UPSettingsViewModel(
         .map { it.biometricEnabled }
         .collectAsMutableStateFlow(viewModelScope, false)
 
+    val snackbarState = SnackbarHostState()
+
     val biometricAvailable = _biometricAvailable.asStateFlow()
 
     val biometricEnabled = _biometricEnabled.asStateFlow()
@@ -52,7 +56,7 @@ class UPSettingsViewModel(
             context,
             subtitle = context.getString(R.string.biometric_toggle_subtitle_text),
             onSuccess = { updateBiometricSettings(true) },
-            onError = { _, message -> },
+            onError = { _, message -> showSnackbar(message) },
             onFailed = { },
             onCancel = { }
         )
@@ -65,6 +69,11 @@ class UPSettingsViewModel(
             val updateSettings = _settings.value.copy(biometricEnabled = enabled)
             database.settingsDao().insert(updateSettings)
         }
+    }
+
+    fun showSnackbar(message: String) = viewModelScope.launch {
+        val errorVisual = UPSnackbarVisual(message = message)
+        snackbarState.showSnackbar(errorVisual)
     }
 
 }

@@ -28,6 +28,10 @@ fun <T> Flow<T>.collectToFlow(flow: MutableStateFlow<T>, scope: CoroutineScope) 
     collect { flow.emit(it) }
 }
 
+suspend fun <T> Flow<T>.collectToFlow(flow: MutableStateFlow<T>) {
+    collect { flow.emit(it) }
+}
+
 fun <T> Flow<T>.collectAsMutableStateFlow(scope: CoroutineScope, initialValue: T): MutableStateFlow<T> {
     val mutableFlow = MutableStateFlow(value = initialValue)
     collectToFlow(mutableFlow, scope)

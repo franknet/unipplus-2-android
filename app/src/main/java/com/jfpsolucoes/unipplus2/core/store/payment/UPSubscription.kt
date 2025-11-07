@@ -1,4 +1,4 @@
-package com.jfpsolucoes.unipplus2.core.payment
+package com.jfpsolucoes.unipplus2.core.store.payment
 
 import android.app.Activity
 import com.android.billingclient.api.ProductDetails

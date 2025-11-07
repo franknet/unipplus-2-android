@@ -20,4 +20,8 @@
         <key>app_update_check_enabled</key>
         <value>false</value>
     </entry>
+    <entry>
+        <key>app_review_enabled</key>
+        <value>true</value>
+    </entry>
 </defaults>

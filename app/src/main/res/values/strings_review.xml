@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="review_text">Está gostando do App? Deixe sua avaliação, ela é fundamental para futuras melhorias e funcionalidades</string>
+    <string name="review_button_text">AVALIAR</string>
+</resources>

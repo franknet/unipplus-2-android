@@ -4,25 +4,22 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
+import com.jfpsolucoes.unipplus2.core.store.UPAppStoreManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ScreenOrientation
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isHeightMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
-import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInCredentials
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
@@ -30,8 +27,6 @@ import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
-import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
@@ -55,6 +50,19 @@ fun UPSignInView(
         activity.requestScreenOrientation(ScreenOrientation.PORTRAIT)
     }
 
+    if (signInUIState is UIState.UIStateSuccess) {
+        viewModel.resetLoginState()
+        viewModel.resetBiometricState()
+    }
+
+    if (signInUIState is UIState.UIStateError) {
+        viewModel.showSnackbar(signInUIState.error?.message ?: "")
+    }
+
+    if (signInUIState is UIState.UIStateSuccess) {
+        navController.navigate(route = HOME_NAVIGATION_ROUTE)
+    }
+
     UPUIStateScaffold(
         state = userProfileState,
         modifier = modifier,
@@ -69,27 +77,8 @@ fun UPSignInView(
         errorContent = { padding, error ->
             UPErrorView(error = error)
         }
-    ) { padding, userProfile ->
+    ) { _, userProfile ->
         Column(Modifier.safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-            if (signInUIState is UIState.UIStateSuccess) {
-                viewModel.resetLoginState()
-                viewModel.resetBiometricState()
-                navController.navigate(route = HOME_NAVIGATION_ROUTE)
-            }
-
-            if (signInUIState is UIState.UIStateError) {
-                val snackbarVisuals = UPSnackbarVisual(
-                    message = signInUIState.error?.localizedMessage.value,
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-                rememberCoroutineScope().launch {
-                    val result = viewModel.snackbarState.showSnackbar(snackbarVisuals)
-                    if (result == SnackbarResult.Dismissed) {
-                        viewModel.resetLoginState()
-                    }
-                }
-            }
-
             SignInLogo(modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth())

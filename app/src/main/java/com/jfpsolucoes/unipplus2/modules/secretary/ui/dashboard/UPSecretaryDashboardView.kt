@@ -16,12 +16,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.jfpsolucoes.unipplus2.core.common.model.UPAppSession
-import com.jfpsolucoes.unipplus2.core.database.SharedPreferencesManager
+import com.jfpsolucoes.unipplus2.core.store.UPAppStoreManager
+import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeature
 import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
+import com.jfpsolucoes.unipplus2.ui.components.cards.ReviewCard
 import com.jfpsolucoes.unipplus2.ui.components.features.UPFeatureCard
 import com.jfpsolucoes.unipplus2.ui.components.image.Image
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
@@ -35,13 +37,15 @@ fun UPSecretaryDashboardView(
     features: List<UPSecretaryFeature>?,
     onSelectFeature: (UPSecretaryFeature) -> Unit = {}
 ) {
-    val userProfile by viewModel.userProfile.collectAsState()
+    val activity = activity
+    val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
+    val appReviewEnabled = viewModel.appReviewEnabled
 
     Scaffold(
         bottomBar = {
             ADBanner(Modifier.fillMaxWidth())
         }
-    ) { paddingValues ->
+    ) { _ ->
         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item { VerticalSpacer(0.dp) }
 
@@ -77,9 +81,15 @@ fun UPSecretaryDashboardView(
                 }
             }
 
-            item {
-                VerticalSpacer(0.dp)
+            if (appReviewEnabled) {
+                item {
+                    ReviewCard(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        UPAppStoreManager.requestReview(activity)
+                    }
+                }
             }
+
+            item { VerticalSpacer(0.dp) }
         }
     }
 }

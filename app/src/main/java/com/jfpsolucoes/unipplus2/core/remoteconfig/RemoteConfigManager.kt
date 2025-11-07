@@ -5,14 +5,13 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.jfpsolucoes.unipplus2.R
 
-class RemoteConfigKeys {
-    companion object {
-        const val APP_BUILD_VERSION = "app_build_version"
-        const val APP_UPDATE_CHECK_ENABLED = "app_update_check_enabled"
-        const val APP_SHARE_ENABLED = "app_share_enabled"
-        const val APP_SHARE_TEXT = "app_share_text"
-        const val AD_ENABLED = "ad_enabled"
-    }
+object RemoteConfigKeys {
+    const val APP_BUILD_VERSION = "app_build_version"
+    const val APP_UPDATE_CHECK_ENABLED = "app_update_check_enabled"
+    const val APP_SHARE_ENABLED = "app_share_enabled"
+    const val APP_SHARE_TEXT = "app_share_text"
+    const val APP_REVIEW_ENABLED = "app_review_enabled"
+    const val AD_ENABLED = "ad_enabled"
 }
 
 object RemoteConfigManager {

@@ -38,11 +38,7 @@ class UPHomeViewModel(
         .collectAsMutableStateFlow(viewModelScope, false)
 
     private val _systemSelected = _systemsState
-        .map { it.data }
-        .filterNotNull()
-        .map { it.feature }
-        .filterNotNull()
-        .map { it.firstOrNull() }
+        .map { it.data?.feature?.firstOrNull() }
         .collectAsMutableStateFlow(viewModelScope, null)
 
     val systems = _systemsState.asStateFlow()

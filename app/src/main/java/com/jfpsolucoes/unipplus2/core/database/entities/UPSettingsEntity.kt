@@ -7,6 +7,11 @@ import androidx.room.PrimaryKey
 data class UPSettingsEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
+
+    // Security
     val biometricEnabled: Boolean = false,
-    val biometricDialogEnabled: Boolean = true
+    val biometricDialogEnabled: Boolean = true,
+
+    // App
+    val appRateCount: Int = 0
 )

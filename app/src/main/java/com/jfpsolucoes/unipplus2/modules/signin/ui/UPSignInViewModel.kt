@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
@@ -16,10 +17,13 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.modules.signin.domain.UPPostSignInUseCase
 import com.jfpsolucoes.unipplus2.ui.UIState
+import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class SignInViewModel(
     private val postSignInUseCase: UPPostSignInUseCase = UPPostSignInUseCase(),
@@ -83,9 +87,9 @@ class SignInViewModel(
             context,
             onSuccess = { performSignIn() },
             onError = { _, error ->
-                _biometricError.value = error
                 _biometricEnabled.value = false
                 onEditPassword("")
+                showSnackbar(error)
             },
             onFailed = { },
             onCancel = {
@@ -111,5 +115,14 @@ class SignInViewModel(
     fun resetBiometricState() {
         _biometricError.value = null
         _biometricEnabled.value = true
+    }
+
+    fun showSnackbar(message: String) = viewModelScope.launch {
+        val result = snackbarState.showSnackbar(
+            UPSnackbarVisual(message = message)
+        )
+        if (result == SnackbarResult.Dismissed) {
+            resetLoginState()
+        }
     }
 }
