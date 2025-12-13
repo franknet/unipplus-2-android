@@ -3,126 +3,42 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
-import com.jfpsolucoes.unipplus2.core.database.entities.UPCredentialsEntity
 import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
-import com.jfpsolucoes.unipplus2.core.security.UPBiometricManager
-import com.jfpsolucoes.unipplus2.core.security.UPBiometricManagerImpl
-import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
-import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
-import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
-import com.jfpsolucoes.unipplus2.modules.signin.domain.UPPostSignInUseCase
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class SignInViewModel(
-    private val postSignInUseCase: UPPostSignInUseCase = UPPostSignInUseCase(),
-    database: EncryptedDataBase = EncryptedDataBase.shared,
-    private val biometricManager: UPBiometricManager = UPBiometricManagerImpl
-) : ViewModel() {
-    private val _credentials = database.credentialsDao().get()
-        .filterNotNull()
-        .collectAsMutableStateFlow(viewModelScope, UPCredentialsEntity())
+interface UPSignInViewModel {
+    val settings: StateFlow<UPSettingsEntity>
 
-    private val _settings = database.settingsDao().get()
-        .filterNotNull()
-        .collectAsMutableStateFlow(viewModelScope, UPSettingsEntity())
+    val snackbarState: SnackbarHostState
 
-    private val _userProfileState = database.userProfileDao().get()
-        .map { it ?: UPUserProfileEntity() }
-        .toUIStateFlow()
-        .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
+    val signInState: StateFlow<UIState<UPUserProfileEntity>>
 
-    private val _signInState = MutableStateFlow<UIState<UPUserProfileEntity>>(UIState.UIStateNone())
+    val userProfileState: StateFlow<UIState<UPUserProfileEntity>>
 
-    private val _biometricEnabled = _settings.map {
-        it.biometricEnabled
-    }.collectAsMutableStateFlow(viewModelScope, false)
+    val rgText: StateFlow<String>
 
-    private val _biometricError = MutableStateFlow<String?>(null)
+    val passwordText: StateFlow<String>
 
-    private val _rgText = _credentials
-        .map { it.rg }
-        .collectAsMutableStateFlow(viewModelScope, "")
+    fun onEditRg(value: String)
 
-    private val _passwordText = "".mutableStateFlow
+    fun onEditPassword(value: String)
 
-    var snackbarState = SnackbarHostState()
+    fun requestBiometricAuthentication(context: AppCompatActivity)
 
-    var biometricEnabled = _biometricEnabled.asStateFlow()
+    fun performSignIn(activity: AppCompatActivity?)
 
-    var biometricError = _biometricError.asStateFlow()
+    fun resetLoginState()
 
-    var signInState = _signInState.asStateFlow()
+    fun resetBiometricState()
 
-    val userProfileState = _userProfileState.asStateFlow()
+    fun showSnackbar(message: String)
 
-    val rgText = _rgText.asStateFlow()
-
-    val passwordText = _passwordText.asStateFlow()
-
-    fun onEditRg(value: String) {
-        val credentialsUpdated = _credentials.value.copy(rg = value)
-        _credentials.value = credentialsUpdated
-    }
-
-    fun onEditPassword(value: String) {
-        val credentialsUpdated = _credentials.value.copy(password = value)
-        _credentials.value = credentialsUpdated
-        _passwordText.value = value
-    }
-
-    fun requestBiometricAuthentication(context: AppCompatActivity) {
-        biometricManager.authenticate(
-            context,
-            onSuccess = { performSignIn() },
-            onError = { _, error ->
-                _biometricEnabled.value = false
-                onEditPassword("")
-                showSnackbar(error)
-            },
-            onFailed = { },
-            onCancel = {
-                _biometricEnabled.value = false
-                onEditPassword("")
-            }
-        )
-    }
-
-    fun performSignIn(activity: AppCompatActivity? = null) {
-        if (_biometricEnabled.value && activity != null) {
-            requestBiometricAuthentication(activity)
-            return
-        }
-        postSignInUseCase(_credentials.value)
-            .collectToFlow(_signInState, viewModelScope)
-    }
-
-    fun resetLoginState()  {
-        _signInState.value = UIState.UIStateNone()
-    }
-
-    fun resetBiometricState() {
-        _biometricError.value = null
-        _biometricEnabled.value = true
-    }
-
-    fun showSnackbar(message: String) = viewModelScope.launch {
-        val result = snackbarState.showSnackbar(
-            UPSnackbarVisual(message = message)
-        )
-        if (result == SnackbarResult.Dismissed) {
-            resetLoginState()
-        }
-    }
+    fun onChangeAutoSignIn(checked: Boolean)
 }

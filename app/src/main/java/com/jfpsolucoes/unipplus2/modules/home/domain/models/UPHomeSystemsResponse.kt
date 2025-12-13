@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Parcelize
 data class UPHomeSystemsResponse(
-    val feature: List<UPSystem>?,
-    val web: List<UPSystem>?
+    val feature: List<UPSystem>? = null,
+    val web: List<UPSystem>? = null
 ): Parcelable
 
 object UPSystemType {

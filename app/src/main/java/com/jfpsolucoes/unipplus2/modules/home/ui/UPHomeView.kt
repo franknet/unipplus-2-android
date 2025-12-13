@@ -1,8 +1,18 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui
 
 import android.annotation.SuppressLint
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Surface
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -12,8 +22,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
@@ -22,8 +40,10 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
 import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
+import com.jfpsolucoes.unipplus2.core.utils.extensions.stateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
+import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemType
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeNavigationSuite
@@ -32,6 +52,9 @@ import com.jfpsolucoes.unipplus2.modules.secretary.ui.UPSecretaryView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
+import com.jfpsolucoes.unipplus2.ui.UIState
+import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
+import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
 import com.jfpsolucoes.unipplus2.ui.components.appshare.ShareAppDialog
 import com.jfpsolucoes.unipplus2.ui.components.dialogs.UPBiometricAlertDialog
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
@@ -39,6 +62,7 @@ import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebView
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
+import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 
 @Composable
 private fun calculateNavigationTypeByWindowClass(): NavigationSuiteType {
@@ -46,22 +70,31 @@ private fun calculateNavigationTypeByWindowClass(): NavigationSuiteType {
     return when {
         windowSizeClass.isWidthLargeLowerBound || windowSizeClass.isWidthExtraLargeLowerBound -> NavigationSuiteType.NavigationDrawer
         windowSizeClass.isWidthMediumLowerBound || windowSizeClass.isWidthExpandedLowerBound -> NavigationSuiteType.NavigationRail
-        else -> suiteLayoutTypeFromAdaptiveInfo()
+        else -> NavigationSuiteType.None
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "ContextCastToActivity")
 @Composable
 fun UPHomeView(
-    viewModel: UPHomeViewModel = viewModel(),
+    viewModel: UPHomeViewModel = viewModel<UPHomeViewModelImpl>(),
+    navController: NavHostController? = LocalNavController.current,
+    navigationLayoutType: NavigationSuiteType = calculateNavigationTypeByWindowClass(),
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    activity: AppCompatActivity? = LocalContext.current as AppCompatActivity,
+    adsEnabled: Boolean = true,
 ) {
-    val systemsState by viewModel.systems.collectAsState()
+    activity?.requestScreenOrientation()
 
-    activity.requestScreenOrientation()
+    val systemsState by viewModel.systemsState.collectAsState()
 
-    ShareAppDialog()
+    val coroutineScope = rememberCoroutineScope()
 
-    ShowInterstitialAd()
+    val selectedSystem by viewModel.systemSelected.collectAsStateWithLifecycle()
+
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
+    if (adsEnabled) { ShowInterstitialAd() }
 
     UPUIStateScaffold(
         state = systemsState,
@@ -71,61 +104,78 @@ fun UPHomeView(
                 viewModel.getSystems()
             }
         },
-        content = { _, data ->
-            SuccessContent(
+        floatingActionButton = {
+            if (navigationLayoutType == NavigationSuiteType.None) {
+                FloatingActionButton(
+                    onClick = {
+                        if (drawerState.isClosed) {
+                            coroutineScope.perform(drawerState::open)
+                        } else {
+                            coroutineScope.perform(drawerState::close)
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryBackgroundLow,
+                    contentColor = Color.White
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_outline_menu_24),
+                        contentDescription = ""
+                    )
+                }
+            }
+        },
+        bottomBar = {
+            if (adsEnabled) {
+                ADBanner(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            bottom = systemBarsPadding.calculateBottomPadding()
+                        )
+                )
+            }
+        },
+        content = { padding, data ->
+            UPHomeNavigationSuite(
+                modifier = Modifier.padding(
+                    top = padding.calculateTopPadding(),
+                    bottom = padding.calculateBottomPadding()
+                ),
+                drawerState = drawerState,
+                layoutType = navigationLayoutType,
                 data = data,
-                viewModel = viewModel
-            )
-        }
-    )
-}
-
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
-@Composable
-private fun SuccessContent(
-    data: UPHomeSystemsResponse? = null,
-    viewModel: UPHomeViewModel
-) {
-    val navController = LocalNavController.current
-    val coroutineScope = rememberCoroutineScope()
-    val navigationLayoutType = calculateNavigationTypeByWindowClass()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
-    val selectedSystem by viewModel.systemSelected.collectAsStateWithLifecycle()
-    val biometricDialogEnabled by viewModel.biometricDialogEnabled.collectAsStateWithLifecycle()
-
-    if (biometricDialogEnabled) {
-        UPBiometricAlertDialog(
-            onClickOk = viewModel::onClickOKBiometricDialog,
-            onClickCancel = viewModel::updateSettings
-        )
-    }
-
-    UPHomeNavigationSuite(
-        drawerState = drawerState,
-        layoutType = navigationLayoutType,
-        data = data,
-        selectedSystem = selectedSystem,
-        onSelectSystem = viewModel::onSelectedSystem,
-        onClickExit = navController::popBackStack,
-        onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
-    ) {
-        Surface {
-            CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
-                coroutineScope.perform(drawerState::close)
-                selectedSystem?.let { system ->
-                    if (system.type == UPSystemType.WEB) {
-                        val settings = PortalWebViewSettings(url = system.url.value)
-                        PortalWebView(webSettings = settings)
-                    }
-                    else {
+                selectedSystem = selectedSystem,
+                onSelectSystem = viewModel::onSelectedSystem,
+                onClickExit = { navController?.popBackStack() },
+                onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
+            ) {
+                CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
+                    coroutineScope.perform(drawerState::close)
+                    selectedSystem?.let { system ->
+                        if (system.type == UPSystemType.WEB) {
+                            val settings = PortalWebViewSettings(url = system.url.value)
+                            PortalWebView(
+                                modifier = Modifier.padding(
+                                    bottom = padding.calculateBottomPadding()
+                                ),
+                                webSettings = settings
+                            )
+                        }
                         when (system.deeplink) {
                             UPSystemDeeplink.SECRETARY -> {
-                                UPSecretaryView()
+                                UPSecretaryView(
+                                    modifier = Modifier.padding(
+                                        bottom = padding.calculateBottomPadding()
+                                    )
+                                )
                             }
                             UPSystemDeeplink.SETTINGS -> {
-                                UPSettingsView(title = system.description.value)
+                                UPSettingsView(
+                                    modifier = Modifier.padding(
+                                        bottom = padding.calculateBottomPadding()
+                                    ),
+                                    title = system.description.value
+                                )
                             }
                             else -> {}
                         }
@@ -133,5 +183,35 @@ private fun SuccessContent(
                 }
             }
         }
+    )
+}
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview(showSystemUi = true)
+@Composable
+private fun UPHomeViewPreview() {
+    UNIPPlus2Theme {
+        UPHomeView(
+            viewModel = UPHomeViewModelPreviewImpl(
+                systemsState = UIState.UIStateSuccess(
+                    UPHomeSystemsResponse(
+                        feature = listOf(
+                            UPSystem(id = 0, description = "teste", type = UPSystemType.FEATURE),
+                            UPSystem(id = 1, description = "teste", type = UPSystemType.FEATURE),
+                        ),
+                        web = listOf(
+                            UPSystem(id = 0, description = "teste", type = UPSystemType.FEATURE),
+                            UPSystem(id = 1, description = "teste", type = UPSystemType.FEATURE),
+                            UPSystem(id = 2, description = "teste", type = UPSystemType.FEATURE),
+                            UPSystem(id = 3, description = "teste", type = UPSystemType.FEATURE)
+                        ),
+                    )
+                ).stateFlow
+            ),
+            navController = null,
+            drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+            activity = null,
+            adsEnabled = false
+        )
     }
 }

@@ -29,25 +29,21 @@ class UPSettingsViewModel(
 ): ViewModel() {
 
     private val _userProfile = database.userProfileDao().get()
-        .filterNotNull()
+        .map { it ?: UPUserProfileEntity() }
         .toUIStateFlow()
         .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
 
     private val _settings = database.settingsDao().get()
-        .filterNotNull()
+        .map { it ?: UPSettingsEntity() }
         .collectAsMutableStateFlow(viewModelScope, UPSettingsEntity())
 
     private val _biometricAvailable = biometricManager.isBiometricAvailable.mutableStateFlow
 
-    private val _biometricEnabled = _settings
-        .map { it.biometricEnabled }
-        .collectAsMutableStateFlow(viewModelScope, false)
-
     val snackbarState = SnackbarHostState()
 
-    val biometricAvailable = _biometricAvailable.asStateFlow()
+    val settings = _settings.asStateFlow()
 
-    val biometricEnabled = _biometricEnabled.asStateFlow()
+    val biometricAvailable = _biometricAvailable.asStateFlow()
 
     val userProfile = _userProfile.asStateFlow()
 
@@ -66,14 +62,23 @@ class UPSettingsViewModel(
         if (enabled && context != null) {
             requestBiometricAuthentication(context)
         } else {
-            val updateSettings = _settings.value.copy(biometricEnabled = enabled)
-            database.settingsDao().insert(updateSettings)
+            database.settingsDao().insert(_settings.value.copy(
+                biometricEnabled = enabled
+            ))
         }
     }
 
     fun showSnackbar(message: String) = viewModelScope.launch {
         val errorVisual = UPSnackbarVisual(message = message)
         snackbarState.showSnackbar(errorVisual)
+    }
+
+    fun onAutoSignCheckedChange(value: Boolean) {
+        viewModelScope.launch {
+            database.settingsDao().insert(_settings.value.copy(
+                autoSignIn = value
+            ))
+        }
     }
 
 }

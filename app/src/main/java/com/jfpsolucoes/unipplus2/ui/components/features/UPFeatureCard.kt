@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.jfpsolucoes.unipplus2.ui.styles.defaultCardColors
 
 @Composable
 fun UPFeatureCard(
@@ -31,10 +33,12 @@ fun UPFeatureCard(
     label: String,
     enabled: Boolean,
     message: String?,
+    colors: CardColors = defaultCardColors,
     onClick: () -> Unit = {},
 ) = Card(
     enabled = enabled,
-    onClick = onClick
+    onClick = onClick,
+    colors = colors
 ) {
     Box(modifier) {
         Column(

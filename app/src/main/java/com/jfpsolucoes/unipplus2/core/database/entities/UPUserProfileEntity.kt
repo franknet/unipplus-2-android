@@ -24,14 +24,14 @@ data class Academic(
 )
 
 data class User(
-    val rg: String?,
+    val rg: String? = null,
     @ColumnInfo("userId")
-    val id: String?,
+    val id: String? = null,
     @ColumnInfo("userName")
-    val name: String?,
-    val email: String?,
-    val gender: String?,
-    val photo: String?,
+    val name: String? = null,
+    val email: String? = null,
+    val gender: String? = null,
+    val photo: String? = null,
 )
 
 data class Campus(

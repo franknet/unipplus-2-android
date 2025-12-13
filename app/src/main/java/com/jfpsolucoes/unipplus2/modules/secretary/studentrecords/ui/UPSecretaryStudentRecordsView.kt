@@ -13,11 +13,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,6 +37,7 @@ import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
+import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -48,6 +51,7 @@ fun UPSecretaryStudentRecordsView(
     onClickBack: () -> Unit
 ) {
     val disciplinesUIState by viewModel.disciplinesUIState.collectAsState()
+
     val mainNavigator = LocalNavController.current
 
     BackHandler(enabled = navigationButtonEnabled) {
@@ -55,6 +59,7 @@ fun UPSecretaryStudentRecordsView(
     }
 
     UPUIStateScaffold(
+        modifier = modifier,
         state = disciplinesUIState,
         topBar = {
             UPStudentRecordsTopBar(
@@ -68,9 +73,6 @@ fun UPSecretaryStudentRecordsView(
                 }
             )
         },
-        bottomBar = {
-            ADBanner(Modifier.fillMaxWidth())
-        },
         loadingContent = {
             UPLoadingView()
         },
@@ -83,7 +85,6 @@ fun UPSecretaryStudentRecordsView(
                     top = padding.calculateTopPadding(),
                     start = 16.dp,
                     end = 16.dp,
-                    bottom = padding.calculateBottomPadding()
                 ),
                 data = data
             )
@@ -115,7 +116,10 @@ private fun UPStudentRecordsTopBar(
                     Icon(painter = UPIcons.Outlined.of("ic_globe"), contentDescription = "")
                 }
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+        )
     )
 }
 
@@ -137,7 +141,8 @@ fun UPStudentRecordsContent(
             items(items = group.disciplines.value) { discipline ->
                 UPDisciplineItemView(
                     title = discipline.name.value,
-                    alignment = itemViewAlignment
+                    alignment = itemViewAlignment,
+                    colors = secondCardColors
                 ) {
                     discipline.items.value.forEach { item ->
                         item(
@@ -151,6 +156,6 @@ fun UPStudentRecordsContent(
             }
         }
 
-        item { VerticalSpacer() }
+        item { VerticalSpacer(space = 0.dp) }
     }
 }

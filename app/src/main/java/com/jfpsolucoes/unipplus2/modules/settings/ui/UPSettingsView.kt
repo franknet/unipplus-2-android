@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
@@ -18,11 +18,11 @@ import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,8 +51,8 @@ fun UPSettingsView(
     val isSupportingPaneHidden = navigator.scaffoldValue[SupportingPaneScaffoldRole.Supporting] == PaneAdaptedValue.Hidden
     val coroutineScope = rememberCoroutineScope()
 
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
-    val biometricSwitchChecked by viewModel.biometricEnabled.collectAsStateWithLifecycle()
     val biometricAvailable by viewModel.biometricAvailable.collectAsStateWithLifecycle()
 
     if (!isSupportingPaneHidden) {
@@ -69,18 +69,12 @@ fun UPSettingsView(
             }
         },
         topBar = {
-            TopAppBar(title = { Text(title) })
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = "Versão ${BuildConfig.VERSION_NAME}"
+            TopAppBar(
+                title = { Text(title) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
                 )
-            }
+            )
         },
         loadingContent = {
             UPLoadingView()
@@ -91,7 +85,10 @@ fun UPSettingsView(
     ) { padding, userProfile ->
         SupportingPaneScaffold(
             modifier = modifier,
-            directive = navigator.scaffoldDirective,
+            directive = navigator.scaffoldDirective.copy(
+                verticalPartitionSpacerSize = 0.dp,
+                horizontalPartitionSpacerSize = 0.dp
+            ),
             scaffoldState = navigator.scaffoldState,
             mainPane = {
                 LazyColumn(modifier = Modifier.padding(
@@ -113,10 +110,24 @@ fun UPSettingsView(
                     if (biometricAvailable) {
                         item {
                             UPSettingsBiometricItemView(
-                                checked = biometricSwitchChecked,
-                                onCheckedChange = {
+                                biometricChecked = settings.biometricEnabled,
+                                onBiometricCheckedChange = {
                                     viewModel.updateBiometricSettings(it, activity)
-                                }
+                                },
+                                autoSignChecked = settings.autoSignIn,
+                                onAutoSignCheckedChange = viewModel::onAutoSignCheckedChange
+                            )
+                        }
+                    }
+
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = "Versão: ${BuildConfig.VERSION_NAME}"
                             )
                         }
                     }

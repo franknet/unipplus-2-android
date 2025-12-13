@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
+import com.jfpsolucoes.unipplus2.ui.styles.buttonPrimaryHighContrastColors
 
 @Composable
 fun UPErrorView(
@@ -39,7 +40,8 @@ fun UPErrorView(
             VerticalSpacer()
 
             Button(
-                onClick = it
+                onClick = it,
+                colors = buttonPrimaryHighContrastColors
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_outline_refresh_24),

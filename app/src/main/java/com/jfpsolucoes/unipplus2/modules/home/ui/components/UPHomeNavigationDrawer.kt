@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,7 +15,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
@@ -31,13 +31,14 @@ import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
+import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.components.image.Image
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
-import com.jfpsolucoes.unipplus2.ui.theme.primaryBackgroundLow
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "RememberInComposition")
 @Composable
 fun UPHomeNavigationDrawer(
+    modifier: Modifier = Modifier,
     data: UPHomeSystemsResponse? = null,
     selectedSystem: UPSystem? = null,
     onSelectSystem: (UPSystem) -> Unit = {},
@@ -53,12 +54,15 @@ fun UPHomeNavigationDrawer(
     )
 
     Surface(
+        modifier = Modifier
+            .width(320.dp)
+            .fillMaxHeight(),
         color = MaterialTheme.colorScheme.primaryBackgroundLow,
         contentColor = Color.White
     ) {
-        Column(Modifier
-            .width(320.dp)
-            .fillMaxHeight()
+        Column(
+            modifier = modifier
+                .fillMaxSize()
         ) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 item { VerticalSpacer() }

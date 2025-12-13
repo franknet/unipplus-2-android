@@ -5,12 +5,15 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.colorResource
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,18 +21,24 @@ import androidx.navigation.compose.rememberNavController
 import com.jfpsolucoes.unipplus2.core.utils.UPAppServicesManager
 import com.jfpsolucoes.unipplus2.modules.signin.ui.signInNavigation
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
+import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundHigh
+import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
-import com.jfpsolucoes.unipplus2.ui.theme.primaryBackgroundLow
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        installSplashScreen()
+
         enableEdgeToEdge()
+
         lifecycleScope.launch {
             UPAppServicesManager.initialize(this@MainActivity)
         }
+
         setContent {
             UNIPPlus2Theme {
                 UPNavigationHost()
@@ -46,15 +55,13 @@ class MainActivity : AppCompatActivity() {
         CompositionLocalProvider(
             LocalNavController provides navController
         ) {
-            Surface(color = MaterialTheme.colorScheme.primaryBackgroundLow) {
-                Surface(Modifier.safeDrawingPadding()) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = "/"
-                    ) {
-                        signInNavigation()
-                    }
-                }
+            NavHost(
+                modifier = modifier
+                    .background(color = colorResource(R.color.surfaceDim_highContrast)),
+                navController = navController,
+                startDestination = "/"
+            ) {
+                signInNavigation()
             }
         }
     }

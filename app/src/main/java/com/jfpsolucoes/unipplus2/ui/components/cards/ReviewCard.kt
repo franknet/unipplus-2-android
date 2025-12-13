@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,14 +14,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.ui.styles.defaultButtonColors
+import com.jfpsolucoes.unipplus2.ui.styles.defaultCardColors
+import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 
 @Composable
 fun ReviewCard(
     modifier: Modifier = Modifier,
+    colors: CardColors = defaultCardColors,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
+        modifier = modifier,
+        colors = colors
     ) {
         Text(
             modifier = Modifier.padding(16.dp),
@@ -29,19 +36,24 @@ fun ReviewCard(
 
         Button(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            onClick = onClick
+            onClick = onClick,
+            colors = defaultButtonColors
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.review_button_text),
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center
+                )
             )
         }
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun ReviewCardPreview() {
-    ReviewCard {}
+    UNIPPlus2Theme(darkTheme = true) {
+        ReviewCard {}
+    }
 }

@@ -1,4 +1,6 @@
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -37,6 +39,18 @@ android {
     }
 
     buildTypes {
+        val BASE_URL_FIELD = "BASE_URL"
+        val API_AUTH_FIELD = "API_AUTH"
+        val API_SECRETARY_FIELD = "API_SECRETARY"
+
+        val REMOTE_BASE_URL = "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\""
+        val REMOTE_API_AUTH = "\"/auth\""
+        val REMOTE_API_SECRETARY = "\"/secretary\""
+
+        val LOCAL_BASE_URL = "\"http://10.0.2.2:5001\""
+        val LOCAL_API_AUTH = "\"/unip-plus-2-a3fa1/southamerica-east1/auth\""
+        val LOCAL_API_SECRETARY = "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\""
+
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -49,22 +63,31 @@ android {
                 debugSymbolLevel = "full"
             }
 
-            buildConfigField("String", "BASE_URL", "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\"")
-            buildConfigField("String", "API_AUTH", "\"/auth\"")
-            buildConfigField("String", "API_SECRETARY", "\"/secretary\"")
+            buildConfigField("String", BASE_URL_FIELD, REMOTE_BASE_URL)
+            buildConfigField("String", API_AUTH_FIELD, REMOTE_API_AUTH)
+            buildConfigField("String", API_SECRETARY_FIELD, REMOTE_API_SECRETARY)
         }
         debug {
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5001\"")
-            buildConfigField("String", "API_AUTH", "\"/unip-plus-2-a3fa1/southamerica-east1/auth\"")
-            buildConfigField("String", "API_SECRETARY", "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\"")
+            buildConfigField("String", BASE_URL_FIELD, REMOTE_BASE_URL)
+            buildConfigField("String", API_AUTH_FIELD, REMOTE_API_AUTH)
+            buildConfigField("String", API_SECRETARY_FIELD, REMOTE_API_SECRETARY)
+        }
+        create("debug_local") {
+            initWith(getByName("debug"))
+
+            buildConfigField("String", BASE_URL_FIELD, LOCAL_BASE_URL)
+            buildConfigField("String", API_AUTH_FIELD, LOCAL_API_AUTH)
+            buildConfigField("String", API_SECRETARY_FIELD, LOCAL_API_SECRETARY)
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
+        }
     }
     buildFeatures {
         compose = true

@@ -4,20 +4,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -26,23 +26,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.components.button.LoadingButton
 import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCard
+import com.jfpsolucoes.unipplus2.ui.styles.defaultTextFieldColors
+import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
+
 
 @Composable
 fun SignInCredentials(
     modifier: Modifier = Modifier,
+    settings: UPSettingsEntity,
+    userProfile: UPUserProfileEntity,
     onLoading: Boolean = false,
-    userProfile: UPUserProfileEntity = UPUserProfileEntity(),
     raText: String,
     onEditRa: (String) -> Unit,
     passwordText: String,
-    passwordSupportingText: String? = null,
-    passwordFieldVisible: Boolean = true,
     onEditPassword: (String) -> Unit,
+    onAutoSignInChange: (Boolean) -> Unit = {},
     onClickSignIn: () -> Unit,
 ) = Box(
     modifier,
@@ -64,21 +68,34 @@ fun SignInCredentials(
                 name = userProfile.user.name.value,
                 course = userProfile.academic?.course?.name.value
             )
-
+            if (!(settings.autoSignIn || settings.biometricEnabled)) {
+                PasswordTextField(
+                    text = passwordText,
+                    onEdit = onEditPassword
+                )
+            }
         } else {
             RaTextField(
                 text = raText,
                 onEdit = onEditRa
             )
+
+            PasswordTextField(
+                text = passwordText,
+                onEdit = onEditPassword
+            )
         }
 
-        if (passwordFieldVisible) {
-            PasswordTextField(
-                enabled = !onLoading,
-                text = passwordText,
-                onEdit = onEditPassword,
-                supportingText = passwordSupportingText
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.common_auto_sign_in_text))
+
+            Switch(checked = settings.autoSignIn, onCheckedChange = onAutoSignInChange)
         }
 
         LoadingButton(
@@ -97,10 +114,7 @@ private fun RaTextField(text: String = "", onEdit: (String) -> Unit) {
         placeholder = { RaTextFieldPlaceHolder() },
         value = text,
         onValueChange = onEdit,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-        )
+        colors = defaultTextFieldColors
     )
 }
 
@@ -111,16 +125,13 @@ private fun RaTextFieldPlaceHolder() {
 
 @Composable
 private fun PasswordTextField(
-    enabled: Boolean,
     text: String,
-    supportingText: String? = null,
     onEdit: (String) -> Unit
 ) {
     var isPasswordVisible by false.saveableMutableState
     val setPasswordVisibility: (Boolean) -> Unit = { isPasswordVisible = it }
     TextField(
         modifier = Modifier.fillMaxWidth(),
-        enabled = enabled,
         placeholder = {
             Text(text = stringResource(id = R.string.sign_in_password_place_holder))
         },
@@ -132,18 +143,8 @@ private fun PasswordTextField(
                 onClick = setPasswordVisibility
             )
         },
-        supportingText = {
-            supportingText?.let {
-                Text(it)
-            }
-        },
-        isError = supportingText != null,
         visualTransformation = passwordVisualTransformation(isPasswordVisible),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent,
-        )
+        colors = defaultTextFieldColors
     )
 }
 
@@ -178,12 +179,17 @@ private fun passwordVisualTransformation(isVisible: Boolean): VisualTransformati
 @Preview(showBackground = true)
 @Composable
 private fun SignInBottomSheetViewPreview() {
-    SignInCredentials(
-        modifier = Modifier.fillMaxWidth(),
-        raText = "",
-        onEditRa = {},
-        passwordText = "",
-        onEditPassword = {},
-        onClickSignIn = {}
-    )
+    UNIPPlus2Theme {
+        SignInCredentials(
+            modifier = Modifier.fillMaxWidth(),
+            userProfile = UPUserProfileEntity(),
+            settings = UPSettingsEntity(),
+            onLoading = false,
+            raText = "",
+            onEditRa = {},
+            passwordText = "",
+            onEditPassword = {},
+            onClickSignIn = {}
+        )
+    }
 }

@@ -4,4 +4,5 @@
     <string name="common_share_description_text">Compartilhe o applicativo UNIP Plus 2 com os seus colegas e grupos de WhatsApp.</string>
     <string name="common_cancel_text">Cancelar</string>
     <string name="common_warning_title_text">Atenção</string>
+    <string name="common_auto_sign_in_text">Login automático</string>
 </resources>

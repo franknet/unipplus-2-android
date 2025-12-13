@@ -11,32 +11,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.R
-import com.jfpsolucoes.unipplus2.core.common.model.UPAppSession
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
+import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
+import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -56,13 +60,19 @@ fun UPProfileView(
     UPUIStateScaffold(
         state = userProfileState,
         topBar = {
-            TopAppBar(title = {  }, navigationIcon = {
-                if (navigationIconEnabled) {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(painter = painterResource(R.drawable.ic_outline_arrow_back_24), contentDescription = "")
+            TopAppBar(
+                title = {  },
+                navigationIcon = {
+                    if (navigationIconEnabled) {
+                        IconButton(onClick = onBackPressed) {
+                            Icon(painter = painterResource(R.drawable.ic_outline_arrow_back_24), contentDescription = "")
+                        }
                     }
-                }
-            })
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
         },
         loadingContent = {
             UPLoadingView()
@@ -82,19 +92,26 @@ fun UPProfileView(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Column(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Card(
+                    colors = secondCardColors
                 ) {
-                    Icon(
-                        modifier = Modifier.size(100.dp),
-                        painter = painterResource(R.drawable.ic_outline_account_circle_24),
-                        contentDescription = ""
-                    )
+                    Column(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(all = 16.dp)
+                        ,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(100.dp),
+                            painter = painterResource(R.drawable.ic_outline_account_circle_24),
+                            contentDescription = ""
+                        )
 
-                    Text(userProfile.user?.rg.value, style = MaterialTheme.typography.titleSmall)
+                        Text(userProfile.user?.rg.value, style = MaterialTheme.typography.titleSmall)
 
-                    Text(userProfile.user?.name.value, style = MaterialTheme.typography.titleMedium)
+                        Text(userProfile.user?.name.value, style = MaterialTheme.typography.titleMedium)
+                    }
                 }
 
             }
@@ -126,7 +143,11 @@ fun UPProfileView(
                         overflow = TextOverflow.Ellipsis
                     )
 
+                    VerticalSpacer(space = 8.dp)
+
                     HorizontalDivider()
+
+                    VerticalSpacer(space = 8.dp)
 
                     userProfile.academic?.course?.shift?.let {
                         UPProfileInfoRow(
@@ -151,12 +172,20 @@ fun UPProfileView(
 fun UPProfileInfoCard(
     modifier: Modifier = Modifier,
     title: String,
+    colors: CardColors = secondCardColors,
     content: @Composable (ColumnScope) -> Unit
 ) {
-    Column {
-        Text(title, style = MaterialTheme.typography.titleLarge)
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium
+        )
 
-        Card {
+        Card(
+            colors = colors
+        ) {
             Column(
                 modifier = modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -178,14 +207,12 @@ fun UPProfileInfoRow(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium
         )
 
         HorizontalSpacer()
 
         Text(
             text = value,
-            style = MaterialTheme.typography.labelMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

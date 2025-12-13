@@ -1,6 +1,7 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui.components
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -10,11 +11,14 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 
 @Composable
 fun UPHomeNavigationSuite(
+    modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     layoutType: NavigationSuiteType = suiteLayoutTypeFromAdaptiveInfo(),
     data: UPHomeSystemsResponse? = null,
@@ -28,6 +32,7 @@ fun UPHomeNavigationSuite(
         drawerState = drawerState,
         drawerContent = {
             UPHomeNavigationDrawer(
+                modifier = modifier,
                 data = data,
                 selectedSystem = selectedSystem,
                 onSelectSystem = onSelectSystem,
@@ -42,6 +47,7 @@ fun UPHomeNavigationSuite(
                 when (layoutType) {
                     NavigationSuiteType.NavigationRail -> {
                         UPHomeNavigationRail(
+                            modifier = modifier,
                             data = data,
                             selectedSystem = selectedSystem,
                             onSelectSystem = onSelectSystem,
@@ -50,17 +56,14 @@ fun UPHomeNavigationSuite(
                     }
                     NavigationSuiteType.NavigationDrawer -> {
                         UPHomeNavigationDrawer(
+                            modifier = modifier,
                             data = data,
                             selectedSystem = selectedSystem,
                             onSelectSystem = onSelectSystem,
                             onClickExit = onClickExit
                         )
                     }
-                    else -> {
-                        UPHomeNavigationBar(
-                            onClickMenu = onClickOpenDrawer
-                        )
-                    }
+                    else -> { }
                 }
             }
         ) {

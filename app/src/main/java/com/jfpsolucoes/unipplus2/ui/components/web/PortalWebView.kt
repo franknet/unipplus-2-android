@@ -12,11 +12,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
@@ -53,7 +56,7 @@ fun PortalWebView(
     }
 
     Scaffold(
-        modifier = modifier.safeDrawingPadding(),
+        modifier = modifier,
         topBar = {
             PortalWebViewTopBar(
                 url = webSettings.url,
@@ -61,12 +64,15 @@ fun PortalWebView(
                 onClickRefreshPage = webView::reload
             )
         },
-        bottomBar = {
-            ADBanner(Modifier.fillMaxWidth())
-        }
+        containerColor = Color.Transparent
     ) { padding ->
         if (isLoading) {
-            UPLoadingView()
+            UPLoadingView(
+                modifier = Modifier.padding(
+                    top = padding.calculateTopPadding(),
+                    bottom = padding.calculateBottomPadding()
+                )
+            )
         } else {
             AndroidView(
                 modifier = Modifier.padding(
@@ -106,6 +112,9 @@ private fun PortalWebViewTopBar(
             IconButton(onClick = onClickRefreshPage) {
                 Icon(painter = painterResource(R.drawable.ic_outline_refresh_24), contentDescription = null)
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceBright
+        )
     )
 }

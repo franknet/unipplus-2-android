@@ -20,8 +20,7 @@ import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigKeys
 import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigManager
 
 val activity: AppCompatActivity
- @SuppressLint("ContextCastToActivity") @Composable
- get() = LocalContext.current as AppCompatActivity
+ @Composable get() = LocalContext.current as AppCompatActivity
 
 @Composable
 fun ShowInterstitialAd(

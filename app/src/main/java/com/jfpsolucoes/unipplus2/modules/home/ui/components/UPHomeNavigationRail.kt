@@ -6,9 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.NavigationRailItemColors
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +20,8 @@ import com.jfpsolucoes.unipplus2.core.compose.ForEach
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
+import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.components.image.Image
-import com.jfpsolucoes.unipplus2.ui.theme.primaryBackgroundHigh
-import com.jfpsolucoes.unipplus2.ui.theme.primaryBackgroundLow
 
 @Composable
 fun UPHomeNavigationRail(
@@ -43,7 +40,6 @@ fun UPHomeNavigationRail(
     )
 
     NavigationRail(
-        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primaryBackgroundLow,
         contentColor = Color.White
     ) {

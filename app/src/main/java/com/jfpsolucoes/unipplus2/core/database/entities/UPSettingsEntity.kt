@@ -11,6 +11,7 @@ data class UPSettingsEntity(
     // Security
     val biometricEnabled: Boolean = false,
     val biometricDialogEnabled: Boolean = true,
+    val autoSignIn: Boolean = false,
 
     // App
     val appRateCount: Int = 0

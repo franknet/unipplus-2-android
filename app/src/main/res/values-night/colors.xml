@@ -40,7 +40,7 @@
     <color name="tertiaryFixedDim">#A5C8FF</color>
     <color name="onTertiaryFixedVariant">#16487D</color>
     <color name="surfaceDim">#141313</color>
-    <color name="surfaceBright">#3A3939</color>
+    <color name="surfaceBright">#1C1B1B</color>
     <color name="surfaceContainerLowest">#0E0E0E</color>
     <color name="surfaceContainerLow">#1C1B1B</color>
     <color name="surfaceContainer">#201F1F</color>
@@ -140,9 +140,11 @@
     <color name="surfaceContainer_highContrast">#201F1F</color>
     <color name="surfaceContainerHigh_highContrast">#2A2A2A</color>
     <color name="surfaceContainerHighest_highContrast">#353434</color>
+    <color name="surfaceTint">#141313</color>
 
     // Custom colors
-    <color name="primaryBackgroundLow">@color/surfaceContainerLowest</color>
-    <color name="primaryBackgroundHigh">@color/surfaceContainer</color>
-    <color name="secondBackgroundLow">@color/primary</color>
+    <color name="primaryBackgroundLow">@color/surfaceContainerLow</color>
+    <color name="primaryBackground_highContrast">@color/surfaceBright_mediumContrast</color>
+    <color name="primaryBackgroundHigh">@color/surfaceContainerLowest</color>
+    <color name="secondBackgroundLow">@color/secondary_highContrast</color>
 </resources>

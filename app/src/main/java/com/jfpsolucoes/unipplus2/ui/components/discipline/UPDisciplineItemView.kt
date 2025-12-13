@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.ui.components.ColumnScopeLambda
 import com.jfpsolucoes.unipplus2.ui.components.progressindicator.UPVerticalLinearProgressIndicatorView
+import com.jfpsolucoes.unipplus2.ui.styles.defaultCardColors
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 import kotlin.random.Random
 
@@ -159,9 +161,11 @@ fun UPDisciplineItemView(
     trailingContent: (@Composable () -> Unit)? = null,
     alignment: UPDisciplineItemAlignment,
     message: String? = null,
+    colors: CardColors = defaultCardColors,
     content: UPDisciplineItemScope.() -> Unit
 ) = Card(
-    modifier = modifier
+    modifier = modifier,
+    colors = colors
 ) {
     Column(
         modifier = Modifier.padding(16.dp),
@@ -224,7 +228,7 @@ fun UPDisciplineItemView(
 private fun UPDisciplineItemViewPreview() {
     val alignment = UPDisciplineItemAlignment.Horizontal
 
-    UNIPPlus2Theme {
+    UNIPPlus2Theme(darkTheme = true) {
         UPDisciplineItemView(
             title = "Disciplina",
             alignment = alignment,

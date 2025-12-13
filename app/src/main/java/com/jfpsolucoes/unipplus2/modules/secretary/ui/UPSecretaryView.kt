@@ -1,6 +1,8 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
@@ -11,6 +13,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isMainPaneExpanded
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isSupportingPaneExpanded
@@ -21,20 +25,33 @@ import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeat
 import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeaturesResponse
 import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPSecretaryStudentRecordsView
 import com.jfpsolucoes.unipplus2.modules.secretary.ui.dashboard.UPSecretaryDashboardView
+import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UPSecretaryView(
     modifier: Modifier = Modifier,
     viewModel: UPSecretaryViewModel = viewModel()
 ) {
-    val featuresUIState by viewModel.featuresState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val navigator = rememberSupportingPaneScaffoldNavigator<UPSecretaryFeature>()
+
+    val featuresUIState by viewModel.featuresState.collectAsStateWithLifecycle()
+
+    if (featuresUIState.success && navigator.scaffoldValue.isSupportingPaneExpanded) {
+        LaunchedEffect(Unit) {
+            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, featuresUIState.data?.features?.first())
+        }
+    }
 
     UPUIStateScaffold(
+        modifier = modifier,
         state = featuresUIState,
         loadingContent = { _ ->
             UPLoadingView()
@@ -44,51 +61,39 @@ fun UPSecretaryView(
                 viewModel.fetchSecretaryFeatures()
             }
         },
-        content = { padding, data ->
-            ContentView(data = data)
-        }
-    )
-}
-
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
-@Composable
-private fun ContentView(
-    modifier: Modifier = Modifier,
-    data: UPSecretaryFeaturesResponse
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val navigator = rememberSupportingPaneScaffoldNavigator<UPSecretaryFeature>()
-
-    if (navigator.scaffoldValue.isSupportingPaneExpanded) {
-        LaunchedEffect(Unit) {
-            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, data.features?.first())
-        }
-    }
-
-    SupportingPaneScaffold(
-        directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
-        mainPane = {
-            UPSecretaryDashboardView(features = data.features) { feature ->
-                coroutineScope.launch {
-                    navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, feature)
-                }
-            }
-        },
-        supportingPane = {
-            if (navigator.currentDestination?.pane == SupportingPaneScaffoldRole.Supporting) {
-                navigator.currentDestination?.contentKey?.let { system ->
-                    when (system.deeplink) {
-                        SECRETARY_STUDENT_RECORDS_DEEPLINK -> UPSecretaryStudentRecordsView(
-                            feature = system,
-                            navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
-                            onClickBack = { coroutineScope.perform(navigator::navigateBack) }
-                        )
-                        SECRETARY_FINANCIAL_DEEPLINK -> {}
-                        else -> {}
+        content = { _ , data ->
+            SupportingPaneScaffold(
+                directive = navigator.scaffoldDirective.copy(
+                    verticalPartitionSpacerSize = 0.dp,
+                    horizontalPartitionSpacerSize = 0.dp
+                ),
+                scaffoldState = navigator.scaffoldState,
+                mainPane = {
+                    UPSecretaryDashboardView(
+                        modifier = modifier,
+                        features = data.features
+                    ) { feature ->
+                        coroutineScope.launch {
+                            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, feature)
+                        }
+                    }
+                },
+                supportingPane = {
+                    if (navigator.currentDestination?.pane == SupportingPaneScaffoldRole.Supporting) {
+                        navigator.currentDestination?.contentKey?.let { system ->
+                            when (system.deeplink) {
+                                SECRETARY_STUDENT_RECORDS_DEEPLINK -> UPSecretaryStudentRecordsView(
+                                    feature = system,
+                                    navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
+                                    onClickBack = { coroutineScope.perform(navigator::navigateBack) }
+                                )
+                                SECRETARY_FINANCIAL_DEEPLINK -> {}
+                                else -> {}
+                            }
+                        }
                     }
                 }
-            }
-        },
+            )
+        }
     )
 }

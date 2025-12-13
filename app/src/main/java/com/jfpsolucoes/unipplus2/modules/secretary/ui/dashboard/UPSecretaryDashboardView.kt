@@ -10,11 +10,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,10 +31,12 @@ import com.jfpsolucoes.unipplus2.ui.components.image.Image
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCard
+import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UPSecretaryDashboardView(
+    modifier: Modifier = Modifier,
     viewModel: UPSecretaryDashboardViewModel = viewModel(),
     features: List<UPSecretaryFeature>?,
     onSelectFeature: (UPSecretaryFeature) -> Unit = {}
@@ -42,18 +46,22 @@ fun UPSecretaryDashboardView(
     val appReviewEnabled = viewModel.appReviewEnabled
 
     Scaffold(
-        bottomBar = {
-            ADBanner(Modifier.fillMaxWidth())
-        }
-    ) { _ ->
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        modifier = modifier,
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier.padding(top = padding.calculateTopPadding()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             item { VerticalSpacer(0.dp) }
 
             item {
                 UPStudentInfoCard(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     name = userProfile.user?.name.value,
-                    course = userProfile.academic?.course?.name.value
+                    course = userProfile.academic?.course?.name.value,
+                    colors = secondCardColors
                 )
             }
 
@@ -73,6 +81,7 @@ fun UPSecretaryDashboardView(
                             label = feature.description.value,
                             enabled = feature.enabled,
                             message = feature.message,
+                            colors = secondCardColors,
                             onClick = { onSelectFeature(feature) }
                         )
                     }
@@ -83,7 +92,10 @@ fun UPSecretaryDashboardView(
 
             if (appReviewEnabled) {
                 item {
-                    ReviewCard(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    ReviewCard(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        colors = secondCardColors
+                    ) {
                         UPAppStoreManager.requestReview(activity)
                     }
                 }
