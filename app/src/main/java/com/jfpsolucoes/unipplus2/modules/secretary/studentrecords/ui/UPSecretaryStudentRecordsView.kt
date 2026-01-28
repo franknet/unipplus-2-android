@@ -3,7 +3,6 @@ package com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,11 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
-import com.jfpsolucoes.unipplus2.modules.secretary.domain.models.UPSecretaryFeature
+import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.UPSecretaryFeature
 import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.UPStudentRecordsDisciplinesResponse
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.UPIcons
-import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
 import com.jfpsolucoes.unipplus2.ui.components.discipline.UPDisciplineItemAlignment
 import com.jfpsolucoes.unipplus2.ui.components.discipline.UPDisciplineItemView
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView

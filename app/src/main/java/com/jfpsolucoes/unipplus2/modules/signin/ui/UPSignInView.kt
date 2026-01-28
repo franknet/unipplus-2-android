@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.jfpsolucoes.unipplus2.modules.signin.ui
 
 import android.annotation.SuppressLint
@@ -6,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -124,6 +127,7 @@ fun UPSignInView(
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showSystemUi = true, device = TABLET)
 @Composable
 private fun UPSignInViewPreview() {

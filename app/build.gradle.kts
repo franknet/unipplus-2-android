@@ -44,12 +44,12 @@ android {
         val API_SECRETARY_FIELD = "API_SECRETARY"
 
         val REMOTE_BASE_URL = "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\""
-        val REMOTE_API_AUTH = "\"/auth\""
-        val REMOTE_API_SECRETARY = "\"/secretary\""
+        val REMOTE_API_AUTH = "\"api/auth\""
+        val REMOTE_API_SECRETARY = "\"api/secretary\""
 
         val LOCAL_BASE_URL = "\"http://10.0.2.2:5001\""
-        val LOCAL_API_AUTH = "\"/unip-plus-2-a3fa1/southamerica-east1/auth\""
-        val LOCAL_API_SECRETARY = "\"/unip-plus-2-a3fa1/southamerica-east1/secretary\""
+        val LOCAL_API_AUTH = "\"/unip-plus-2-a3fa1/southamerica-east1/api/auth\""
+        val LOCAL_API_SECRETARY = "\"/unip-plus-2-a3fa1/southamerica-east1/api/secretary\""
 
         release {
             isMinifyEnabled = true
@@ -96,6 +96,16 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    sourceSets {
+        getByName("debug_local") {
+            assets {
+                srcDirs("src/debug_local/assets")
+            }
+            java {
+                srcDirs("src/debug_local/java")
+            }
         }
     }
 }

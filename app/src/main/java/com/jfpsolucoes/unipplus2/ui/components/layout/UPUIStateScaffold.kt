@@ -1,14 +1,21 @@
+
 package com.jfpsolucoes.unipplus2.ui.components.layout
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.ui.UIState
 
+@ExperimentalMaterial3Api
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun <T> UPUIStateScaffold(
@@ -22,21 +29,29 @@ fun <T> UPUIStateScaffold(
     errorContent: @Composable (PaddingValues, Throwable) -> Unit,
     containerColor: Color = Color.Transparent,
     contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    bottomSheetState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
+    bottomSheetContent: @Composable () -> Unit = {},
     content: @Composable (PaddingValues, T) -> Unit
-) = Scaffold(
-    modifier = modifier,
-    topBar = topBar,
-    bottomBar = bottomBar,
-    snackbarHost = snackbarHost,
-    floatingActionButton = floatingActionButton,
-    containerColor = containerColor,
-    contentColor = contentColor
-) {  padding ->
-    when (state) {
-        is UIState.UIStateLoading -> loadingContent.invoke(padding)
-        is UIState.UIStateError -> { state.error?.let { errorContent.invoke(padding, it) } }
-        is UIState.UIStateSuccess -> { state.data?.let { content.invoke(padding, it) } }
-        else -> {}
+) = BottomSheetScaffold(
+    scaffoldState = bottomSheetState,
+    sheetContent = { bottomSheetContent() },
+    sheetPeekHeight = 0.dp
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = topBar,
+        bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
+        floatingActionButton = floatingActionButton,
+        containerColor = containerColor,
+        contentColor = contentColor
+    ) {  padding ->
+        when (state) {
+            is UIState.UIStateLoading -> loadingContent.invoke(padding)
+            is UIState.UIStateError -> { state.error?.let { errorContent.invoke(padding, it) } }
+            is UIState.UIStateSuccess -> { state.data?.let { content.invoke(padding, it) } }
+            else -> {}
+        }
     }
 }
 

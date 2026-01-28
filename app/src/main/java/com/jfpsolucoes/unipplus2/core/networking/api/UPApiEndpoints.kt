@@ -1,32 +1,30 @@
 package com.jfpsolucoes.unipplus2.core.networking.api
 
-class UPApiEndpoints {
-    companion object {
-        const val BASE_URL = "https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net"
+import com.jfpsolucoes.unipplus2.BuildConfig
+
+object UPApiEndpoints {
+    const val BASE_URL = BuildConfig.BASE_URL
+
+    object Auth {
+        private const val AUTH_API = BuildConfig.API_AUTH
+        const val SIGN_IN = "$AUTH_API/v1/sign-in"
+        const val SYSTEMS = "$AUTH_API/v1/systems"
     }
 
-    class Auth {
-        companion object {
-            const val SIGN_IN = "/auth/v1/sign-in"
-            const val SYSTEMS = "/auth/v1/systems"
-        }
-    }
+    object Secretary {
+        private const val SECRETARY_API = BuildConfig.API_SECRETARY
+        const val FEATURES = "$SECRETARY_API/v1/features"
 
-    class Secretary {
-        companion object {
-            const val FEATURES = "/secretary/v1/features"
+        object StudentRecords {
+            private const val STUDENT_RECORDS_API = "$SECRETARY_API/student-records"
+            const val DISCIPLINES = "$STUDENT_RECORDS_API/v1/disciplines"
         }
 
-        class StudentRecords {
-            companion object {
-                const val DISCIPLINES = "/secretary/student-records/v1/disciplines"
-            }
-        }
-
-        class Finance {
-            companion object {
-
-            }
+        object Financial {
+            private const val FINANCIAL_API = "$SECRETARY_API/financial"
+            const val FEATURES = "$FINANCIAL_API/v1/features"
+            const val EXTRACT = "$FINANCIAL_API/v1/extract"
+            const val DEBTS = "$FINANCIAL_API/v1/debts"
         }
 
     }

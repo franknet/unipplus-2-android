@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.jfpsolucoes.unipplus2.modules.home.ui
 
 import android.annotation.SuppressLint
@@ -9,11 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
@@ -25,7 +26,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
-import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
@@ -47,16 +46,13 @@ import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemType
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeNavigationSuite
-import com.jfpsolucoes.unipplus2.modules.home.ui.components.suiteLayoutTypeFromAdaptiveInfo
-import com.jfpsolucoes.unipplus2.modules.secretary.ui.UPSecretaryView
+import com.jfpsolucoes.unipplus2.modules.secretary.features.ui.UPSecretaryView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
-import com.jfpsolucoes.unipplus2.ui.components.appshare.ShareAppDialog
-import com.jfpsolucoes.unipplus2.ui.components.dialogs.UPBiometricAlertDialog
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView

@@ -1,7 +1,6 @@
 package com.jfpsolucoes.unipplus2.core.networking
 
 import android.content.Context
-import com.jfpsolucoes.unipplus2.BuildConfig
 import com.jfpsolucoes.unipplus2.core.networking.api.UPApiEndpoints
 import okhttp3.Cache
 import okhttp3.JavaNetCookieJar
