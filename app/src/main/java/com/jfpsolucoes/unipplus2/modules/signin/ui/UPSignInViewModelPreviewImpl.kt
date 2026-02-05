@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
+import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.stateFlow
 import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,8 @@ class UPSignInViewModelPreviewImpl(
     override val rgText = "Teste".stateFlow
 
     override val passwordText = "".stateFlow
+
+    override val showPasswordField = true.stateFlow
 
     override fun onEditRg(value: String) {
         TODO("Not yet implemented")

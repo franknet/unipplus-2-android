@@ -2,10 +2,12 @@ package com.jfpsolucoes.unipplus2.modules.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.stateFlow
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.ui.UIState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -18,7 +20,7 @@ class UPHomeViewModelPreviewImpl(
         TODO("Not yet implemented")
     }
 
-    override fun updateSettings() = viewModelScope.launch {
+    override fun updateSettings(settings: UPSettingsEntity) = viewModelScope.launch {
         TODO("Not yet implemented")
     }
 
@@ -27,6 +29,10 @@ class UPHomeViewModelPreviewImpl(
     }
 
     override fun onSelectedSystem(system: UPSystem) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onSignOut(): Job {
         TODO("Not yet implemented")
     }
 

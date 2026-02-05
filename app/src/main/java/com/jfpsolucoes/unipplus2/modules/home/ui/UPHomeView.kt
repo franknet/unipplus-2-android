@@ -3,6 +3,7 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -92,6 +93,11 @@ fun UPHomeView(
 
     if (adsEnabled) { ShowInterstitialAd() }
 
+    BackHandler {
+        viewModel.onSignOut()
+        navController?.popBackStack()
+    }
+
     UPUIStateScaffold(
         state = systemsState,
         loadingContent = { UPLoadingView() },
@@ -142,7 +148,10 @@ fun UPHomeView(
                 data = data,
                 selectedSystem = selectedSystem,
                 onSelectSystem = viewModel::onSelectedSystem,
-                onClickExit = { navController?.popBackStack() },
+                onClickExit = {
+                    viewModel.onSignOut()
+                    navController?.popBackStack()
+                },
                 onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
             ) {
                 CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {

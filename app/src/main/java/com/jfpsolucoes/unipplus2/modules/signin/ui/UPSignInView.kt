@@ -16,6 +16,9 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -52,13 +55,14 @@ fun UPSignInView(
     viewModel: UPSignInViewModel = viewModel<SignInViewModelImpl>(),
     navController: NavHostController? = LocalNavController.current,
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
-    activity: AppCompatActivity? = LocalContext.current as AppCompatActivity
+    activity: AppCompatActivity? = com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 ) {
     val userProfileState by viewModel.userProfileState.collectAsStateWithLifecycle()
     val signInUIState by viewModel.signInState.collectAsStateWithLifecycle()
 
     val rgText by viewModel.rgText.collectAsStateWithLifecycle()
     val passwordText by viewModel.passwordText.collectAsStateWithLifecycle()
+    val showPasswordField by viewModel.showPasswordField.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     if (windowSizeClass.isHeightMediumLowerBound) {
@@ -73,12 +77,6 @@ fun UPSignInView(
 
     if (signInUIState.failure) {
         viewModel.showSnackbar(signInUIState.error?.message ?: "")
-    }
-
-    if (userProfileState.success && settings.autoSignIn) {
-        LaunchedEffect(Unit) {
-            viewModel.performSignIn(null)
-        }
     }
 
     UPUIStateScaffold(
@@ -106,6 +104,15 @@ fun UPSignInView(
         },
         contentColor = White
     ) { _, userProfile ->
+        LaunchedEffect(settings.autoSignIn) {
+            if (settings.autoSignIn) {
+                viewModel.performSignIn(null)
+            }
+            if (settings.biometricEnabled) {
+                viewModel.performSignIn(activity)
+            }
+        }
+
         Column(Modifier.safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
             SignInLogo(modifier = Modifier
                 .weight(1f)
@@ -119,6 +126,7 @@ fun UPSignInView(
                 raText = rgText,
                 onEditRa = viewModel::onEditRg,
                 passwordText = passwordText,
+                showPasswordField = showPasswordField,
                 onEditPassword = viewModel::onEditPassword,
                 onAutoSignInChange = viewModel::onChangeAutoSignIn,
                 onClickSignIn = { viewModel.performSignIn(activity) }

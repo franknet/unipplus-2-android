@@ -45,6 +45,7 @@ fun SignInCredentials(
     raText: String,
     onEditRa: (String) -> Unit,
     passwordText: String,
+    showPasswordField: Boolean = true,
     onEditPassword: (String) -> Unit,
     onAutoSignInChange: (Boolean) -> Unit = {},
     onClickSignIn: () -> Unit,
@@ -68,7 +69,7 @@ fun SignInCredentials(
                 name = userProfile.user.name.value,
                 course = userProfile.academic?.course?.name.value
             )
-            if (!(settings.autoSignIn || settings.biometricEnabled)) {
+            if (showPasswordField) {
                 PasswordTextField(
                     text = passwordText,
                     onEdit = onEditPassword

@@ -10,6 +10,7 @@ import com.jfpsolucoes.unipplus2.modules.home.domain.UPHomeGetSystemsUseCase
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
 import com.jfpsolucoes.unipplus2.ui.UIState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -43,9 +44,8 @@ class UPHomeViewModelImpl(
         getSystemsUseCase().collectToFlow(_systemsState, viewModelScope)
     }
 
-    override fun updateSettings() = viewModelScope.launch {
-         val settingsUpdated = _settings.value.copy(biometricDialogEnabled = false)
-        database.settingsDao().insert(settingsUpdated)
+    override fun updateSettings(settings: UPSettingsEntity) = viewModelScope.launch {
+        database.settingsDao().insert(settings)
     }
 
     override fun onClickOKBiometricDialog() = viewModelScope.launch {
@@ -54,11 +54,15 @@ class UPHomeViewModelImpl(
         val settings = features.firstOrNull {
             it.deeplink ==  UPSystemDeeplink.SETTINGS
         } ?: return@launch
-        updateSettings()
+        updateSettings(_settings.value.copy(biometricDialogEnabled = false))
         onSelectedSystem(settings)
     }
 
     override fun onSelectedSystem(system: UPSystem) {
         _systemSelected.value = system
+    }
+
+    override fun onSignOut() = viewModelScope.launch {
+        updateSettings(_settings.value.copy(autoSignIn = false))
     }
 }

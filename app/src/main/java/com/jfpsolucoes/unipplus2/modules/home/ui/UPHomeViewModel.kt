@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.modules.home.ui
 
+import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.ui.UIState
@@ -13,9 +14,11 @@ interface UPHomeViewModel {
 
     val biometricDialogEnabled: StateFlow<Boolean>
 
+    fun onSignOut(): Job
+
     fun getSystems()
 
-    fun updateSettings(): Job
+    fun updateSettings(settings: UPSettingsEntity): Job
 
     fun onClickOKBiometricDialog(): Job
 

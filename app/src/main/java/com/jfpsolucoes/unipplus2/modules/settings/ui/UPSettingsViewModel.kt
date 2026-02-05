@@ -63,6 +63,7 @@ class UPSettingsViewModel(
             requestBiometricAuthentication(context)
         } else {
             database.settingsDao().insert(_settings.value.copy(
+                autoSignIn = false,
                 biometricEnabled = enabled
             ))
         }
@@ -76,7 +77,8 @@ class UPSettingsViewModel(
     fun onAutoSignCheckedChange(value: Boolean) {
         viewModelScope.launch {
             database.settingsDao().insert(_settings.value.copy(
-                autoSignIn = value
+                autoSignIn = value,
+                biometricEnabled = false
             ))
         }
     }

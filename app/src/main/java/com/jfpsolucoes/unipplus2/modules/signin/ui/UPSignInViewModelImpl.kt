@@ -13,6 +13,7 @@ import com.jfpsolucoes.unipplus2.core.security.UPBiometricManager
 import com.jfpsolucoes.unipplus2.core.security.UPBiometricManagerImpl
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
+import com.jfpsolucoes.unipplus2.core.utils.extensions.debugPrint
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
@@ -54,6 +55,14 @@ class SignInViewModelImpl(
 
     private val _passwordText = "".mutableStateFlow
 
+    private val _showPasswordField = _settings
+        .map { !(it.biometricEnabled || it.autoSignIn) }
+        .debugPrint("SignInViewModelImpl")
+        .collectAsMutableStateFlow(
+            scope = viewModelScope,
+            initialValue = true
+        )
+
     override val settings = _settings.asStateFlow()
 
     override val snackbarState = SnackbarHostState()
@@ -65,6 +74,8 @@ class SignInViewModelImpl(
     override val rgText = _rgText.asStateFlow()
 
     override val passwordText = _passwordText.asStateFlow()
+
+    override val showPasswordField = _showPasswordField.asStateFlow()
 
     override fun onEditRg(value: String) {
         _rgText.update { value }
@@ -87,6 +98,7 @@ class SignInViewModelImpl(
             onFailed = { },
             onCancel = {
                 onEditPassword("")
+                _showPasswordField.value = true
             }
         )
     }
@@ -125,6 +137,9 @@ class SignInViewModelImpl(
 
     override fun onChangeAutoSignIn(checked: Boolean) {
         viewModelScope.launch {
+            if (_credentials.value.password.isEmpty()) {
+                return@launch
+            }
             database.settingsDao().insert(_settings.value.copy(
                 autoSignIn = checked
             ))

@@ -26,6 +26,8 @@ interface UPSignInViewModel {
 
     val passwordText: StateFlow<String>
 
+    val showPasswordField: StateFlow<Boolean>
+
     fun onEditRg(value: String)
 
     fun onEditPassword(value: String)
