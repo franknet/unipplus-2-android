@@ -10,12 +10,9 @@ private const val TAG = "HttpServiceCookieStore"
 private const val WEB_VIEW_TAG = "Webkit.CookieManager"
 
 class HttpServiceCookieStore(
-    private val cookieStore: CookieStore = CookieManager().cookieStore
+    private val cookieStore: CookieStore = CookieManager().cookieStore,
+    private val androidCookieStore: android.webkit.CookieManager = android.webkit.CookieManager.getInstance()
 ): CookieStore {
-
-    private val androidCookieStore = android.webkit.CookieManager.getInstance().apply {
-        setAcceptCookie(true)
-    }
 
     override fun add(uri: URI?, cookie: HttpCookie?) {
         Log.i(TAG, "add: $cookie")
@@ -57,7 +54,10 @@ private fun android.webkit.CookieManager.add(uri: URI?, cookie: HttpCookie?) {
         }
         if (it.name == "SESSION") {
             Log.i(WEB_VIEW_TAG, "add: $it")
-            setCookie("https://gfa.unip.br/aluno", "${it}; path=/aluno/; HttpOnly")
+            setCookie("https://gfa.unip.br", "${it}; path=/aluno/; HttpOnly")
         }
+
+        Log.i(WEB_VIEW_TAG, "add: $it")
+        setCookie("http://docs.google.com", "${it}")
     }
 }

@@ -29,29 +29,21 @@ fun <T> UPUIStateScaffold(
     errorContent: @Composable (PaddingValues, Throwable) -> Unit,
     containerColor: Color = Color.Transparent,
     contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    bottomSheetState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
-    bottomSheetContent: @Composable () -> Unit = {},
     content: @Composable (PaddingValues, T) -> Unit
-) = BottomSheetScaffold(
-    scaffoldState = bottomSheetState,
-    sheetContent = { bottomSheetContent() },
-    sheetPeekHeight = 0.dp
-) {
-    Scaffold(
-        modifier = modifier,
-        topBar = topBar,
-        bottomBar = bottomBar,
-        snackbarHost = snackbarHost,
-        floatingActionButton = floatingActionButton,
-        containerColor = containerColor,
-        contentColor = contentColor
-    ) {  padding ->
-        when (state) {
-            is UIState.UIStateLoading -> loadingContent.invoke(padding)
-            is UIState.UIStateError -> { state.error?.let { errorContent.invoke(padding, it) } }
-            is UIState.UIStateSuccess -> { state.data?.let { content.invoke(padding, it) } }
-            else -> {}
-        }
+) = Scaffold(
+    modifier = modifier,
+    topBar = topBar,
+    bottomBar = bottomBar,
+    snackbarHost = snackbarHost,
+    floatingActionButton = floatingActionButton,
+    containerColor = containerColor,
+    contentColor = contentColor
+) {  padding ->
+    when (state) {
+        is UIState.UIStateLoading -> loadingContent.invoke(padding)
+        is UIState.UIStateError -> { state.error?.let { errorContent.invoke(padding, it) } }
+        is UIState.UIStateSuccess -> { state.data?.let { content.invoke(padding, it) } }
+        else -> {}
     }
 }
 

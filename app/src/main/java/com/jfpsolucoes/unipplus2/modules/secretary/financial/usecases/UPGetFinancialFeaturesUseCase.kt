@@ -4,10 +4,14 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.modules.secretary.features.data.UPSecretaryRepository
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.repository.UPSecretaryRepositoryImpl
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.data.UPFinancialRepository
+import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialFeaturesData
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.repository.UPFinancialRepositoryImpl
+import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 class UPGetFinancialFeaturesUseCase(

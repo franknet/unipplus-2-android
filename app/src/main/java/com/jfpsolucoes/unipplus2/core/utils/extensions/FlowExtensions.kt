@@ -11,10 +11,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 fun <T> Flow<T>.toUIStateFlow(): Flow<UIState<T>> {
@@ -26,6 +28,15 @@ fun <T> Flow<T>.toUIStateFlow(): Flow<UIState<T>> {
 
 fun <T> Flow<T>.collectToFlow(flow: MutableStateFlow<T>, scope: CoroutineScope) = scope.launch {
     collect { flow.emit(it) }
+}
+
+fun <T> Flow<T>.asMutableSharedPushFlow(scope: CoroutineScope): MutableSharedFlow<T> {
+    val shared = MutableSharedFlow<T>()
+    val zip = combine(shared, this) { _, value -> value }
+    scope.launch {
+        zip.collect { shared.emit(it) }
+    }
+    return shared
 }
 
 suspend fun <T> Flow<T>.collectToFlow(flow: MutableStateFlow<T>) {

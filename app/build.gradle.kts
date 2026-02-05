@@ -74,6 +74,7 @@ android {
         }
         create("debug_local") {
             initWith(getByName("debug"))
+            isDebuggable = true
 
             buildConfigField("String", BASE_URL_FIELD, LOCAL_BASE_URL)
             buildConfigField("String", API_AUTH_FIELD, LOCAL_API_AUTH)

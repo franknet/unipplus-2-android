@@ -2,16 +2,17 @@ package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
+import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialFeature
+import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialFeaturesData
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.usecases.UPGetFinancialFeaturesUseCase
 import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -19,36 +20,27 @@ import kotlinx.coroutines.launch
 class UPFinancialViewModel(
     val getFinancialFeaturesUseCase: UPGetFinancialFeaturesUseCase = UPGetFinancialFeaturesUseCase(),
     ): ViewModel() {
-
-    private val _featuresUIState = getFinancialFeaturesUseCase()
-        .shareIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            replay = 1,
-        )
+    private val _featuresUIState = MutableSharedFlow<UIState<UPFinancialFeaturesData>>()
+    private val _featureSelected = MutableStateFlow<UPFinancialFeature?>(null)
+    private val _periodSelected = MutableStateFlow<String?>(null)
     val featuresUIState = _featuresUIState
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Lazily,
             initialValue = UIState.UIStateNone()
         )
-
-    val periodsState = _featuresUIState
-        .mapLatest { it.data?.periods }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
-
-    private val _featureSelectedIndex = MutableStateFlow(0)
-    val featureSelectedIndex = _featureSelectedIndex.asStateFlow()
-
+    val periodSelected = _periodSelected.asStateFlow()
+    val featureSelected = _featureSelected.asStateFlow()
     fun fetch() = viewModelScope.launch {
-        _featuresUIState.collect()
+        getFinancialFeaturesUseCase().collect {
+            _featuresUIState.emit(it)
+        }
+    }
+    fun setSelectedFeature(feature: UPFinancialFeature?) {
+        _featureSelected.value = feature
     }
 
-    fun setSelectedFeatureIndex(index: Int) {
-        _featureSelectedIndex.value = index
+    fun setSelectedPeriod(period: String?) {
+        _periodSelected.value = period
     }
 }

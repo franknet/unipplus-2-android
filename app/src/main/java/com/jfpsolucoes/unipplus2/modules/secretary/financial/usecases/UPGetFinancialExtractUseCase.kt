@@ -8,15 +8,16 @@ import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.repository.U
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.withContext
 
 class UPGetFinancialExtractUseCase(
     val repository: UPFinancialRepository = UPFinancialRepositoryImpl(),
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    operator fun invoke() = flow {
+    operator fun invoke(period: String?) = flow {
         val data = withContext(dispatcher) {
-            repository.getExtract()
+            repository.getExtract(period)
         }
         emit(data)
     }.toUIStateFlow()

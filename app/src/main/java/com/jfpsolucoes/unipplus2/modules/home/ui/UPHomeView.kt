@@ -82,7 +82,7 @@ fun UPHomeView(
 ) {
     activity?.requestScreenOrientation()
 
-    val systemsState by viewModel.systemsState.collectAsState()
+    val systemsState by viewModel.systemsState.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
 

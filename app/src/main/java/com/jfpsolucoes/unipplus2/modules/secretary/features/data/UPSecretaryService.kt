@@ -8,7 +8,6 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 
 interface UPSecretaryService {
-    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
     @GET(UPApiEndpoints.Secretary.FEATURES)
     suspend fun getSecretaryFeatures(): Response<UPSecretaryFeaturesResponse>
 }

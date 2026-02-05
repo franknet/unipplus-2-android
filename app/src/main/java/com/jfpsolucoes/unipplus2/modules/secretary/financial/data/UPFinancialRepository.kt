@@ -6,6 +6,6 @@ import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFin
 
 interface UPFinancialRepository {
     suspend fun getFeatures(): UPFinancialFeaturesData
-    suspend fun getExtract(): UPFinancialExtractData
+    suspend fun getExtract(period: String?): UPFinancialExtractData
     suspend fun getDebts(): UPFinancialDebtsData
 }

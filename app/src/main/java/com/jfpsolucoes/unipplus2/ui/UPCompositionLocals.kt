@@ -9,7 +9,6 @@ import androidx.window.layout.FoldingFeature
 
 val LocalNavController = compositionLocalOf<NavHostController> { error("") }
 val LocalFoldingFeatures = compositionLocalOf<List<FoldingFeature>?> { error("") }
-
 val LocalNavigationLayoutType = compositionLocalOf<NavigationSuiteType> { error("") }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)

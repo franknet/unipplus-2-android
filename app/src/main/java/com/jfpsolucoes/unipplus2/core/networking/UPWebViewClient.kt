@@ -3,6 +3,7 @@ package com.jfpsolucoes.unipplus2.core.networking
 import android.graphics.Bitmap
 import android.util.Log
 import android.webkit.CookieManager
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.net.toUri
@@ -20,6 +21,7 @@ class UPWebViewClient(
     override fun onLoadResource(view: WebView?, url: String?) {
         super.onLoadResource(view, url)
         url?.toUri()?.let {
+            // Store all cookies from web page
             if (it.host == "www.unipplus.com.br") {
                 val cookie = CookieManager.getInstance().getCookie(url)
                 Log.i(TAG, "onLoadResource: $cookie")
@@ -37,5 +39,8 @@ class UPWebViewClient(
         listener?.onLoadingFinished()
     }
 
-
+    // Enabled all urls redirections
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        return false
+    }
 }

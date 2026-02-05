@@ -1,10 +1,14 @@
 package com.jfpsolucoes.unipplus2.ui.components.web
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.webkit.CookieManager
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
-import androidx.compose.foundation.layout.fillMaxWidth
+import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,20 +19,18 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jfpsolucoes.unipplus2.R
-import com.jfpsolucoes.unipplus2.core.networking.UPWebViewClient
-import com.jfpsolucoes.unipplus2.core.networking.WebViewClientListener
-import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableState
-import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
+
 
 const val TAG = "PortalWebView"
 
@@ -38,21 +40,45 @@ const val TAG = "PortalWebView"
 fun PortalWebView(
     modifier: Modifier = Modifier,
     webSettings: PortalWebViewSettings,
+    cookieManager: CookieManager = CookieManager.getInstance(),
     onClickBack: (() -> Unit)? = null
 ) {
-    var isLoading by false.mutableState
+    val context = LocalContext.current
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
 
-    val webView = WebView(LocalContext.current).apply {
+    val webView = WebView(context).apply {
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         settings.javaScriptCanOpenWindowsAutomatically = true
         settings.setSupportZoom(true)
+        settings.builtInZoomControls = true
         settings.displayZoomControls = false
-        webViewClient = UPWebViewClient(object : WebViewClientListener {
-            override fun onLoadingStarted() { isLoading = true }
-            override fun onLoadingFinished() { isLoading = false }
-        })
-        loadUrl(webSettings.url)
+        settings.setSupportMultipleWindows(true)
+        // Client
+        webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                isLoading = true
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                isLoading = false
+            }
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                return true
+            }
+        }
+        webChromeClient = WebChromeClient()
+
+        // Sync cookies
+        cookieManager.setAcceptCookie(true)
+        cookieManager.setAcceptThirdPartyCookies(this, true)
     }
 
     Scaffold(
@@ -67,19 +93,17 @@ fun PortalWebView(
         containerColor = Color.Transparent
     ) { padding ->
         if (isLoading) {
-            UPLoadingView(
-                modifier = Modifier.padding(
-                    top = padding.calculateTopPadding(),
-                    bottom = padding.calculateBottomPadding()
-                )
-            )
+            UPLoadingView()
         } else {
             AndroidView(
-                modifier = Modifier.padding(
-                    top = padding.calculateTopPadding(),
-                    bottom = padding.calculateBottomPadding()
-                ),
-                factory = { webView }
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = padding.calculateTopPadding(),
+                        bottom = padding.calculateBottomPadding()
+                    ),
+                factory = { webView },
+                update = { webView.loadUrl(webSettings.url) }
             )
         }
     }

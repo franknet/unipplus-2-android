@@ -20,9 +20,9 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.SECRETARY_FINANCIAL_DEEPLINK
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.SECRETARY_STUDENT_RECORDS_DEEPLINK
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.UPSecretaryFeature
-import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPSecretaryStudentRecordsView
 import com.jfpsolucoes.unipplus2.modules.secretary.features.ui.dashboard.UPSecretaryDashboardView
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.UPFinancialView
+import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPSecretaryStudentRecordsView
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
@@ -44,12 +44,6 @@ fun UPSecretaryView(
 
     val featuresUIState by viewModel.featuresState.collectAsStateWithLifecycle()
 
-    if (featuresUIState.success && navigator.scaffoldValue.isSupportingPaneExpanded) {
-        LaunchedEffect(Unit) {
-            navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, featuresUIState.data?.features?.first())
-        }
-    }
-
     UPUIStateScaffold(
         modifier = modifier,
         state = featuresUIState,
@@ -62,6 +56,12 @@ fun UPSecretaryView(
             }
         },
         content = { _ , data ->
+            if (navigator.currentDestination == null && navigator.scaffoldValue.isSupportingPaneExpanded) {
+                LaunchedEffect(Unit) {
+                    navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, featuresUIState.data?.features?.first())
+                }
+            }
+
             SupportingPaneScaffold(
                 directive = navigator.scaffoldDirective.copy(
                     verticalPartitionSpacerSize = 0.dp,
@@ -87,7 +87,11 @@ fun UPSecretaryView(
                                     navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
                                     onClickBack = { coroutineScope.perform(navigator::navigateBack) }
                                 )
-                                SECRETARY_FINANCIAL_DEEPLINK -> UPFinancialView()
+                                SECRETARY_FINANCIAL_DEEPLINK -> UPFinancialView(
+                                    title = system.description.orEmpty(),
+                                    navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
+                                    onClickBack = { coroutineScope.perform(navigator::navigateBack) }
+                                )
                                 else -> {}
                             }
                         }

@@ -19,8 +19,8 @@ class UPFinancialRepositoryImpl(
         return response.body() ?: throw Exception("Dados não encontrados")
     }
 
-    override suspend fun getExtract(): UPFinancialExtractData {
-        val response = service.getExtract()
+    override suspend fun getExtract(period: String?): UPFinancialExtractData {
+        val response = service.getExtract(period)
         if (!response.isSuccessful) { throw Exception(response.errorBody()?.string()) }
         return response.body() ?: throw Exception("Dados não encontrados")
     }
