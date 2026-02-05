@@ -24,14 +24,21 @@ data class UPStudentRecordsDiscipline(
     val items: List<UPStudentRecordsDisciplineItem>?,
     val name: String?,
     val obs: String?,
-    val type: String?
+    val type: String?,
+    val status: UPStudentRecordsDisciplineStatus?
 ): Parcelable
 
 @Parcelize
 data class UPStudentRecordsDisciplineItem(
     val code: String?,
-    val grade: String?,
+    val score: String?,
     val label: String?,
-    val maxGrade: String?,
-    val releaseDate: String?
+    val percentage: Number?,
+    val color: Long?
+): Parcelable
+
+@Parcelize
+data class UPStudentRecordsDisciplineStatus(
+    val message: String?,
+    val color: Long?
 ): Parcelable

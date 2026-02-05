@@ -5,8 +5,10 @@ import android.graphics.Bitmap
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +51,21 @@ fun PortalWebView(
     }
 
     val webView = WebView(context).apply {
+        settings.allowFileAccess = true
+        settings.allowContentAccess = true
+        settings.cacheMode = WebSettings.LOAD_DEFAULT
+
+        // SPA support
+        settings.useWideViewPort = true
+        settings.loadWithOverviewMode = true
+
+        // Important for some legacy systems
+        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+
+        // Prevent desktop blocking
+        settings.userAgentString =
+            WebSettings.getDefaultUserAgent(context)
+
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         settings.javaScriptCanOpenWindowsAutomatically = true
@@ -57,28 +74,33 @@ fun PortalWebView(
         settings.displayZoomControls = false
         settings.setSupportMultipleWindows(true)
         // Client
+        webChromeClient = WebChromeClient()
         webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                super.onPageStarted(view, url, favicon)
                 isLoading = true
             }
-
             override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
                 isLoading = false
             }
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                return true
+                return false
             }
         }
-        webChromeClient = WebChromeClient()
+
+        WebView.setWebContentsDebuggingEnabled(true)
 
         // Sync cookies
         cookieManager.setAcceptCookie(true)
         cookieManager.setAcceptThirdPartyCookies(this, true)
+
+        loadUrl(webSettings.url)
+    }
+
+    BackHandler(onClickBack != null) {
+        onClickBack?.invoke()
     }
 
     Scaffold(
@@ -102,8 +124,7 @@ fun PortalWebView(
                         top = padding.calculateTopPadding(),
                         bottom = padding.calculateBottomPadding()
                     ),
-                factory = { webView },
-                update = { webView.loadUrl(webSettings.url) }
+                factory = { webView }
             )
         }
     }

@@ -3,6 +3,7 @@ package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialExtractData
+import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPayment
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.usecases.UPGetFinancialExtractUseCase
 import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +22,7 @@ class UPFinancialExtractViewModel(
     val getFinancialExtractUseCase: UPGetFinancialExtractUseCase = UPGetFinancialExtractUseCase(),
 ): ViewModel() {
     private val _extractUIState = MutableSharedFlow<UIState<UPFinancialExtractData>>()
-
+    private val _selectedPayment = MutableSharedFlow<UPFinancialPayment>()
     val extractUIState = _extractUIState
         .stateIn(
             scope = viewModelScope,
@@ -29,9 +30,20 @@ class UPFinancialExtractViewModel(
             initialValue = UIState.UIStateLoading()
         )
 
+    val selectedPayment = _selectedPayment
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = null
+        )
+
     fun fetch(period: String?) = viewModelScope.launch {
         getFinancialExtractUseCase(period).collect {
             _extractUIState.emit(it)
         }
+    }
+
+    fun setSelectedPayment(payment: UPFinancialPayment) = viewModelScope.launch {
+        _selectedPayment.emit(payment)
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.core.compose.ForEach
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPayment
@@ -34,7 +35,6 @@ fun UPFinancialPaymentBottonSheetView(
             text = "Meios de Pagamento",
             style = MaterialTheme.typography.titleMedium
         )
-
         VerticalSpacer()
 
         Row(
@@ -54,22 +54,21 @@ fun UPFinancialPaymentBottonSheetView(
                         onClick = { onSelectMethod(paymentMethod) }
                     ) {
                         Image(
-                            modifier = Modifier
-                                .padding(12.dp),
+                            modifier = Modifier.padding(12.dp),
                             svgString = paymentMethod.iconSVG.orEmpty()
                         )
                     }
-
+                    VerticalSpacer(space = 4.dp)
                     Text(
                         text = paymentMethod.label.orEmpty(),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            textAlign = TextAlign.Center
+                        )
                     )
                 }
             }
-
             HorizontalSpacer()
         }
-
         VerticalSpacer()
     }
 }

@@ -59,6 +59,7 @@ fun UPFinancialPaymentRow(
     modifier: Modifier = Modifier,
     payment: UPFinancialPayment,
     shape: Shape = RectangleShape,
+    action: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -149,6 +150,12 @@ fun UPFinancialPaymentRow(
                     text = payment.obs.orEmpty(),
                     style = MaterialTheme.typography.bodySmall
                 )
+            }
+
+            //TODO: Add actions
+            action?.let {
+                HorizontalSpacer(4.dp)
+                it.invoke()
             }
         }
     }

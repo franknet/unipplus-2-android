@@ -1,13 +1,18 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,11 +20,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.compose.LazyForEachColumn
+import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPaymentMethodType
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialPaymentBottonSheetView
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialPaymentRow
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
@@ -63,15 +73,28 @@ fun UPFinancialDebtsView(
             }
         },
         content = { _, data ->
-            LazyColumn {
-                // Top spacing
-                item {
-                    VerticalSpacer()
+            if (data.debts.isNullOrEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Não há cobranças!",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
+                return@UPUIStateScaffold
+            }
 
-                items(items = data.debts.orEmpty()) { debtPayment ->
-                    val topCorderRadius = if (data.debts?.first() == debtPayment) 16.dp else 0.dp
-                    val bottomCorderRadius = if (data.debts?.last() == debtPayment) 16.dp else 0.dp
+            LazyForEachColumn(
+                showDivider = true,
+                items = data.debts,
+                header = { VerticalSpacer() },
+                footer = { VerticalSpacer() }
+            ) { debtPayment ->
+                item {
+                    val topCorderRadius = if (data.debts.first() == debtPayment) 16.dp else 0.dp
+                    val bottomCorderRadius = if (data.debts.last() == debtPayment) 16.dp else 0.dp
 
                     UPFinancialPaymentRow(
                         modifier = Modifier.fillMaxWidth(),
@@ -81,20 +104,21 @@ fun UPFinancialDebtsView(
                             topEnd = topCorderRadius,
                             bottomStart = bottomCorderRadius,
                             bottomEnd = bottomCorderRadius
-                        )
+                        ),
+                        action = {
+                            if (!debtPayment.paymentMethods.isNullOrEmpty()) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_outline_more_vert_24),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     ) {
-                        viewModel.setSelectedPayment(debtPayment)
-//                        showBottomSheet = true //TODO: Future implementation
+                        debtPayment.paymentMethods?.let {
+                            viewModel.setSelectedPayment(debtPayment)
+                            showBottomSheet = true
+                        }
                     }
-
-                    if (data.debts?.last() != debtPayment) {
-                        HorizontalDivider()
-                    }
-                }
-
-                // Bottom spacing
-                item {
-                    VerticalSpacer()
                 }
             }
         }
@@ -110,11 +134,21 @@ fun UPFinancialDebtsView(
             UPFinancialPaymentBottonSheetView(
                 payment = paymentSelected
             ) { paymentMethod ->
-                val portalSettings = PortalWebViewSettings(
-                    url = paymentMethod.deepLink.orEmpty()
-                )
-                showBottomSheet = false
-                navController?.navigate(portalSettings)
+                if (paymentMethod.type == null) {
+                    return@UPFinancialPaymentBottonSheetView
+                }
+                when (paymentMethod.type) {
+                    UPFinancialPaymentMethodType.PDF -> {
+
+                    }
+                    UPFinancialPaymentMethodType.WEB -> {
+                        val portalSettings = PortalWebViewSettings(
+                            url = paymentMethod.deepLink.orEmpty()
+                        )
+                        showBottomSheet = false
+                        navController?.navigate(portalSettings)
+                    }
+                }
             }
         }
     }
