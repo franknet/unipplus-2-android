@@ -2,13 +2,22 @@ package com.jfpsolucoes.unipplus2.core.utils.extensions
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.jfpsolucoes.unipplus2.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -44,4 +53,39 @@ fun ComponentActivity.getFoldingFeatures(callback: (List<FoldingFeature>?) -> Un
             }
         }
     }
+}
+
+fun Activity.showInterstitialAd(enabled: Boolean, complete: ((error: String?) -> Unit)? = null) {
+    if (!enabled) {
+        complete?.invoke(null)
+        return
+    }
+    val request = AdRequest.Builder().build()
+    InterstitialAd.load(
+        this,
+        resources.getString(R.string.admob_interstitial_id),
+        request,
+        object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                super.onAdFailedToLoad(p0)
+                complete?.invoke(p0.message)
+                Log.e("InterstitialAd", p0.message)
+            }
+            override fun onAdLoaded(ad: InterstitialAd) {
+                super.onAdLoaded(ad)
+                ad.show(this@showInterstitialAd)
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        super.onAdDismissedFullScreenContent()
+                        complete?.invoke(null)
+                    }
+                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                        super.onAdFailedToShowFullScreenContent(p0)
+                        complete?.invoke(p0.message)
+                        Log.e("InterstitialAd", p0.message)
+                    }
+                }
+            }
+        }
+    )
 }

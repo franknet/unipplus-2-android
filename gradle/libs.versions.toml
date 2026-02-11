@@ -115,6 +115,7 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 firebase-remoteconfig = { group = "com.google.firebase", name = "firebase-config" }
 firebase-inappmessaging-display = { group = "com.google.firebase", name = "firebase-inappmessaging-display" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database" }
 
 # Playstore
 playstore-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "playStoreAppUpdateKtx" }

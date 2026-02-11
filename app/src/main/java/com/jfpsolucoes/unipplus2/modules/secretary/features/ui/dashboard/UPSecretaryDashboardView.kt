@@ -40,7 +40,7 @@ fun UPSecretaryDashboardView(
 ) {
     val activity = activity
     val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
-    val appReviewEnabled = viewModel.appReviewEnabled
+    val appReviewEnabled by viewModel.appReviewEnabled.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -56,7 +56,7 @@ fun UPSecretaryDashboardView(
             item {
                 UPStudentInfoCard(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    name = userProfile.user?.name.value,
+                    name = userProfile.name.value,
                     course = userProfile.academic?.course?.name.value,
                     colors = secondCardColors
                 )

@@ -40,7 +40,7 @@ import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 fun SignInCredentials(
     modifier: Modifier = Modifier,
     settings: UPSettingsEntity,
-    userProfile: UPUserProfileEntity,
+    userProfile: UPUserProfileEntity?,
     onLoading: Boolean = false,
     raText: String,
     onEditRa: (String) -> Unit,
@@ -64,13 +64,14 @@ fun SignInCredentials(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (userProfile.user != null) {
+        if (userProfile != null) {
             UPStudentInfoCard(
-                name = userProfile.user.name.value,
+                name = userProfile.name.value,
                 course = userProfile.academic?.course?.name.value
             )
             if (showPasswordField) {
                 PasswordTextField(
+                    enabled = !onLoading,
                     text = passwordText,
                     onEdit = onEditPassword
                 )
@@ -82,6 +83,7 @@ fun SignInCredentials(
             )
 
             PasswordTextField(
+                enabled = !onLoading,
                 text = passwordText,
                 onEdit = onEditPassword
             )
@@ -96,7 +98,11 @@ fun SignInCredentials(
         ) {
             Text(stringResource(R.string.common_auto_sign_in_text))
 
-            Switch(checked = settings.autoSignIn, onCheckedChange = onAutoSignInChange)
+            Switch(
+                enabled = !onLoading,
+                checked = settings.autoSignIn,
+                onCheckedChange = onAutoSignInChange
+            )
         }
 
         LoadingButton(
@@ -126,6 +132,7 @@ private fun RaTextFieldPlaceHolder() {
 
 @Composable
 private fun PasswordTextField(
+    enabled: Boolean = true,
     text: String,
     onEdit: (String) -> Unit
 ) {
@@ -133,6 +140,7 @@ private fun PasswordTextField(
     val setPasswordVisibility: (Boolean) -> Unit = { isPasswordVisible = it }
     TextField(
         modifier = Modifier.fillMaxWidth(),
+        enabled = enabled,
         placeholder = {
             Text(text = stringResource(id = R.string.sign_in_password_place_holder))
         },

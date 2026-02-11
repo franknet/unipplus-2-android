@@ -56,7 +56,7 @@ private fun android.webkit.CookieManager.add(uri: URI?, cookie: HttpCookie?) {
         }
         if (it.name == "SESSION") {
             Log.i(WEB_VIEW_TAG, "add: $it")
-            setCookie("https://gfa.unip.br/aluno.html", "$it; Path=/aluno; HttpOnly")
+            setCookie("https://gfa.unip.br", "$it; Path=/aluno/; HttpOnly")
         }
         // Store cookie immediately
         flush()

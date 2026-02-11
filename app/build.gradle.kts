@@ -68,6 +68,10 @@ android {
             buildConfigField("String", API_SECRETARY_FIELD, REMOTE_API_SECRETARY)
         }
         debug {
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             buildConfigField("String", BASE_URL_FIELD, REMOTE_BASE_URL)
             buildConfigField("String", API_AUTH_FIELD, REMOTE_API_AUTH)
             buildConfigField("String", API_SECRETARY_FIELD, REMOTE_API_SECRETARY)
@@ -167,6 +171,7 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.remoteconfig)
+    implementation(libs.firebase.database)
     implementation(libs.firebase.inappmessaging.display)
 
     // Play Store

@@ -9,6 +9,7 @@ import com.jfpsolucoes.unipplus2.modules.secretary.financial.data.UPFinancialSer
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialDebtsData
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialExtractData
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialFeaturesData
+import okhttp3.ResponseBody
 
 class UPFinancialRepositoryImpl(
     val service: UPFinancialService = HttpService.create(UPFinancialService::class.java)
@@ -29,5 +30,12 @@ class UPFinancialRepositoryImpl(
         val response = service.getDebts()
         if (!response.isSuccessful) { throw Exception(response.errorBody()?.string()) }
         return response.body() ?: throw Exception("Dados não encontrados")
+    }
+
+    override suspend fun download(path: String): ResponseBody {
+        val response = service.download(path)
+        if (!response.isSuccessful) { throw Exception(response.errorBody()?.string()) }
+        return response.body() ?: throw Exception("Dados não encontrados")
+
     }
 }

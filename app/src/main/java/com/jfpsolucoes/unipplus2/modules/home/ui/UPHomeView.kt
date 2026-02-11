@@ -21,6 +21,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
@@ -40,6 +42,7 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
 import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
+import com.jfpsolucoes.unipplus2.core.utils.extensions.showInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.stateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
@@ -78,8 +81,7 @@ fun UPHomeView(
     navController: NavHostController? = LocalNavController.current,
     navigationLayoutType: NavigationSuiteType = calculateNavigationTypeByWindowClass(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    activity: AppCompatActivity? = LocalContext.current as AppCompatActivity,
-    adsEnabled: Boolean = true,
+    activity: AppCompatActivity? = LocalContext.current as AppCompatActivity
 ) {
     activity?.requestScreenOrientation()
 
@@ -91,11 +93,16 @@ fun UPHomeView(
 
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
 
-    if (adsEnabled) { ShowInterstitialAd() }
+    val isAdEnabled by UPAdManager.adsEnabled.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isAdEnabled) {
+        activity?.showInterstitialAd(isAdEnabled)
+    }
 
     BackHandler {
-        viewModel.onSignOut()
-        navController?.popBackStack()
+        viewModel.onSignOut().invokeOnCompletion {
+            navController?.popBackStack()
+        }
     }
 
     UPUIStateScaffold(
@@ -127,7 +134,7 @@ fun UPHomeView(
             }
         },
         bottomBar = {
-            if (adsEnabled) {
+            if (isAdEnabled) {
                 ADBanner(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -149,8 +156,9 @@ fun UPHomeView(
                 selectedSystem = selectedSystem,
                 onSelectSystem = viewModel::onSelectedSystem,
                 onClickExit = {
-                    viewModel.onSignOut()
-                    navController?.popBackStack()
+                    viewModel.onSignOut().invokeOnCompletion {
+                        navController?.popBackStack()
+                    }
                 },
                 onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
             ) {
@@ -215,8 +223,7 @@ private fun UPHomeViewPreview() {
             ),
             navController = null,
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-            activity = null,
-            adsEnabled = false
+            activity = null
         )
     }
 }

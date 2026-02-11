@@ -26,9 +26,6 @@ val activity: AppCompatActivity
 fun ShowInterstitialAd(
     onAdDismissed: () -> Unit = {}
 ) {
-    val enabled = RemoteConfigManager.getBoolean(RemoteConfigKeys.AD_ENABLED)
-    if (!enabled) return
-
     var hasShowed by rememberSaveable { mutableStateOf(false) }
     if (hasShowed) return
 

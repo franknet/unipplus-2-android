@@ -20,7 +20,7 @@ interface UPSignInViewModel {
 
     val signInState: StateFlow<UIState<UPUserProfileEntity>>
 
-    val userProfileState: StateFlow<UIState<UPUserProfileEntity>>
+    val userProfileState: StateFlow<UIState<UPUserProfileEntity?>>
 
     val rgText: StateFlow<String>
 

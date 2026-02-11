@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
@@ -27,17 +30,12 @@ import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        UPAppServicesManager.initialize(this@MainActivity)
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        installSplashScreen()
-
         enableEdgeToEdge()
-
-        lifecycleScope.launch {
-            UPAppServicesManager.initialize(this@MainActivity)
-        }
 
         setContent {
             UNIPPlus2Theme {

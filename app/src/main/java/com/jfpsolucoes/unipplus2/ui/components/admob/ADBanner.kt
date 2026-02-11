@@ -12,16 +12,11 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.jfpsolucoes.unipplus2.R
-import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigKeys
-import com.jfpsolucoes.unipplus2.core.remoteconfig.RemoteConfigManager
 
 @Composable
 fun ADBanner(
     modifier: Modifier = Modifier
 ) {
-    val enabled = RemoteConfigManager.getBoolean(RemoteConfigKeys.AD_ENABLED)
-    if (!enabled) return
-
     if (LocalInspectionMode.current) return
 
     val adUnitId = stringResource(R.string.admob_banner_id)

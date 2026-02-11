@@ -99,8 +99,10 @@ fun PortalWebView(
         loadUrl(webSettings.url)
     }
 
-    BackHandler(onClickBack != null) {
-        onClickBack?.invoke()
+    BackHandler {
+        if (!webView.canGoBack()) {
+            onClickBack?.invoke()
+        }
     }
 
     Scaffold(

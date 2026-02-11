@@ -62,7 +62,5 @@ class UPHomeViewModelImpl(
         _systemSelected.value = system
     }
 
-    override fun onSignOut() = viewModelScope.launch {
-        updateSettings(_settings.value.copy(autoSignIn = false))
-    }
+    override fun onSignOut() = updateSettings(_settings.value.copy(autoSignIn = false))
 }

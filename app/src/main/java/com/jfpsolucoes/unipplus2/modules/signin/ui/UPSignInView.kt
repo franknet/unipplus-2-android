@@ -10,20 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices.TABLET
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,7 +27,6 @@ import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowSizeClass
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
 import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
-import com.jfpsolucoes.unipplus2.core.database.entities.User
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ScreenOrientation
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isHeightMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
@@ -76,12 +70,23 @@ fun UPSignInView(
     }
 
     if (signInUIState.failure) {
+        if (!showPasswordField) {
+            viewModel.onChangeAutoSignIn(false)
+        }
         viewModel.showSnackbar(signInUIState.error?.message ?: "")
     }
 
-    UPUIStateScaffold(
-        state = userProfileState,
-        modifier = modifier
+    LaunchedEffect(settings.autoSignIn) {
+        if (settings.autoSignIn) {
+            viewModel.performSignIn(null)
+        }
+        if (settings.biometricEnabled) {
+            viewModel.performSignIn(activity)
+        }
+    }
+
+    Column(
+        modifier = Modifier
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
@@ -91,64 +96,24 @@ fun UPSignInView(
                 )
             )
             .safeDrawingPadding(),
-        snackbarHost = {
-            SnackbarHost(viewModel.snackbarState) {
-                Snackbar(it)
-            }
-        },
-        loadingContent = {
-            UPLoadingView()
-        },
-        errorContent = { padding, error ->
-            UPErrorView(error = error)
-        },
-        contentColor = White
-    ) { _, userProfile ->
-        LaunchedEffect(settings.autoSignIn) {
-            if (settings.autoSignIn) {
-                viewModel.performSignIn(null)
-            }
-            if (settings.biometricEnabled) {
-                viewModel.performSignIn(activity)
-            }
-        }
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SignInLogo(modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth())
 
-        Column(Modifier.safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-            SignInLogo(modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth())
-
-            SignInCredentials(
-                modifier = Modifier.weight(1f),
-                userProfile = userProfile,
-                settings = settings,
-                onLoading = signInUIState is UIState.UIStateLoading,
-                raText = rgText,
-                onEditRa = viewModel::onEditRg,
-                passwordText = passwordText,
-                showPasswordField = showPasswordField,
-                onEditPassword = viewModel::onEditPassword,
-                onAutoSignInChange = viewModel::onChangeAutoSignIn,
-                onClickSignIn = { viewModel.performSignIn(activity) }
-            )
-        }
-    }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showSystemUi = true, device = TABLET)
-@Composable
-private fun UPSignInViewPreview() {
-    UNIPPlus2Theme {
-        UPSignInView(
-            viewModel = UPSignInViewModelPreviewImpl(
-                userProfileState = UIState.UIStateSuccess(UPUserProfileEntity(
-                    user = User(rg = "000000", id = "000000", name = "Teste")
-                )).stateFlow,
-                signInState = UIState.UIStateLoading<UPUserProfileEntity>().stateFlow,
-            ),
-            navController = null,
-            activity = null
+        SignInCredentials(
+            modifier = Modifier.weight(1f),
+            userProfile = userProfileState.data,
+            settings = settings,
+            onLoading = signInUIState is UIState.UIStateLoading,
+            raText = rgText,
+            onEditRa = viewModel::onEditRg,
+            passwordText = passwordText,
+            showPasswordField = showPasswordField,
+            onEditPassword = viewModel::onEditPassword,
+            onAutoSignInChange = viewModel::onChangeAutoSignIn,
+            onClickSignIn = { viewModel.performSignIn(activity) }
         )
     }
 }

@@ -2,19 +2,18 @@ package com.jfpsolucoes.unipplus2.modules.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
-import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
+import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.ui.UIState
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.filterNotNull
 
 class UPProfileViewModel(
-    dataBase: EncryptedDataBase = EncryptedDataBase.shared
+    dataBase: UPFirebaseDatabase = UPFirebaseDatabase
 ): ViewModel() {
-    private val _userProfileState = dataBase.userProfileDao().get()
-        .map { it ?: UPUserProfileEntity() }
+    private val _userProfileState = dataBase.userProfile
+        .filterNotNull()
         .toUIStateFlow()
         .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
 

@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.core.store
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -8,7 +9,7 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 
 object UPAppStoreManager {
-    fun checkUpdate(context: AppCompatActivity) {
+    fun checkUpdate(context: Activity) {
         val manager = AppUpdateManagerFactory.create(context)
         val appInfoTask = manager.appUpdateInfo
         appInfoTask.addOnSuccessListener { appUpdateInfo ->

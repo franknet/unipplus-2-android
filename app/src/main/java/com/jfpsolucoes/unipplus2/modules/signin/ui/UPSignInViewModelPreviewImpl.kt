@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class UPSignInViewModelPreviewImpl(
     override val signInState: StateFlow<UIState<UPUserProfileEntity>> = UIState.UIStateNone<UPUserProfileEntity>().stateFlow,
-    override val userProfileState: StateFlow<UIState<UPUserProfileEntity>> = UIState.UIStateNone<UPUserProfileEntity>().stateFlow
+    override val userProfileState: StateFlow<UIState<UPUserProfileEntity?>> = UIState.UIStateNone<UPUserProfileEntity?>().stateFlow
 ): UPSignInViewModel, ViewModel() {
 
     override val settings = UPSettingsEntity().stateFlow

@@ -100,7 +100,7 @@ fun UPSettingsView(
                 ) {
                     // Student info
                     item {
-                        UPSettingsProfileItemView(userProfile.user?.name.value) {
+                        UPSettingsProfileItemView(userProfile.name.value) {
                             coroutineScope.launch {
                                 navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
                             }
