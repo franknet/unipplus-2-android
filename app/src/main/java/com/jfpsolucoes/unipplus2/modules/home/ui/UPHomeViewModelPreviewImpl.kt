@@ -16,6 +16,9 @@ class UPHomeViewModelPreviewImpl(
     override val systemSelected: StateFlow<UPSystem?> = null.stateFlow,
     override val biometricDialogEnabled: StateFlow<Boolean> = false.stateFlow
 ) : UPHomeViewModel, ViewModel() {
+    override val shouldSignOut: StateFlow<Boolean>
+        get() = TODO("Not yet implemented")
+
     override fun getSystems() {
         TODO("Not yet implemented")
     }
@@ -35,5 +38,4 @@ class UPHomeViewModelPreviewImpl(
     override fun onSignOut(): Job {
         TODO("Not yet implemented")
     }
-
 }

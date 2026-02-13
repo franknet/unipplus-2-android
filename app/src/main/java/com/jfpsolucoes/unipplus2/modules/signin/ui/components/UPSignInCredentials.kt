@@ -39,15 +39,16 @@ import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 @Composable
 fun SignInCredentials(
     modifier: Modifier = Modifier,
-    settings: UPSettingsEntity,
-    userProfile: UPUserProfileEntity?,
-    onLoading: Boolean = false,
+    userName: String? = null,
+    userCourse: String? = null,
     raText: String,
     onEditRa: (String) -> Unit,
     passwordText: String,
-    showPasswordField: Boolean = true,
     onEditPassword: (String) -> Unit,
+    showPasswordField: Boolean = true,
+    autoSignChecked: Boolean = true,
     onAutoSignInChange: (Boolean) -> Unit = {},
+    onLoading: Boolean = false,
     onClickSignIn: () -> Unit,
 ) = Box(
     modifier,
@@ -64,24 +65,19 @@ fun SignInCredentials(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (userProfile != null) {
+        if (userName != null && userCourse != null) {
             UPStudentInfoCard(
-                name = userProfile.name.value,
-                course = userProfile.academic?.course?.name.value
+                name = userName,
+                course = userCourse
             )
-            if (showPasswordField) {
-                PasswordTextField(
-                    enabled = !onLoading,
-                    text = passwordText,
-                    onEdit = onEditPassword
-                )
-            }
         } else {
             RaTextField(
                 text = raText,
                 onEdit = onEditRa
             )
+        }
 
+        if (showPasswordField) {
             PasswordTextField(
                 enabled = !onLoading,
                 text = passwordText,
@@ -100,7 +96,7 @@ fun SignInCredentials(
 
             Switch(
                 enabled = !onLoading,
-                checked = settings.autoSignIn,
+                checked = autoSignChecked,
                 onCheckedChange = onAutoSignInChange
             )
         }
@@ -191,8 +187,6 @@ private fun SignInBottomSheetViewPreview() {
     UNIPPlus2Theme {
         SignInCredentials(
             modifier = Modifier.fillMaxWidth(),
-            userProfile = UPUserProfileEntity(),
-            settings = UPSettingsEntity(),
             onLoading = false,
             raText = "",
             onEditRa = {},

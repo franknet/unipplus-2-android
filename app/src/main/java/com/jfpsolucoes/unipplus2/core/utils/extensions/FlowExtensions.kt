@@ -49,6 +49,16 @@ fun <T> Flow<T>.collectAsMutableStateFlow(scope: CoroutineScope, initialValue: T
     return mutableFlow
 }
 
+fun <T> Flow<T>.collectAsMutableSharedFlow(scope: CoroutineScope): MutableSharedFlow<T> {
+    val mutableFlow = MutableSharedFlow<T>()
+    scope.launch {
+        collect {
+            mutableFlow.emit(it)
+        }
+    }
+    return mutableFlow
+}
+
 fun <T> Flow<T>.debugPrint(tag: String): Flow<T> {
     if (!BuildConfig.DEBUG) return this
 

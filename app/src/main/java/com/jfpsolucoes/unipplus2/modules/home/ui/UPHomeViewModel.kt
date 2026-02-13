@@ -14,6 +14,8 @@ interface UPHomeViewModel {
 
     val biometricDialogEnabled: StateFlow<Boolean>
 
+    val shouldSignOut: StateFlow<Boolean>
+
     fun onSignOut(): Job
 
     fun getSystems()

@@ -95,14 +95,18 @@ fun UPHomeView(
 
     val isAdEnabled by UPAdManager.adsEnabled.collectAsStateWithLifecycle()
 
+    val shouldSignOut by viewModel.shouldSignOut.collectAsStateWithLifecycle()
+
+    if (shouldSignOut) {
+        navController?.popBackStack()
+    }
+
     LaunchedEffect(isAdEnabled) {
         activity?.showInterstitialAd(isAdEnabled)
     }
 
     BackHandler {
-        viewModel.onSignOut().invokeOnCompletion {
-            navController?.popBackStack()
-        }
+        viewModel.onSignOut()
     }
 
     UPUIStateScaffold(
@@ -156,9 +160,7 @@ fun UPHomeView(
                 selectedSystem = selectedSystem,
                 onSelectSystem = viewModel::onSelectedSystem,
                 onClickExit = {
-                    viewModel.onSignOut().invokeOnCompletion {
-                        navController?.popBackStack()
-                    }
+                    viewModel.onSignOut()
                 },
                 onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
             ) {

@@ -49,7 +49,6 @@ object RemoteConfigManager {
                 TODO("Not yet implemented")
             }
         })
-
     }
 
     fun getString(key: String): String = Firebase.remoteConfig.getString(key)
