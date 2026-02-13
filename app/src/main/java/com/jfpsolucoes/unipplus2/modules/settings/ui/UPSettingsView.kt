@@ -111,9 +111,7 @@ fun UPSettingsView(
                         item {
                             UPSettingsBiometricItemView(
                                 biometricChecked = settings.biometricEnabled,
-                                onBiometricCheckedChange = {
-                                    viewModel.updateBiometricSettings(it, activity)
-                                },
+                                onBiometricCheckedChange = viewModel::updateBiometricSettings,
                                 autoSignChecked = settings.autoSignIn,
                                 onAutoSignCheckedChange = viewModel::onAutoSignCheckedChange
                             )

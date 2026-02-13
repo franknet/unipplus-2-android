@@ -16,13 +16,13 @@ interface UPHomeViewModel {
 
     val shouldSignOut: StateFlow<Boolean>
 
-    fun onSignOut(): Job
+    val adsEnabled: StateFlow<Boolean>
+
+    suspend fun onSignOut()
 
     fun getSystems()
 
     fun updateSettings(settings: UPSettingsEntity): Job
-
-    fun onClickOKBiometricDialog(): Job
 
     fun onSelectedSystem(system: UPSystem)
 }

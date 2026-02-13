@@ -22,7 +22,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -34,8 +33,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
-import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
-import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
@@ -54,6 +51,7 @@ import com.jfpsolucoes.unipplus2.modules.secretary.features.ui.UPSecretaryView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
+import com.jfpsolucoes.unipplus2.ui.LocalSignInState
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
@@ -63,6 +61,7 @@ import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebView
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 private fun calculateNavigationTypeByWindowClass(): NavigationSuiteType {
@@ -85,19 +84,20 @@ fun UPHomeView(
 ) {
     activity?.requestScreenOrientation()
 
-    val systemsState by viewModel.systemsState.collectAsStateWithLifecycle()
-
     val coroutineScope = rememberCoroutineScope()
+
+    val systemsState by viewModel.systemsState.collectAsStateWithLifecycle()
 
     val selectedSystem by viewModel.systemSelected.collectAsStateWithLifecycle()
 
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
 
-    val isAdEnabled by UPAdManager.adsEnabled.collectAsStateWithLifecycle()
+    val isAdEnabled by viewModel.adsEnabled.collectAsStateWithLifecycle()
 
     val shouldSignOut by viewModel.shouldSignOut.collectAsStateWithLifecycle()
 
-    if (shouldSignOut) {
+    LaunchedEffect(shouldSignOut) {
+        if (!shouldSignOut) { return@LaunchedEffect }
         navController?.popBackStack()
     }
 
@@ -106,7 +106,7 @@ fun UPHomeView(
     }
 
     BackHandler {
-        viewModel.onSignOut()
+        coroutineScope.perform(viewModel::onSignOut)
     }
 
     UPUIStateScaffold(
@@ -160,7 +160,7 @@ fun UPHomeView(
                 selectedSystem = selectedSystem,
                 onSelectSystem = viewModel::onSelectedSystem,
                 onClickExit = {
-                    viewModel.onSignOut()
+                    coroutineScope.perform(viewModel::onSignOut)
                 },
                 onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
             ) {

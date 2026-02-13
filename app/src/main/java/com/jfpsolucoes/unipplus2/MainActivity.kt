@@ -6,28 +6,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.jfpsolucoes.unipplus2.core.utils.UPAppServicesManager
 import com.jfpsolucoes.unipplus2.modules.signin.ui.signInNavigation
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
-import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundHigh
-import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
+import com.jfpsolucoes.unipplus2.ui.LocalSignInState
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -15,6 +15,7 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -32,7 +33,7 @@ class UPSettingsViewModel(
         .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
 
     private val _settings = database.settingsDao().get()
-        .map { it ?: UPSettingsEntity() }
+        .filterNotNull()
         .collectAsMutableStateFlow(viewModelScope, UPSettingsEntity())
 
     private val _biometricAvailable = biometricManager.isBiometricAvailable.mutableStateFlow
@@ -45,6 +46,8 @@ class UPSettingsViewModel(
 
     val userProfile = _userProfile.asStateFlow()
 
+    val requestBiometricAuthentication = MutableStateFlow(false)
+
     fun requestBiometricAuthentication(context: AppCompatActivity) {
         biometricManager.authenticate(
             context,
@@ -56,15 +59,11 @@ class UPSettingsViewModel(
         )
     }
 
-    fun updateBiometricSettings(enabled: Boolean, context: AppCompatActivity? = null) = viewModelScope.launch {
-        if (enabled && context != null) {
-            requestBiometricAuthentication(context)
-        } else {
-            database.settingsDao().insert(_settings.value.copy(
-                autoSignIn = false,
-                biometricEnabled = enabled
-            ))
-        }
+    fun updateBiometricSettings(enabled: Boolean) = viewModelScope.launch {
+        database.settingsDao().insert(_settings.value.copy(
+            autoSignIn = false,
+            biometricEnabled = enabled
+        ))
     }
 
     fun showSnackbar(message: String) = viewModelScope.launch {

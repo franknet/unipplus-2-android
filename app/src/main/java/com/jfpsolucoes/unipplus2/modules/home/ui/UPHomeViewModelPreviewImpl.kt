@@ -19,6 +19,9 @@ class UPHomeViewModelPreviewImpl(
     override val shouldSignOut: StateFlow<Boolean>
         get() = TODO("Not yet implemented")
 
+    override val adsEnabled: StateFlow<Boolean>
+        get() = TODO("Not yet implemented")
+
     override fun getSystems() {
         TODO("Not yet implemented")
     }
@@ -27,15 +30,11 @@ class UPHomeViewModelPreviewImpl(
         TODO("Not yet implemented")
     }
 
-    override fun onClickOKBiometricDialog() = viewModelScope.launch {
-        TODO("Not yet implemented")
-    }
-
     override fun onSelectedSystem(system: UPSystem) {
         TODO("Not yet implemented")
     }
 
-    override fun onSignOut(): Job {
+    override suspend fun onSignOut() {
         TODO("Not yet implemented")
     }
 }
