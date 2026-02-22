@@ -4,10 +4,15 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeGesturesPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -85,30 +92,40 @@ fun UPSignInView(
             SnackbarHost(snackbarState)
         }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        BoxWithConstraints(
+            modifier = Modifier.safeGesturesPadding()
         ) {
-            SignInLogo(modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth())
+            val itemHigh = (maxHeight / 2)
 
-            SignInCredentials(
-                modifier = Modifier.weight(1f),
-                userName = userProfile?.name,
-                userCourse = userProfile?.academic?.course?.name,
-                onLoading = signInUIState.loading,
-                raText = rgText,
-                onEditRa = viewModel::updateRg,
-                passwordText = passwordText,
-                onEditPassword = viewModel::updatePassword,
-                showPasswordField = showPasswordField,
-                autoSignChecked = settings.autoSignIn,
-                onAutoSignInChange = {
-                    viewModel.updateSettings(settings.copy(autoSignIn = it))
-                },
-                onClickSignIn = viewModel::performSignIn
-            )
+            LazyColumn (
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    SignInLogo(modifier = Modifier
+                        .height(itemHigh)
+                        .fillMaxWidth())
+                }
+
+                item {
+                    SignInCredentials(
+                        modifier = Modifier.height(itemHigh),
+                        userName = userProfile?.name,
+                        userCourse = userProfile?.academic?.course?.name,
+                        onLoading = signInUIState.loading,
+                        raText = rgText,
+                        onEditRa = viewModel::updateRg,
+                        passwordText = passwordText,
+                        onEditPassword = viewModel::updatePassword,
+                        showPasswordField = showPasswordField,
+                        autoSignChecked = settings.autoSignIn,
+                        onAutoSignInChange = {
+                            viewModel.updateSettings(settings.copy(autoSignIn = it))
+                        },
+                        onClickSignIn = viewModel::performSignIn
+                    )
+                }
+            }
         }
     }
 }

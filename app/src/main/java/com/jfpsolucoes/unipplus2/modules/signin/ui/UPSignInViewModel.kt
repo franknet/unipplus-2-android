@@ -113,6 +113,9 @@ class UPSignInViewModel(
     }
 
     fun performSignIn() = viewModelScope.launch {
+        if (_showPasswordField.value && _passwordText.value.isEmpty()) {
+            return@launch
+        }
         postSignInUseCase(_credentials.value)
             .map(::signInStateChangedListener)
             .collectToFlow(_sinInUIState)
