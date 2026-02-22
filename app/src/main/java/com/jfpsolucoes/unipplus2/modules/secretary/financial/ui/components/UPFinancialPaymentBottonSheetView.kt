@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.android.material.color.MaterialColors
 import com.jfpsolucoes.unipplus2.core.compose.ForEach
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPayment
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPaymentMethod
@@ -51,11 +54,16 @@ fun UPFinancialPaymentBottonSheetView(
                     FilledIconButton(
                         modifier = Modifier.size(60.dp),
                         shape = CircleShape,
-                        onClick = { onSelectMethod(paymentMethod) }
+                        onClick = { onSelectMethod(paymentMethod) },
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryFixed,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryFixed,
+                        )
                     ) {
                         Image(
                             modifier = Modifier.padding(12.dp),
-                            svgString = paymentMethod.iconSVG.orEmpty()
+                            svgString = paymentMethod.iconSVG.orEmpty(),
+                            color = MaterialTheme.colorScheme.onPrimaryFixed
                         )
                     }
                     VerticalSpacer(space = 4.dp)

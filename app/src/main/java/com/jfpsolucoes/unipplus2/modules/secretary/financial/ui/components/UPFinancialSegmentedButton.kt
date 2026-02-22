@@ -1,6 +1,7 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components
 
 import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
@@ -14,12 +15,14 @@ import androidx.compose.ui.Modifier
 import com.jfpsolucoes.unipplus2.core.compose.ForEachIndexed
 import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialFeature
+import com.jfpsolucoes.unipplus2.ui.styles.UPSegmentedButtonColors
 
 @Composable
 fun UPFinancialSegmentedButton(
     modifier: Modifier = Modifier,
     features: List<UPFinancialFeature>,
     selectedIndex: Int = 0,
+    colors: SegmentedButtonColors = UPSegmentedButtonColors,
     onSelectFeature: (UPFinancialFeature) -> Unit = {}
 ) {
     SingleChoiceSegmentedButtonRow(

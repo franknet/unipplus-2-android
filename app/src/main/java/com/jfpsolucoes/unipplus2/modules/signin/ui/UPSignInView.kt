@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -29,6 +30,7 @@ import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundHigh
 import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
+import com.jfpsolucoes.unipplus2.ui.colors.primaryHighContrast
 import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
@@ -72,11 +74,13 @@ fun UPSignInView(
         modifier = modifier.background(
             Brush.verticalGradient(
                 colors = listOf(
-                    MaterialTheme.colorScheme.primaryBackgroundLow,
-                    MaterialTheme.colorScheme.primaryBackgroundHigh,
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.primaryHighContrast,
                 )
             )
         ),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
         snackbarHost = {
             SnackbarHost(snackbarState)
         }

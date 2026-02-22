@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,6 +29,7 @@ import com.jfpsolucoes.unipplus2.ui.components.image.Image
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCard
+import com.jfpsolucoes.unipplus2.ui.styles.CardColorsPrimary
 import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -58,7 +60,7 @@ fun UPSecretaryDashboardView(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     name = userProfile.name.value,
                     course = userProfile.academic?.course?.name.value,
-                    colors = secondCardColors
+                    colors = CardColorsPrimary
                 )
             }
 

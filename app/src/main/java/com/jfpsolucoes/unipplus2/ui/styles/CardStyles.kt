@@ -12,6 +12,12 @@ val defaultCardColors: CardColors
         contentColor = MaterialTheme.colorScheme.onSurface,
     )
 
+val CardColorsPrimary: CardColors
+    @Composable get() = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    )
+
 val secondCardColors: CardColors
     @Composable get() = CardDefaults.cardColors(
         containerColor = MaterialTheme.colorScheme.surfaceBright,

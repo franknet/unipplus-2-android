@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -42,25 +43,17 @@ fun UPSegmentButton(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 private fun UPSegmentedButtonPreview() {
     UNIPPlus2Theme {
-        var selectedIndex by remember { mutableIntStateOf(1) }
+        var selectedIndex by remember { mutableIntStateOf(0) }
 
-        Column {
-            UPSegmentButton(
-                modifier = Modifier.fillMaxWidth(),
-                options = listOf("teste", "teste"),
-                selectedIndex = selectedIndex,
-                onSelected = { selectedIndex = it }
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Red)
-            )
-        }
+        UPSegmentButton(
+            modifier = Modifier.fillMaxWidth(),
+            options = listOf("teste", "teste"),
+            selectedIndex = selectedIndex,
+            onSelected = {  }
+        )
     }
 }

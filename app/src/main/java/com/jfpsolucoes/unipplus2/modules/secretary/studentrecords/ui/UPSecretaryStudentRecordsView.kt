@@ -112,7 +112,8 @@ fun UPSecretaryStudentRecordsView(
 
                 item {
                     Text(
-                        text = group.label.orEmpty()
+                        text = group.label.orEmpty(),
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
 

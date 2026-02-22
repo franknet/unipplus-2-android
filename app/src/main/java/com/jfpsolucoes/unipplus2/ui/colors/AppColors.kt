@@ -4,9 +4,13 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.jfpsolucoes.unipplus2.R
+
+val ColorScheme.primaryHighContrast: Color
+    @Composable get() = colorResource(id = R.color.primary_highContrast)
 
 val ColorScheme.primaryBackgroundLow: Color
     @Composable get() = colorResource(id = R.color.primaryBackgroundLow)

@@ -8,6 +8,7 @@ import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,8 +28,6 @@ fun <T> UPUIStateScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     loadingContent: @Composable (PaddingValues) -> Unit,
     errorContent: @Composable (PaddingValues, Throwable) -> Unit,
-    containerColor: Color = Color.Transparent,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     content: @Composable (PaddingValues, T) -> Unit
 ) = Scaffold(
     modifier = modifier,
@@ -36,8 +35,6 @@ fun <T> UPUIStateScaffold(
     bottomBar = bottomBar,
     snackbarHost = snackbarHost,
     floatingActionButton = floatingActionButton,
-    containerColor = containerColor,
-    contentColor = contentColor
 ) {  padding ->
     when (state) {
         is UIState.UIStateLoading -> loadingContent.invoke(padding)

@@ -1,14 +1,12 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.components
 
-import android.R
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -17,7 +15,6 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -29,14 +26,16 @@ import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.core.compose.ForEach
 import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.UPStudentRecordsDiscipline
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
+import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 
 @Composable
 fun UPStudentRecordsDisciplineRow(
     modifier: Modifier = Modifier,
     shape: Shape = CardDefaults.shape,
-    discipline: UPStudentRecordsDiscipline?
+    discipline: UPStudentRecordsDiscipline?,
+    colors: CardColors = secondCardColors
 ) {
-    val statusColor = if (discipline?.status?.color == 0L) CardDefaults.cardColors().containerColor else Color(discipline?.status?.color ?: 0L)
+    val statusColor = if (discipline?.status?.color == 0L) colors.containerColor else Color(discipline?.status?.color ?: 0L)
     Card(
         modifier = modifier,
         shape = shape,
@@ -47,7 +46,7 @@ fun UPStudentRecordsDisciplineRow(
         Surface(
             modifier = Modifier
                 .padding(start = 4.dp),
-            color = CardDefaults.cardColors().containerColor
+            color = colors.containerColor
         ) {
             Column(
                 modifier = Modifier

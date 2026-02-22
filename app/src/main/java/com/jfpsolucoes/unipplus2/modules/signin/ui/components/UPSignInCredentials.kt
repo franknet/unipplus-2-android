@@ -32,6 +32,7 @@ import com.jfpsolucoes.unipplus2.core.utils.extensions.saveableMutableState
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.components.button.LoadingButton
 import com.jfpsolucoes.unipplus2.ui.components.unipplus.student.UPStudentInfoCard
+import com.jfpsolucoes.unipplus2.ui.styles.ButtonColorsPrimaryFixed
 import com.jfpsolucoes.unipplus2.ui.styles.defaultTextFieldColors
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 
@@ -105,6 +106,7 @@ fun SignInCredentials(
             modifier = Modifier.height(60.dp),
             title = stringResource(id = R.string.sign_in_button_title),
             isLoading = onLoading,
+            colors = ButtonColorsPrimaryFixed,
             onClick = onClickSignIn
         )
     }

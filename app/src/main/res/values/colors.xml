@@ -4,8 +4,8 @@
     <color name="onPrimary">#FFFFFF</color>
     <color name="primaryContainer">#286ECD</color>
     <color name="onPrimaryContainer">#FFFFFF</color>
-    <color name="primaryFixed">#D7E2FF</color>
-    <color name="onPrimaryFixed">#001B3F</color>
+    <color name="primaryFixed">#004998</color>
+    <color name="onPrimaryFixed">#FCFBFF</color>
     <color name="primaryFixedDim">#ABC7FF</color>
     <color name="onPrimaryFixedVariant">#00458F</color>
     <color name="inversePrimary">#ABC7FF</color>
@@ -111,7 +111,7 @@
     <color name="onErrorContainer_highContrast">#FFFFFF</color>
 
     <!-- Surface and background colors -->
-    <color name="background">#F9F9FF</color>
+    <color name="background">#EDEDED</color>
     <color name="onBackground">#191C22</color>
     <color name="surface">#FCF8F8</color>
     <color name="onSurface">#1C1B1B</color>

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFin
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPaymentStatus
 import com.jfpsolucoes.unipplus2.ui.components.image.Image
 import com.jfpsolucoes.unipplus2.ui.components.spacer.HorizontalSpacer
+import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
 
 @Composable
@@ -59,12 +61,14 @@ fun UPFinancialPaymentRow(
     modifier: Modifier = Modifier,
     payment: UPFinancialPayment,
     shape: Shape = RectangleShape,
+    colors: CardColors = secondCardColors,
     action: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
     Card(
         onClick = onClick,
-        shape = shape
+        shape = shape,
+        colors = colors
     ) {
         Row(
             modifier = modifier.padding(16.dp),
