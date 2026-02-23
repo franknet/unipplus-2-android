@@ -41,5 +41,6 @@
 }
 -keep class com.jfpsolucoes.unipplus2.modules.signin.domain.models.** { *; }
 -keep class com.jfpsolucoes.unipplus2.modules.home.domain.models.** { *; }
--keep class com.jfpsolucoes.unipplus2.modules.secretary.domain.models.** { *; }
+-keep class com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.** { *; }
 -keep class com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.** { *; }
+-keep class com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.** { *; }

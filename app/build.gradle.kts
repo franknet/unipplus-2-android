@@ -60,7 +60,7 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "full"
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
 
             buildConfigField("String", BASE_URL_FIELD, REMOTE_BASE_URL)
