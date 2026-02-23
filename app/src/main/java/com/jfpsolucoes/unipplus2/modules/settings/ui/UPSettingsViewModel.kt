@@ -51,7 +51,9 @@ class UPSettingsViewModel(
         biometricManager.authenticate(
             context,
             subtitle = context.getString(R.string.biometric_toggle_subtitle_text),
-            onSuccess = { updateBiometricSettings(true) },
+            onSuccess = {
+                updateBiometricSettings(true)
+            },
             onError = { _, message ->
                 showSnackbar(message)
                 updateBiometricSettings(false)
@@ -65,7 +67,11 @@ class UPSettingsViewModel(
         )
     }
 
-    fun updateBiometricSettings(checked: Boolean) = viewModelScope.launch {
+    fun updateBiometricSettings(checked: Boolean, context: AppCompatActivity? = null) = viewModelScope.launch {
+        if (checked && context != null) {
+            requestBiometricAuthentication(context)
+            return@launch
+        }
         _settings.update { it.copy(
             autoSignIn = false,
             biometricEnabled = checked

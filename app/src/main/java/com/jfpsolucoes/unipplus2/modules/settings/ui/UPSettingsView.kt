@@ -61,12 +61,6 @@ fun UPSettingsView(
         }
     }
 
-    LaunchedEffect(settings) {
-        if (settings.biometricEnabled) {
-            viewModel.requestBiometricAuthentication(activity)
-        }
-    }
-
     UPUIStateScaffold(
         state = userProfile,
         snackbarHost = {
@@ -117,7 +111,9 @@ fun UPSettingsView(
                         item {
                             UPSettingsBiometricItemView(
                                 biometricChecked = settings.biometricEnabled,
-                                onBiometricCheckedChange = viewModel::updateBiometricSettings,
+                                onBiometricCheckedChange = {
+                                    viewModel.updateBiometricSettings(it, activity)
+                                },
                                 autoSignChecked = settings.autoSignIn,
                                 onAutoSignCheckedChange = viewModel::onAutoSignCheckedChange
                             )
