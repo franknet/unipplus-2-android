@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
+import com.jfpsolucoes.unipplus2.ui.styles.SwitchColorsPrimaryFixed
 import com.jfpsolucoes.unipplus2.ui.styles.secondCardColors
 
 @Composable
@@ -26,15 +29,19 @@ fun UPSettingsBiometricItemView(
     onAutoSignCheckedChange: (Boolean) -> Unit,
     colors: CardColors = secondCardColors,
 ) {
-    Card(
-        colors = colors
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    Column {
+        Text(
+            text = stringResource(R.string.common_security_title_text),
+            style = MaterialTheme.typography.titleMedium,
+        )
+
+        VerticalSpacer()
+
+        Card(
+            colors = colors
         ) {
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -42,12 +49,15 @@ fun UPSettingsBiometricItemView(
 
                 Switch(
                     checked = biometricChecked,
-                    onCheckedChange = onBiometricCheckedChange
+                    onCheckedChange = onBiometricCheckedChange,
+                    colors = SwitchColorsPrimaryFixed
                 )
             }
 
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -55,7 +65,8 @@ fun UPSettingsBiometricItemView(
 
                 Switch(
                     checked = autoSignChecked,
-                    onCheckedChange = onAutoSignCheckedChange
+                    onCheckedChange = onAutoSignCheckedChange,
+                    colors = SwitchColorsPrimaryFixed
                 )
             }
         }

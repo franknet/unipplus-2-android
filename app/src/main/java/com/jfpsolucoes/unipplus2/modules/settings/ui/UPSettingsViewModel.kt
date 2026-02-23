@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class UPSettingsViewModel(
@@ -46,38 +47,43 @@ class UPSettingsViewModel(
 
     val userProfile = _userProfile.asStateFlow()
 
-    val requestBiometricAuthentication = MutableStateFlow(false)
-
     fun requestBiometricAuthentication(context: AppCompatActivity) {
         biometricManager.authenticate(
             context,
             subtitle = context.getString(R.string.biometric_toggle_subtitle_text),
             onSuccess = { updateBiometricSettings(true) },
-            onError = { _, message -> showSnackbar(message) },
-            onFailed = { },
-            onCancel = { }
+            onError = { _, message ->
+                showSnackbar(message)
+                updateBiometricSettings(false)
+           },
+            onFailed = {
+                updateBiometricSettings(false)
+            },
+            onCancel = {
+                updateBiometricSettings(false)
+            }
         )
     }
 
-    fun updateBiometricSettings(enabled: Boolean) = viewModelScope.launch {
-        database.settingsDao().insert(_settings.value.copy(
+    fun updateBiometricSettings(checked: Boolean) = viewModelScope.launch {
+        _settings.update { it.copy(
             autoSignIn = false,
-            biometricEnabled = enabled
-        ))
+            biometricEnabled = checked
+        ) }
+        database.settingsDao().insert(_settings.value)
+    }
+
+    fun onAutoSignCheckedChange(checked: Boolean) = viewModelScope.launch {
+        _settings.update { it.copy(
+            autoSignIn = checked,
+            biometricEnabled = false
+        ) }
+        database.settingsDao().insert(_settings.value)
     }
 
     fun showSnackbar(message: String) = viewModelScope.launch {
         val errorVisual = UPSnackbarVisual(message = message)
         snackbarState.showSnackbar(errorVisual)
-    }
-
-    fun onAutoSignCheckedChange(value: Boolean) {
-        viewModelScope.launch {
-            database.settingsDao().insert(_settings.value.copy(
-                autoSignIn = value,
-                biometricEnabled = false
-            ))
-        }
     }
 
 }

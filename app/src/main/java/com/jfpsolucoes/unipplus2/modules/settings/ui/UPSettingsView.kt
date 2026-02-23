@@ -61,6 +61,12 @@ fun UPSettingsView(
         }
     }
 
+    LaunchedEffect(settings) {
+        if (settings.biometricEnabled) {
+            viewModel.requestBiometricAuthentication(activity)
+        }
+    }
+
     UPUIStateScaffold(
         state = userProfile,
         snackbarHost = {
