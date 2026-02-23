@@ -101,10 +101,6 @@ fun UPHomeView(
         navController?.popBackStack()
     }
 
-    LaunchedEffect(isAdEnabled) {
-        activity?.showInterstitialAd(isAdEnabled)
-    }
-
     BackHandler {
         coroutineScope.perform(viewModel::onSignOut)
     }
@@ -174,7 +170,9 @@ fun UPHomeView(
                                     bottom = padding.calculateBottomPadding()
                                 ),
                                 webSettings = settings
-                            )
+                            ) {
+                                navController?.popBackStack()
+                            }
                         }
                         when (system.deeplink) {
                             UPSystemDeeplink.SECRETARY -> {

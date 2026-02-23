@@ -55,33 +55,43 @@ fun ComponentActivity.getFoldingFeatures(callback: (List<FoldingFeature>?) -> Un
     }
 }
 
-fun Activity.showInterstitialAd(enabled: Boolean, complete: ((error: String?) -> Unit)? = null) {
+fun Activity.showInterstitialAd(
+    enabled: Boolean,
+    onLoading: ((Boolean) -> Unit)? = null,
+    onError: ((error: String?) -> Unit)? = null,
+    onSuccess: (() -> Unit)? = null,
+) {
     if (!enabled) {
-        complete?.invoke(null)
+        onSuccess?.invoke()
         return
     }
     val request = AdRequest.Builder().build()
+    onLoading?.invoke(true)
     InterstitialAd.load(
         this,
         resources.getString(R.string.admob_interstitial_id),
         request,
         object : InterstitialAdLoadCallback() {
+
+
             override fun onAdFailedToLoad(p0: LoadAdError) {
                 super.onAdFailedToLoad(p0)
-                complete?.invoke(p0.message)
+                onLoading?.invoke(false)
+                onError?.invoke(p0.message)
                 Log.e("InterstitialAd", p0.message)
             }
             override fun onAdLoaded(ad: InterstitialAd) {
                 super.onAdLoaded(ad)
+                onLoading?.invoke(false)
                 ad.show(this@showInterstitialAd)
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
                         super.onAdDismissedFullScreenContent()
-                        complete?.invoke(null)
+                        onSuccess?.invoke()
                     }
                     override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                         super.onAdFailedToShowFullScreenContent(p0)
-                        complete?.invoke(p0.message)
+                        onError?.invoke(p0.message)
                         Log.e("InterstitialAd", p0.message)
                     }
                 }

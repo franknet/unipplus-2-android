@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
 import com.jfpsolucoes.unipplus2.core.compose.LazyForEachColumn
+import com.jfpsolucoes.unipplus2.core.file.UPFileProviderManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.showInterstitialAd
@@ -62,13 +63,19 @@ fun UPFinancialDebtsView(
     navController: NavHostController? = LocalNavController.current,
     mainActivity: Activity? = activity
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     val debtsUIState by viewModel.debtsUIState.collectAsStateWithLifecycle()
 
     val paymentSelected by viewModel.selectedPayment.collectAsStateWithLifecycle()
 
-    val isAdsEnabled by UPAdManager.adsEnabled.collectAsStateWithLifecycle()
+    val paymentMethodSelected by viewModel.selectedPaymentMethod.collectAsStateWithLifecycle()
+
+    val fileDownloadedState by viewModel.downloadedFileState.collectAsStateWithLifecycle()
+
+    val adsEnabled by viewModel.adsEnabled.collectAsStateWithLifecycle()
+
+    var loading by remember {
+        mutableStateOf(false)
+    }
 
     var showBottomSheet by remember {
         mutableStateOf(false)
@@ -76,6 +83,40 @@ fun UPFinancialDebtsView(
 
     LaunchedEffect(Unit) {
         viewModel.fetch()
+    }
+
+    LaunchedEffect(paymentMethodSelected) {
+        if (paymentMethodSelected == null) {
+            return@LaunchedEffect
+        }
+        mainActivity?.showInterstitialAd(adsEnabled, onLoading = {
+            loading = it
+        }) {
+            viewModel.setSelectedPaymentMethod(null)
+            if (paymentMethodSelected?.type == UPFinancialPaymentMethodType.PDF) {
+                viewModel.downloadPdfFile(paymentMethodSelected!!)
+            } else {
+                showBottomSheet = false
+                val portalSettings = PortalWebViewSettings(
+                    url = paymentMethodSelected?.deepLink.orEmpty()
+                )
+                navController?.navigate(portalSettings)
+            }
+        }
+    }
+
+    LaunchedEffect(fileDownloadedState) {
+        loading = fileDownloadedState.loading
+        showBottomSheet = fileDownloadedState.loading
+        if (fileDownloadedState.success) {
+            viewModel.resetDownloadedFileState()
+            UPFileProviderManager.share(fileDownloadedState.data!!, mainActivity!!)
+        }
+        if (fileDownloadedState.failure) {
+            snackbarState.showSnackbar(UPSnackbarVisual(
+                message = fileDownloadedState.error?.message.orEmpty()
+            ))
+        }
     }
 
     UPUIStateScaffold(
@@ -152,33 +193,10 @@ fun UPFinancialDebtsView(
             sheetState = bottonSheetState
         ) {
             UPFinancialPaymentBottonSheetView(
-                payment = paymentSelected
-            ) { paymentMethod ->
-                if (paymentMethod.type == null) {
-                    return@UPFinancialPaymentBottonSheetView
-                }
-                mainActivity?.showInterstitialAd(isAdsEnabled) { error ->
-                    if (error != null) {
-                        coroutineScope.launch {
-                            showBottomSheet = false
-                            snackbarState.showSnackbar(error)
-                        }
-                        return@showInterstitialAd
-                    }
-                    when (paymentMethod.type) {
-                        UPFinancialPaymentMethodType.PDF -> {
-
-                        }
-                        UPFinancialPaymentMethodType.WEB -> {
-                            val portalSettings = PortalWebViewSettings(
-                                url = paymentMethod.deepLink.orEmpty()
-                            )
-                            showBottomSheet = false
-                            navController?.navigate(portalSettings)
-                        }
-                    }
-                }
-            }
+                payment = paymentSelected,
+                isLoading = loading,
+                onSelectMethod = viewModel::setSelectedPaymentMethod
+            )
         }
     }
 }

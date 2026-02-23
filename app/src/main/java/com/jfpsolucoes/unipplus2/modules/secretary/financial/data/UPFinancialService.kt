@@ -13,19 +13,22 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UPFinancialService {
-    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
+//    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
     @GET(UPApiEndpoints.Secretary.Financial.FEATURES)
     suspend fun getFeatures(): Response<UPFinancialFeaturesData>
 
-    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
+//    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
     @GET(UPApiEndpoints.Secretary.Financial.EXTRACT)
     suspend fun getExtract(@Query("year") period: String?): Response<UPFinancialExtractData>
 
-    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
+//    @Headers(UPHttpHeaders.CACHE_CONTROL_MAX_STALE_3600)
     @GET(UPApiEndpoints.Secretary.Financial.DEBTS)
     suspend fun getDebts(): Response<UPFinancialDebtsData>
 
     @GET("{path}")
-    suspend fun download(@Path("path") path: String): Response<ResponseBody>
+    suspend fun download(
+        @Path("path", encoded = true) path: String,
+        @Query("bankSlipCode") code: String
+    ): Response<ResponseBody>
 
 }

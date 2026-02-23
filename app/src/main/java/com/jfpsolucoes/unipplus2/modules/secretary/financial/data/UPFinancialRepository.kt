@@ -9,5 +9,5 @@ interface UPFinancialRepository {
     suspend fun getFeatures(): UPFinancialFeaturesData
     suspend fun getExtract(period: String?): UPFinancialExtractData
     suspend fun getDebts(): UPFinancialDebtsData
-    suspend fun download(path: String): ResponseBody
+    suspend fun download(path: String, code: String): ResponseBody
 }

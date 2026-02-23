@@ -3,6 +3,7 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.database.entities.UPCredentialsEntity
@@ -71,6 +72,9 @@ class UPSignInViewModel(
 
     val singInUIState = _sinInUIState.asStateFlow()
 
+    val adsEnabled = UPAdManager.adsEnabled.asStateFlow()
+
+
     fun updateRg(text: String) {
         _credentials.update { it.copy(rg = text) }
         _rgText.update { text }
@@ -138,7 +142,9 @@ class UPSignInViewModel(
     private suspend fun signInStateChangedListener(state: UIState<UPUserProfileEntity>): UIState<UPUserProfileEntity> {
         if (state.success) {
             _showPasswordField.update { !_settings.value.autoSignIn.or(_settings.value.biometricEnabled) }
-            localDatabase.credentialsDao().insert(_credentials.value)
+            localDatabase.credentialsDao().insert(_credentials.value.copy(
+                rg = state.data?.rg.orEmpty()
+            ))
             localDatabase.settingsDao().insert(_settings.value)
         }
         if (state.failure) {

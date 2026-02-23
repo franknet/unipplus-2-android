@@ -21,6 +21,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
+import com.jfpsolucoes.unipplus2.core.utils.extensions.showInterstitialAd
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInCredentials
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
@@ -39,6 +44,8 @@ import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundHigh
 import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.colors.primaryHighContrast
 import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
@@ -48,6 +55,7 @@ fun UPSignInView(
     navController: NavHostController? = LocalNavController.current,
     snackbarState: SnackbarHostState = SnackbarHostState(),
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val activity = activity
     val rgText by viewModel.rgText.collectAsStateWithLifecycle()
     val passwordText by viewModel.passwordText.collectAsStateWithLifecycle()
@@ -55,6 +63,11 @@ fun UPSignInView(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
     val signInUIState by viewModel.singInUIState.collectAsStateWithLifecycle()
+    val adsEnabled by viewModel.adsEnabled.collectAsStateWithLifecycle()
+
+    var loading by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(settings) {
         if (settings.autoSignIn) {
@@ -66,9 +79,20 @@ fun UPSignInView(
     }
 
     LaunchedEffect(signInUIState) {
+        loading = signInUIState.loading
         if (signInUIState.success) {
-            viewModel.resetSingInState()
-            navController?.navigate(HOME_NAVIGATION_ROUTE)
+            activity.showInterstitialAd(adsEnabled, onLoading = {
+                loading = it
+            }, onError = {
+                coroutineScope.launch {
+                    snackbarState.showSnackbar(UPSnackbarVisual(
+                        message = it.orEmpty()
+                    ))
+                }
+            }) {
+                viewModel.resetSingInState()
+                navController?.navigate(HOME_NAVIGATION_ROUTE)
+            }
         }
         if (signInUIState.failure) {
             snackbarState.showSnackbar(UPSnackbarVisual(
@@ -112,7 +136,7 @@ fun UPSignInView(
                         modifier = Modifier.height(itemHigh),
                         userName = userProfile?.name,
                         userCourse = userProfile?.academic?.course?.name,
-                        onLoading = signInUIState.loading,
+                        onLoading = loading,
                         raText = rgText,
                         onEditRa = viewModel::updateRg,
                         passwordText = passwordText,

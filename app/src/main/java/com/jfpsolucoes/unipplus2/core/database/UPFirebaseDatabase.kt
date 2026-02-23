@@ -15,6 +15,8 @@ import kotlin.coroutines.CoroutineContext
 object UPFirebaseDatabase {
     private var dbRef: DatabaseReference? = null
 
+    private var isInitialized = false
+
     val userProfile = MutableStateFlow<UPUserProfileEntity?>(null)
 
     fun initialize() {

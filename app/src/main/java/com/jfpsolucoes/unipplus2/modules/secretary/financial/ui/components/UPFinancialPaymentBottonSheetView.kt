@@ -3,12 +3,14 @@ package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,16 +30,25 @@ import com.jfpsolucoes.unipplus2.ui.components.spacer.VerticalSpacer
 fun UPFinancialPaymentBottonSheetView(
     modifier: Modifier = Modifier,
     payment: UPFinancialPayment? = null,
+    isLoading: Boolean = false,
     onSelectMethod: (UPFinancialPaymentMethod) -> Unit = {}
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+            )
+            VerticalSpacer()
+        }
+
         Text(
             text = "Meios de Pagamento",
             style = MaterialTheme.typography.titleMedium
         )
+
         VerticalSpacer()
 
         Row(
