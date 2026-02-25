@@ -72,9 +72,6 @@ class UPSignInViewModel(
 
     val singInUIState = _sinInUIState.asStateFlow()
 
-    val adsEnabled = UPAdManager.adsEnabled.asStateFlow()
-
-
     fun updateRg(text: String) {
         _credentials.update { it.copy(rg = text) }
         _rgText.update { text }

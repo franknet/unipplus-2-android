@@ -55,7 +55,6 @@ fun UPSignInView(
     navController: NavHostController? = LocalNavController.current,
     snackbarState: SnackbarHostState = SnackbarHostState(),
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val activity = activity
     val rgText by viewModel.rgText.collectAsStateWithLifecycle()
     val passwordText by viewModel.passwordText.collectAsStateWithLifecycle()
@@ -63,7 +62,6 @@ fun UPSignInView(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
     val signInUIState by viewModel.singInUIState.collectAsStateWithLifecycle()
-    val adsEnabled by viewModel.adsEnabled.collectAsStateWithLifecycle()
 
     var loading by remember {
         mutableStateOf(false)
@@ -81,18 +79,8 @@ fun UPSignInView(
     LaunchedEffect(signInUIState) {
         loading = signInUIState.loading
         if (signInUIState.success) {
-            activity.showInterstitialAd(adsEnabled, onLoading = {
-                loading = it
-            }, onError = {
-                coroutineScope.launch {
-                    snackbarState.showSnackbar(UPSnackbarVisual(
-                        message = it.orEmpty()
-                    ))
-                }
-            }) {
-                viewModel.resetSingInState()
-                navController?.navigate(HOME_NAVIGATION_ROUTE)
-            }
+            viewModel.resetSingInState()
+            navController?.navigate(HOME_NAVIGATION_ROUTE)
         }
         if (signInUIState.failure) {
             snackbarState.showSnackbar(UPSnackbarVisual(
