@@ -19,8 +19,8 @@ android {
         applicationId = "com.jfpsolucoes.unipplus2"
         minSdk = 24
         targetSdk = 36
-        versionCode = 131
-        versionName = "1.3.1"
+        versionCode = 133
+        versionName = "1.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -167,6 +167,7 @@ dependencies {
     // FIREBASE
     implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.ads)
+    implementation(libs.facebook.mediation)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.remoteconfig)

@@ -16,8 +16,6 @@ interface UPHomeViewModel {
 
     val shouldSignOut: StateFlow<Boolean>
 
-    val adsEnabled: StateFlow<Boolean>
-
     suspend fun onSignOut()
 
     fun getSystems()

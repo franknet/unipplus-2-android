@@ -1,5 +1,6 @@
 package com.jfpsolucoes.unipplus2.ui.components.admob
 
+import android.util.Log
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,9 +9,11 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.LoadAdError
 import com.jfpsolucoes.unipplus2.R
 
 @Composable
@@ -25,6 +28,20 @@ fun ADBanner(
         view.adUnitId = adUnitId
         view.setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(LocalContext.current, 360))
         view.loadAd(AdRequest.Builder().build())
+        view.adListener = object : AdListener() {
+            override fun onAdImpression() {
+                super.onAdImpression()
+                Log.i("ADBanner", "onAdImpression")
+            }
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                Log.i("ADBanner", "onAdLoaded")
+            }
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                super.onAdFailedToLoad(p0)
+                Log.e("ADBanner", "LoadAdError ${p0.code}: ${p0.message}")
+            }
+        }
     }
 
     AndroidView(modifier = modifier.wrapContentSize(), factory = { adView })

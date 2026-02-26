@@ -23,7 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -33,13 +36,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthMediumLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
 import com.jfpsolucoes.unipplus2.core.utils.extensions.requestScreenOrientation
-import com.jfpsolucoes.unipplus2.core.utils.extensions.showInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.stateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
@@ -51,7 +54,6 @@ import com.jfpsolucoes.unipplus2.modules.secretary.features.ui.UPSecretaryView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.LocalNavigationLayoutType
-import com.jfpsolucoes.unipplus2.ui.LocalSignInState
 import com.jfpsolucoes.unipplus2.ui.UIState
 import com.jfpsolucoes.unipplus2.ui.colors.primaryBackgroundLow
 import com.jfpsolucoes.unipplus2.ui.components.admob.ADBanner
@@ -61,7 +63,6 @@ import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebView
 import com.jfpsolucoes.unipplus2.ui.components.web.PortalWebViewSettings
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 private fun calculateNavigationTypeByWindowClass(): NavigationSuiteType {
@@ -92,9 +93,22 @@ fun UPHomeView(
 
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
 
-    val isAdEnabled by viewModel.adsEnabled.collectAsStateWithLifecycle()
+    val isAdEnabled by UPAdManager.adsEnabled.collectAsStateWithLifecycle()
 
     val shouldSignOut by viewModel.shouldSignOut.collectAsStateWithLifecycle()
+
+    var interstitialAdShowed by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        activity?.let {
+            if (interstitialAdShowed) return@let
+            UPAdManager.showInterstitialAd(it) {
+                interstitialAdShowed = true
+            }
+        }
+    }
 
     LaunchedEffect(shouldSignOut) {
         if (!shouldSignOut) { return@LaunchedEffect }

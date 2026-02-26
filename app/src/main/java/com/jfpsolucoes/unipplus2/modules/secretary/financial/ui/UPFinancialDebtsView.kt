@@ -1,15 +1,11 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui
 
 import android.app.Activity
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -36,9 +32,7 @@ import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
 import com.jfpsolucoes.unipplus2.core.compose.LazyForEachColumn
 import com.jfpsolucoes.unipplus2.core.file.UPFileProviderManager
-import com.jfpsolucoes.unipplus2.core.utils.extensions.ShowInterstitialAd
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
-import com.jfpsolucoes.unipplus2.core.utils.extensions.showInterstitialAd
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPaymentMethodType
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialPaymentBottonSheetView
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialPaymentRow
@@ -63,6 +57,8 @@ fun UPFinancialDebtsView(
     navController: NavHostController? = LocalNavController.current,
     mainActivity: Activity? = activity
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     val debtsUIState by viewModel.debtsUIState.collectAsStateWithLifecycle()
 
     val paymentSelected by viewModel.selectedPayment.collectAsStateWithLifecycle()
@@ -70,8 +66,6 @@ fun UPFinancialDebtsView(
     val paymentMethodSelected by viewModel.selectedPaymentMethod.collectAsStateWithLifecycle()
 
     val fileDownloadedState by viewModel.downloadedFileState.collectAsStateWithLifecycle()
-
-    val adsEnabled by viewModel.adsEnabled.collectAsStateWithLifecycle()
 
     var loading by remember {
         mutableStateOf(false)
@@ -89,9 +83,21 @@ fun UPFinancialDebtsView(
         if (paymentMethodSelected == null) {
             return@LaunchedEffect
         }
-        mainActivity?.showInterstitialAd(adsEnabled, onLoading = {
-            loading = it
-        }) {
+        if (mainActivity == null) { return@LaunchedEffect }
+        UPAdManager.showInterstitialAd(
+            mainActivity,
+            onLoading = {
+                loading = it
+            },
+            onError = { message ->
+                viewModel.setSelectedPaymentMethod(null)
+                coroutineScope.launch {
+                    snackbarState.showSnackbar(UPSnackbarVisual(
+                        message = message.orEmpty()
+                    ))
+                }
+            }
+        ) {
             viewModel.setSelectedPaymentMethod(null)
             if (paymentMethodSelected?.type == UPFinancialPaymentMethodType.PDF) {
                 viewModel.downloadPdfFile(paymentMethodSelected!!)

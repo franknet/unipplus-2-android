@@ -8,21 +8,21 @@ import androidx.compose.runtime.Composable
 
 val defaultCardColors: CardColors
     @Composable get() = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainerHigh),
     )
 
 val CardColorsPrimary: CardColors
     @Composable get() = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = contentColorFor(MaterialTheme.colorScheme.primaryContainer)
     )
 
 val secondCardColors: CardColors
     @Composable get() = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceBright,
-        contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceBright),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainerHigh),
 
-        disabledContainerColor = MaterialTheme.colorScheme.surfaceBright.copy(0.5f),
-        disabledContentColor = contentColorFor(MaterialTheme.colorScheme.surfaceBright).copy(0.5f),
+        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(0.75f),
+        disabledContentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainerHigh.copy(0.75f)),
     )

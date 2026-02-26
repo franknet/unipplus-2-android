@@ -49,8 +49,6 @@ class UPFinancialDebtsViewModel(
 
     val downloadedFileState = _downloadedFileState.asStateFlow()
 
-    val adsEnabled = UPAdManager.adsEnabled.asStateFlow()
-
     fun setSelectedPayment(method: UPFinancialPayment?) {
         _selectedPayment.value = method
     }
@@ -74,6 +72,7 @@ class UPFinancialDebtsViewModel(
     }
 
     fun resetDownloadedFileState() {
+        _selectedPaymentMethod.update { null }
         _downloadedFileState.update { UIState.UIStateNone() }
     }
 }

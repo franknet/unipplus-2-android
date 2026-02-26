@@ -2,7 +2,7 @@
     <!-- Primary colors -->
     <color name="primary">#1C1B1B</color>
     <color name="onPrimary">#FCFBFF</color>
-    <color name="primaryContainer">#201F1F</color>
+    <color name="primaryContainer">#2A2A2A</color>
     <color name="onPrimaryContainer">#FCFBFF</color>
     <color name="primaryFixed">#004998</color>
     <color name="onPrimaryFixed">#FCFBFF</color>

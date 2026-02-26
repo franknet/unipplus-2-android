@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.ui.styles.ButtonColorsPrimaryFixed
 import com.jfpsolucoes.unipplus2.ui.styles.defaultButtonColors
 import com.jfpsolucoes.unipplus2.ui.styles.defaultCardColors
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
@@ -37,7 +38,7 @@ fun ReviewCard(
         Button(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             onClick = onClick,
-            colors = defaultButtonColors
+            colors = ButtonColorsPrimaryFixed
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),

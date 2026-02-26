@@ -49,8 +49,6 @@ class UPHomeViewModelImpl(
 
     override val biometricDialogEnabled = _biometricDialogEnabled.asStateFlow()
 
-    override val adsEnabled = UPAdManager.adsEnabled.asStateFlow()
-
     override fun getSystems() {
         getSystemsUseCase()
             .collectToFlow(_systemsState, viewModelScope)

@@ -19,9 +19,6 @@ class UPHomeViewModelPreviewImpl(
     override val shouldSignOut: StateFlow<Boolean>
         get() = TODO("Not yet implemented")
 
-    override val adsEnabled: StateFlow<Boolean>
-        get() = TODO("Not yet implemented")
-
     override fun getSystems() {
         TODO("Not yet implemented")
     }

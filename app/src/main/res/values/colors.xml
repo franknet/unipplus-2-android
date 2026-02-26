@@ -2,7 +2,7 @@
     <!-- Primary colors -->
     <color name="primary">#004998</color>
     <color name="onPrimary">#FFFFFF</color>
-    <color name="primaryContainer">#286ECD</color>
+    <color name="primaryContainer">#004998</color>
     <color name="onPrimaryContainer">#FFFFFF</color>
     <color name="primaryFixed">#004998</color>
     <color name="onPrimaryFixed">#FCFBFF</color>
@@ -122,7 +122,7 @@
     <color name="surfaceContainerLowest">#FFFFFF</color>
     <color name="surfaceContainerLow">#F6F3F2</color>
     <color name="surfaceContainer">#F1EDEC</color>
-    <color name="surfaceContainerHigh">#EBE7E7</color>
+    <color name="surfaceContainerHigh">#FFFFFF</color>
     <color name="surfaceContainerHighest">#E5E2E1</color>
     <color name="inverseSurface">#313030</color>
     <color name="inverseOnSurface">#F4F0EF</color>

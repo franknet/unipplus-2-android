@@ -34,6 +34,7 @@ constraintlayout = "2.2.1"
 googleGmsGoogleServices = "4.4.4"
 firebase = "34.9.0"
 admob = "25.0.0"
+admobFacebookMediation = "6.21.0.1"
 firebaseAnalytics = "23.0.0"
 firebaseCrashlytics = "20.0.4"
 googleFirebaseCrashlytics = "3.0.6"
@@ -111,6 +112,7 @@ sqlcipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "admob" }
+facebook-mediation = { group = "com.google.ads.mediation", name = "facebook", version.ref = "admobFacebookMediation" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 firebase-remoteconfig = { group = "com.google.firebase", name = "firebase-config" }
