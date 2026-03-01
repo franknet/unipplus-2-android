@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.rememberDrawerState
@@ -49,6 +50,7 @@ import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsRespons
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemDeeplink
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystemType
+import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeExitView
 import com.jfpsolucoes.unipplus2.modules.home.ui.components.UPHomeNavigationSuite
 import com.jfpsolucoes.unipplus2.modules.secretary.features.ui.UPSecretaryView
 import com.jfpsolucoes.unipplus2.modules.settings.ui.UPSettingsView
@@ -97,8 +99,23 @@ fun UPHomeView(
 
     val shouldSignOut by viewModel.shouldSignOut.collectAsStateWithLifecycle()
 
+    var showExitBottomSheet by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     var interstitialAdShowed by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    if (showExitBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showExitBottomSheet = false }
+        ) {
+            UPHomeExitView {
+                showExitBottomSheet = false
+                coroutineScope.perform(viewModel::onSignOut)
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -116,7 +133,7 @@ fun UPHomeView(
     }
 
     BackHandler {
-        coroutineScope.perform(viewModel::onSignOut)
+        showExitBottomSheet = true
     }
 
     UPUIStateScaffold(

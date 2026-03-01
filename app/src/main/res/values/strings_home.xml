@@ -2,4 +2,5 @@
 <resources>
     <string name="home_navigation_item_home">Home</string>
     <string name="home_navigation_item_settings">Settings</string>
+    <string name="home_exit_question_text">Deseja sair do aplicativo?</string>
 </resources>
