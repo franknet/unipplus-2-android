@@ -39,7 +39,9 @@ fun UPHomeExitView(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.common_exit_text),
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center
+                )
             )
         }
         VerticalSpacer(32.dp)

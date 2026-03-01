@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.jfpsolucoes.unipplus2.core.store.UPAppStoreManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.UPSecretaryFeature
@@ -94,9 +92,7 @@ fun UPSecretaryDashboardView(
                     ReviewCard(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         colors = secondCardColors
-                    ) {
-                        UPAppStoreManager.requestReview(activity)
-                    }
+                    )
                 }
             }
 
