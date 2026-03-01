@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.res.painterResource
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.ui.styles.TextButtonColorsOnBackground
+import com.jfpsolucoes.unipplus2.ui.styles.TopBarColorsOnBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,9 +29,7 @@ fun UPFinancialTopbar(
 ) {
     TopAppBar(
         modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Transparent
-        ),
+        colors = TopBarColorsOnBackground,
         navigationIcon = {
             if (navigationEnabled) {
                 IconButton(
@@ -48,7 +48,8 @@ fun UPFinancialTopbar(
         actions = {
             periodSelected?.let { period ->
                 TextButton(
-                    onClick = openPeriodsBottomSheet
+                    onClick = openPeriodsBottomSheet,
+                    colors = TextButtonColorsOnBackground
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically

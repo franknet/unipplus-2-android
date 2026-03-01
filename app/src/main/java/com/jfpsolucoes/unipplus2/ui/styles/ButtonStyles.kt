@@ -28,3 +28,8 @@ val ButtonColorsPrimaryFixed: ButtonColors
         containerColor = MaterialTheme.colorScheme.primaryFixed,
         disabledContainerColor = MaterialTheme.colorScheme.primaryFixed
     )
+
+val TextButtonColorsOnBackground: ButtonColors
+    @Composable get() = ButtonDefaults.textButtonColors(
+        contentColor = MaterialTheme.colorScheme.onBackground
+    )

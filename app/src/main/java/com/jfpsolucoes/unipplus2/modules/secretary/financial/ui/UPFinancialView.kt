@@ -129,6 +129,7 @@ fun UPFinancialView(
                 ) {
                     UPFinancialPeriodsBottonSheetView(
                         periods = data.periods,
+                        selectedPeriod = periodSelected,
                         onSelectPeriod = {
                             showPeriodsBottomSheet = false
                             viewModel.setSelectedPeriod(it)
