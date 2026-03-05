@@ -3,7 +3,6 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.database.entities.UPCredentialsEntity

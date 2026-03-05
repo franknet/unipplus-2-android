@@ -45,9 +45,9 @@ object UPAdManager {
     )
 
     fun initialize(context: Activity) {
-        val adReqConfig = RequestConfiguration.Builder().setTestDeviceIds(listOf("DE5B79B15A493C1572129ADC7E84C9F6")).build()
-        AdSettings.addTestDevice("bb25fc68-7a4e-44ce-8118-322e60f3acbe")
-        MobileAds.setRequestConfiguration(adReqConfig)
+//        val adReqConfig = RequestConfiguration.Builder().setTestDeviceIds(listOf("DE5B79B15A493C1572129ADC7E84C9F6")).build()
+//        AdSettings.addTestDevice("bb25fc68-7a4e-44ce-8118-322e60f3acbe")
+//        MobileAds.setRequestConfiguration(adReqConfig)
         MobileAds.initialize(context)
     }
 

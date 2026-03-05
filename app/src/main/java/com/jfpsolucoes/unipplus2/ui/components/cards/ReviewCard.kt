@@ -1,6 +1,7 @@
 package com.jfpsolucoes.unipplus2.ui.components.cards
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.store.UPAppStoreManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
@@ -53,19 +55,22 @@ fun ReviewCard(
                 },
                 colors = ButtonColorsPrimaryFixed
             ) {
+                Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     painter = painterResource(R.drawable.ic_filled_star_24px),
                     contentDescription = null
                 )
+                HorizontalSpacer(4.dp)
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.review_button_text),
                     style = MaterialTheme.typography.titleSmall.copy(
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp
                     ),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
+                Spacer(modifier = Modifier.weight(1f))
             }
 
             HorizontalSpacer()
@@ -77,19 +82,22 @@ fun ReviewCard(
                 },
                 colors = ButtonColorsPrimaryFixed
             ) {
+                Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     painter = painterResource(R.drawable.ic_outlined_share_24px),
                     contentDescription = null
                 )
+                HorizontalSpacer(4.dp)
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.common_share_text),
                     style = MaterialTheme.typography.titleSmall.copy(
                         textAlign = TextAlign.Center,
+                        fontSize = 12.sp
                     ),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
