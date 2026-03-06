@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isMainPaneExpanded
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isSupportingPaneExpanded
 import com.jfpsolucoes.unipplus2.core.utils.extensions.perform
@@ -22,7 +24,7 @@ import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.SECRET
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.UPSecretaryFeature
 import com.jfpsolucoes.unipplus2.modules.secretary.features.ui.dashboard.UPSecretaryDashboardView
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.UPFinancialView
-import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPSecretaryStudentRecordsView
+import com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui.UPStudentRecordsView
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
@@ -43,6 +45,10 @@ fun UPSecretaryView(
     val navigator = rememberSupportingPaneScaffoldNavigator<UPSecretaryFeature>()
 
     val featuresUIState by viewModel.featuresState.collectAsStateWithLifecycle()
+
+    RememberLaunchedEffect {
+        viewModel.trackScreenView()
+    }
 
     UPUIStateScaffold(
         modifier = modifier,
@@ -70,7 +76,6 @@ fun UPSecretaryView(
                 scaffoldState = navigator.scaffoldState,
                 mainPane = {
                     UPSecretaryDashboardView(
-                        modifier = modifier,
                         features = data.features
                     ) { feature ->
                         coroutineScope.launch {
@@ -82,7 +87,7 @@ fun UPSecretaryView(
                     if (navigator.currentDestination?.pane == SupportingPaneScaffoldRole.Supporting) {
                         navigator.currentDestination?.contentKey?.let { system ->
                             when (system.deeplink) {
-                                SECRETARY_STUDENT_RECORDS_DEEPLINK -> UPSecretaryStudentRecordsView(
+                                SECRETARY_STUDENT_RECORDS_DEEPLINK -> UPStudentRecordsView(
                                     feature = system,
                                     navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
                                     onClickBack = { coroutineScope.perform(navigator::navigateBack) }

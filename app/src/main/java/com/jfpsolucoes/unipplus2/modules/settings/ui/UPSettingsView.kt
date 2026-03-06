@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.BuildConfig
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.modules.profile.ui.UPProfileView
@@ -55,8 +57,12 @@ fun UPSettingsView(
     val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
     val biometricAvailable by viewModel.biometricAvailable.collectAsStateWithLifecycle()
 
-    if (!isSupportingPaneHidden) {
-        LaunchedEffect(Unit) {
+    RememberLaunchedEffect {
+        viewModel.trackScreenView()
+    }
+
+    LaunchedEffect(isSupportingPaneHidden) {
+        if (!isSupportingPaneHidden) {
             navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, 0)
         }
     }

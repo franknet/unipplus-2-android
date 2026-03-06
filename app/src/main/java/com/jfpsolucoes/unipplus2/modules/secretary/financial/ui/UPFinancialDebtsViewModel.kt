@@ -3,6 +3,7 @@ package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
@@ -74,5 +75,9 @@ class UPFinancialDebtsViewModel(
     fun resetDownloadedFileState() {
         _selectedPaymentMethod.update { null }
         _downloadedFileState.update { UIState.UIStateNone() }
+    }
+
+    fun trackScreenView() {
+        UPAnalyticsManager.trackScreenView("UPFinancialDebtsView")
     }
 }

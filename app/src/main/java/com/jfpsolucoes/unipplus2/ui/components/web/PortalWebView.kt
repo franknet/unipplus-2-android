@@ -31,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 
 
@@ -97,6 +99,10 @@ fun PortalWebView(
         cookieManager.setAcceptThirdPartyCookies(this, true)
 
         loadUrl(webSettings.url)
+    }
+
+    RememberLaunchedEffect {
+        UPAnalyticsManager.trackScreenView("PortalWebView")
     }
 
     BackHandler {

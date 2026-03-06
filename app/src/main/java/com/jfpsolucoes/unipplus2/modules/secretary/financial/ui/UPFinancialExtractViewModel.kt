@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.modules.secretary.financial.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialExtractData
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPayment
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.usecases.UPGetFinancialExtractUseCase
@@ -45,5 +46,9 @@ class UPFinancialExtractViewModel(
 
     fun setSelectedPayment(payment: UPFinancialPayment) = viewModelScope.launch {
         _selectedPayment.emit(payment)
+    }
+
+    fun trackScreenView() {
+        UPAnalyticsManager.trackScreenView("UPFinancialExtractView")
     }
 }

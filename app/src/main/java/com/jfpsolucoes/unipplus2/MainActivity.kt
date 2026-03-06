@@ -17,9 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.jfpsolucoes.unipplus2.core.utils.UPAppServicesManager
 import com.jfpsolucoes.unipplus2.modules.signin.ui.signInNavigation
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
-import com.jfpsolucoes.unipplus2.ui.LocalSignInState
 import com.jfpsolucoes.unipplus2.ui.theme.UNIPPlus2Theme
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

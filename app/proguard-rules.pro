@@ -44,3 +44,11 @@
 -keep class com.jfpsolucoes.unipplus2.modules.secretary.features.domain.models.** { *; }
 -keep class com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.domain.models.** { *; }
 -keep class com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.** { *; }
+
+# Facebook (Meta) mediation ads rules
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.ads.**
+-keeppackagenames com.facebook.*
+
+# Adroid play core review Rules
+-keep class com.google.android.play.core.review.** { *; }

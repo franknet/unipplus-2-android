@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.value
 import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
@@ -54,6 +57,10 @@ fun UPProfileView(
 
     BackHandler {
         onBackPressed()
+    }
+
+    RememberLaunchedEffect {
+        viewModel.trackScreenView()
     }
 
     UPUIStateScaffold(

@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.modules.secretary.studentrecords.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.debugPrint
@@ -22,4 +23,7 @@ class UPStudentRecordsViewModel(
     fun getDisciplines() = getDisciplinesUseCase()
         .collectToFlow(_disciplinesUIState, viewModelScope)
 
+    fun trackScreenView() {
+        UPAnalyticsManager.trackScreenView("UPSecretaryStudentRecordsView")
+    }
 }

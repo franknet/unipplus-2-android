@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.initialize
 import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.file.UPFileDirectoryManager
@@ -35,6 +36,8 @@ object UPAppServicesManager {
     private fun initGoogleAndFirebaseServices(context: Activity) {
         // Firebase
         Firebase.initialize(context)
+
+        UPAnalyticsManager.initialize(context)
 
         RemoteConfigManager.initialize()
 

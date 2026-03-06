@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialBalanceView
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialExtractPaymentBottomSheetView
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialPaymentRow
@@ -49,6 +51,10 @@ fun UPFinancialExtractView(
     val selectedPayment by viewModel.selectedPayment.collectAsStateWithLifecycle()
     var showBottomSheet by remember {
         mutableStateOf(false)
+    }
+
+    RememberLaunchedEffect {
+        viewModel.trackScreenView()
     }
 
     LaunchedEffect(period) {

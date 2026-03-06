@@ -29,6 +29,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInCredentials
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
@@ -54,6 +56,10 @@ fun UPSignInView(
 
     var loading by remember {
         mutableStateOf(false)
+    }
+
+    RememberLaunchedEffect {
+        UPAnalyticsManager.trackScreenView("UPSignInView")
     }
 
     LaunchedEffect(settings) {

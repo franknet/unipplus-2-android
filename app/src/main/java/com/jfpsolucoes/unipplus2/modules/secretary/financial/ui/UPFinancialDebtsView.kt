@@ -30,8 +30,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.compose.LazyForEachColumn
 import com.jfpsolucoes.unipplus2.core.file.UPFileProviderManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.domain.models.UPFinancialPaymentMethodType
 import com.jfpsolucoes.unipplus2.modules.secretary.financial.ui.components.UPFinancialPaymentBottonSheetView
@@ -73,6 +75,10 @@ fun UPFinancialDebtsView(
 
     var showBottomSheet by remember {
         mutableStateOf(false)
+    }
+
+    RememberLaunchedEffect {
+        viewModel.trackScreenView()
     }
 
     LaunchedEffect(Unit) {

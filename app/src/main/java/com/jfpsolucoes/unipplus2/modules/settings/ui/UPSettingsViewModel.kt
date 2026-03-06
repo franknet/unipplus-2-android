@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jfpsolucoes.unipplus2.R
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
@@ -90,6 +91,10 @@ class UPSettingsViewModel(
     fun showSnackbar(message: String) = viewModelScope.launch {
         val errorVisual = UPSnackbarVisual(message = message)
         snackbarState.showSnackbar(errorVisual)
+    }
+
+    fun trackScreenView() {
+        UPAnalyticsManager.trackScreenView("UPSettingsView")
     }
 
 }

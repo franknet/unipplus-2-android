@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.modules.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
@@ -18,4 +19,8 @@ class UPProfileViewModel(
         .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
 
     val userProfileState = _userProfileState.asStateFlow()
+
+    fun trackScreenView() {
+        UPAnalyticsManager.trackScreenView("UPProfileView")
+    }
 }

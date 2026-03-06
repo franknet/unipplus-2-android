@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.modules.secretary.features.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
 import com.jfpsolucoes.unipplus2.modules.secretary.features.domain.UPGetSecretaryFeaturesUseCase
@@ -18,6 +19,10 @@ class UPSecretaryViewModel(
 
     fun fetchSecretaryFeatures() = viewModelScope.launch {
         getSecretaryFeaturesUseCase().collectToFlow(_featuresState, viewModelScope)
+    }
+
+    fun trackScreenView() {
+        UPAnalyticsManager.trackScreenView("UPSecretaryView")
     }
 
 }
