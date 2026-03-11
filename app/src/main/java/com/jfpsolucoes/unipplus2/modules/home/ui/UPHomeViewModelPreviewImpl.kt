@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 
 class UPHomeViewModelPreviewImpl(
     override val systemsState: StateFlow<UIState<UPHomeSystemsResponse>> = UIState.UIStateNone<UPHomeSystemsResponse>().stateFlow,
-    override val systemSelected: StateFlow<UPSystem?> = null.stateFlow,
-    override val biometricDialogEnabled: StateFlow<Boolean> = false.stateFlow
+    override val systemSelected: StateFlow<UPSystem?> = null.stateFlow
 ) : UPHomeViewModel, ViewModel() {
     override val shouldSignOut: StateFlow<Boolean>
         get() = TODO("Not yet implemented")
@@ -31,7 +30,7 @@ class UPHomeViewModelPreviewImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun onSignOut() {
+    override fun onSignOut() = viewModelScope.launch {
         TODO("Not yet implemented")
     }
 }

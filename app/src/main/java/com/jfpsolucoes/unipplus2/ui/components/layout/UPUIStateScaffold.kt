@@ -28,6 +28,8 @@ fun <T> UPUIStateScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     loadingContent: @Composable (PaddingValues) -> Unit,
     errorContent: @Composable (PaddingValues, Throwable) -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = contentColorFor(containerColor),
     content: @Composable (PaddingValues, T) -> Unit
 ) = Scaffold(
     modifier = modifier,
@@ -35,6 +37,8 @@ fun <T> UPUIStateScaffold(
     bottomBar = bottomBar,
     snackbarHost = snackbarHost,
     floatingActionButton = floatingActionButton,
+    containerColor = containerColor,
+    contentColor = contentColor,
 ) {  padding ->
     when (state) {
         is UIState.UIStateLoading -> loadingContent.invoke(padding)

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
@@ -27,7 +28,7 @@ fun <T> Flow<T>.toUIStateFlow(): Flow<UIState<T>> {
 }
 
 fun <T> Flow<T>.collectToFlow(flow: MutableStateFlow<T>, scope: CoroutineScope) = scope.launch {
-    collect { flow.emit(it) }
+    collect { flow.value = it }
 }
 
 fun <T> Flow<T>.asMutableSharedPushFlow(scope: CoroutineScope): MutableSharedFlow<T> {

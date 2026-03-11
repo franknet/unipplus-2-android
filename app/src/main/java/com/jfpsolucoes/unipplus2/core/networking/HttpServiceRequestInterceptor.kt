@@ -12,7 +12,7 @@ private const val HEADER_X_COURSE_TYPE = "x-course-type"
 private const val HEADER_X_TOKEN = "x-token"
 private const val HEADER_X_REFRESH_TOKEN = "x-refresh-token"
 private const val HEADER_X_APP_VERSION = "x-app-version"
-private const val HEADER_X_OS_NAME = "x-os-name"
+private const val HEADER_X_APP_PLATFORM = "x-app-platform"
 
 class HttpServiceRequestInterceptor: Interceptor {
     private var mHeadersStore = mutableMapOf<String, String?>()
@@ -36,7 +36,7 @@ class HttpServiceRequestInterceptor: Interceptor {
         val requestBuilder =  chain.request().newBuilder()
 
         requestBuilder.addHeader(HEADER_X_APP_VERSION, BuildConfig.VERSION_NAME)
-        requestBuilder.addHeader(HEADER_X_OS_NAME, "android")
+        requestBuilder.addHeader(HEADER_X_APP_PLATFORM, "android")
 
         // Set stored headers
         mHeadersStore[HEADER_X_UUID]?.let { requestBuilder.addHeader(HEADER_X_UUID, it) }

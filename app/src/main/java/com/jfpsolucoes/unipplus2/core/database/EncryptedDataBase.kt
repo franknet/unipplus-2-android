@@ -30,7 +30,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         UPCredentialsEntity::class,
         UPSettingsEntity::class
     ],
-    version = 5
+    version = 6
 )
 abstract class EncryptedDataBase : RoomDatabase() {
 

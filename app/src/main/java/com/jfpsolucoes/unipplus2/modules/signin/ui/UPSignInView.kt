@@ -12,15 +12,12 @@ import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,13 +26,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
-import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
+import com.jfpsolucoes.unipplus2.core.security.UPBiometricManagerImpl
 import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.activity
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInCredentials
 import com.jfpsolucoes.unipplus2.modules.signin.ui.components.SignInLogo
 import com.jfpsolucoes.unipplus2.ui.LocalNavController
 import com.jfpsolucoes.unipplus2.ui.colors.primaryHighContrast
+import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
+import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
+import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
@@ -48,18 +48,21 @@ fun UPSignInView(
 ) {
     val activity = activity
     val rgText by viewModel.rgText.collectAsStateWithLifecycle()
-    val passwordText by viewModel.passwordText.collectAsStateWithLifecycle()
-    val showPasswordField by viewModel.showPasswordField.collectAsStateWithLifecycle()
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
-    val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
+    val showPasswordField by viewModel.passwordFieldVisible.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsState()
+    val userProfileUIState by viewModel.userProfile.collectAsStateWithLifecycle()
     val signInUIState by viewModel.singInUIState.collectAsStateWithLifecycle()
+    val snackBarMessage by viewModel.snackBarMessage.collectAsStateWithLifecycle()
 
-    var loading by remember {
-        mutableStateOf(false)
+    LaunchedEffect(Unit) {
+        navController?.addOnDestinationChangedListener { _, _, _ ->
+            viewModel.resetSingInState()
+        }
     }
 
     RememberLaunchedEffect {
-        UPAnalyticsManager.trackScreenView("UPSignInView")
+        viewModel.trackScreenView()
     }
 
     LaunchedEffect(settings) {
@@ -67,24 +70,34 @@ fun UPSignInView(
             viewModel.performSignIn()
         }
         if (settings.biometricEnabled) {
-            viewModel.performBiometricAuthentication(activity)
+            UPBiometricManagerImpl.authenticate(
+                activity,
+                onSuccess = viewModel::performSignIn,
+                onFailed = {},
+                onError = { _, _ ->
+                    viewModel.resetAndShowPasswordField()
+                },
+                onCancel = {
+                    viewModel.resetAndShowPasswordField()
+                }
+            )
         }
     }
 
     LaunchedEffect(signInUIState) {
-        loading = signInUIState.loading
         if (signInUIState.success) {
-            viewModel.resetSingInState()
             navController?.navigate(HOME_NAVIGATION_ROUTE)
-        }
-        if (signInUIState.failure) {
-            snackbarState.showSnackbar(UPSnackbarVisual(
-                message = signInUIState.error?.message.orEmpty()
-            ))
         }
     }
 
-    Scaffold(
+    LaunchedEffect(snackBarMessage) {
+        if (snackBarMessage.isNullOrEmpty()) { return@LaunchedEffect }
+        snackbarState.showSnackbar(UPSnackbarVisual(
+            message = snackBarMessage.orEmpty()
+        ))
+    }
+
+    UPUIStateScaffold(
         modifier = modifier.background(
             Brush.verticalGradient(
                 colors = listOf(
@@ -93,12 +106,19 @@ fun UPSignInView(
                 )
             )
         ),
-        containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
+        state = userProfileUIState,
         snackbarHost = {
             SnackbarHost(snackbarState)
-        }
-    ) {
+        },
+        loadingContent = { _ ->
+            UPLoadingView()
+        },
+        errorContent = { _, error ->
+            UPErrorView(error = error)
+        },
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+    ) { _, userProfile ->
         BoxWithConstraints(
             modifier = Modifier.safeGesturesPadding()
         ) {
@@ -113,16 +133,15 @@ fun UPSignInView(
                         .height(itemHigh)
                         .fillMaxWidth())
                 }
-
                 item {
                     SignInCredentials(
                         modifier = Modifier.height(itemHigh),
-                        userName = userProfile?.name,
-                        userCourse = userProfile?.academic?.course?.name,
-                        onLoading = loading,
+                        userName = userProfile.name,
+                        userCourse = userProfile.academic?.course?.name,
+                        onLoading = signInUIState.loading,
                         raText = rgText,
-                        onEditRa = viewModel::updateRg,
-                        passwordText = passwordText,
+                        onEditRa = viewModel::updateRgText,
+                        passwordText = password,
                         onEditPassword = viewModel::updatePassword,
                         showPasswordField = showPasswordField,
                         autoSignChecked = settings.autoSignIn,

@@ -38,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.jfpsolucoes.unipplus2.R
 import com.jfpsolucoes.unipplus2.core.ads.UPAdManager
+import com.jfpsolucoes.unipplus2.core.utils.compose.RememberLaunchedEffect
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExpandedLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthExtraLargeLowerBound
 import com.jfpsolucoes.unipplus2.core.utils.extensions.isWidthLargeLowerBound
@@ -103,28 +104,19 @@ fun UPHomeView(
         mutableStateOf(false)
     }
 
-    var interstitialAdShowed by rememberSaveable {
-        mutableStateOf(false)
-    }
-
     if (showExitBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showExitBottomSheet = false }
         ) {
             UPHomeExitView {
                 showExitBottomSheet = false
-                coroutineScope.perform(viewModel::onSignOut)
+                viewModel.onSignOut()
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        activity?.let {
-            if (interstitialAdShowed) return@let
-            UPAdManager.showInterstitialAd(it) {
-                interstitialAdShowed = true
-            }
-        }
+    RememberLaunchedEffect {
+        activity?.let(UPAdManager::showInterstitialAd)
     }
 
     LaunchedEffect(shouldSignOut) {
@@ -197,9 +189,6 @@ fun UPHomeView(
                         if (system.type == UPSystemType.WEB) {
                             val settings = PortalWebViewSettings(url = system.url.value)
                             PortalWebView(
-                                modifier = Modifier.padding(
-                                    bottom = padding.calculateBottomPadding()
-                                ),
                                 webSettings = settings
                             ) {
                                 navController?.popBackStack()
@@ -207,17 +196,10 @@ fun UPHomeView(
                         }
                         when (system.deeplink) {
                             UPSystemDeeplink.SECRETARY -> {
-                                UPSecretaryView(
-                                    modifier = Modifier.padding(
-                                        bottom = padding.calculateBottomPadding()
-                                    )
-                                )
+                                UPSecretaryView()
                             }
                             UPSystemDeeplink.SETTINGS -> {
                                 UPSettingsView(
-                                    modifier = Modifier.padding(
-                                        bottom = padding.calculateBottomPadding()
-                                    ),
                                     title = system.description.value
                                 )
                             }

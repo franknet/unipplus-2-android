@@ -9,18 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface UPHomeViewModel {
     val systemsState: StateFlow<UIState<UPHomeSystemsResponse>>
-
     val systemSelected: StateFlow<UPSystem?>
-
-    val biometricDialogEnabled: StateFlow<Boolean>
-
     val shouldSignOut: StateFlow<Boolean>
-
-    suspend fun onSignOut()
-
+    fun onSignOut(): Job
     fun getSystems()
-
     fun updateSettings(settings: UPSettingsEntity): Job
-
     fun onSelectedSystem(system: UPSystem)
 }
