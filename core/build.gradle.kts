@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.jfpsolucoes.unipplus2.core"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24

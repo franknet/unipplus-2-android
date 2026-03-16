@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.jfpsolucoes.unipplus2.wear"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.jfpsolucoes.unipplus2.wear"

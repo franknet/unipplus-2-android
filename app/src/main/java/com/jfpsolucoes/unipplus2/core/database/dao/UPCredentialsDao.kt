@@ -28,4 +28,7 @@ interface UPCredentialsDao {
 
     @Query("DELETE FROM credentials_table")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM credentials_table WHERE id= :id LIMIT 1")
+    suspend fun getCurrent(id: Long = 0): UPCredentialsEntity?
 }

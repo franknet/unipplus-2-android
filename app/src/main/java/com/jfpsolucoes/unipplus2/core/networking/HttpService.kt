@@ -1,6 +1,7 @@
 package com.jfpsolucoes.unipplus2.core.networking
 
 import android.content.Context
+import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.networking.api.UPApiEndpoints
 import okhttp3.Cache
 import okhttp3.JavaNetCookieJar
@@ -37,7 +38,7 @@ object HttpService {
             .connectTimeout(1, TimeUnit.MINUTES)
             .cache(cache)
             .cookieJar(mCookiejar)
-            .addInterceptor(HttpServiceRequestInterceptor())
+            .addInterceptor(HttpServiceRequestInterceptor(EncryptedDataBase.shared.networkDao()))
             .addInterceptor(HttpServiceLoggingInterceptor)
             .build()
 

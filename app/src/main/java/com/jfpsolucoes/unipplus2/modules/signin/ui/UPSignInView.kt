@@ -37,6 +37,8 @@ import com.jfpsolucoes.unipplus2.ui.components.error.UPErrorView
 import com.jfpsolucoes.unipplus2.ui.components.layout.UPUIStateScaffold
 import com.jfpsolucoes.unipplus2.ui.components.loading.UPLoadingView
 import com.jfpsolucoes.unipplus2.ui.components.snackbar.UPSnackbarVisual
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.lastOrNull
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
@@ -50,8 +52,8 @@ fun UPSignInView(
     val rgText by viewModel.rgText.collectAsStateWithLifecycle()
     val password by viewModel.password.collectAsStateWithLifecycle()
     val showPasswordField by viewModel.passwordFieldVisible.collectAsStateWithLifecycle()
-    val settings by viewModel.settings.collectAsState()
-    val userProfileUIState by viewModel.userProfile.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val screenUIState by viewModel.screenUIState.collectAsStateWithLifecycle()
     val signInUIState by viewModel.singInUIState.collectAsStateWithLifecycle()
     val snackBarMessage by viewModel.snackBarMessage.collectAsStateWithLifecycle()
 
@@ -66,9 +68,6 @@ fun UPSignInView(
     }
 
     LaunchedEffect(settings) {
-        if (settings.autoSignIn) {
-            viewModel.performSignIn()
-        }
         if (settings.biometricEnabled) {
             UPBiometricManagerImpl.authenticate(
                 activity,
@@ -106,7 +105,7 @@ fun UPSignInView(
                 )
             )
         ),
-        state = userProfileUIState,
+        state = screenUIState,
         snackbarHost = {
             SnackbarHost(snackbarState)
         },

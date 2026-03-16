@@ -22,15 +22,15 @@ object UPAppServicesManager {
         if (initialized) return
         initialized = true
 
-        initGoogleAndFirebaseServices(context)
+        EncryptedDataBase.initialize(context)
 
         HttpService.initialize(context)
-
-        EncryptedDataBase.initialize(context)
 
         UPBiometricManagerImpl.initialize(context)
 
         UPFileDirectoryManager.initialize(context)
+
+        initGoogleAndFirebaseServices(context)
     }
 
     private fun initGoogleAndFirebaseServices(context: Activity) {

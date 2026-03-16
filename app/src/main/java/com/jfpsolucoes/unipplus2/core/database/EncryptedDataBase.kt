@@ -7,8 +7,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.jfpsolucoes.unipplus2.core.database.dao.UPCredentialsDao
+import com.jfpsolucoes.unipplus2.core.database.dao.UPNetworkDao
 import com.jfpsolucoes.unipplus2.core.database.dao.UPSettingsDao
 import com.jfpsolucoes.unipplus2.core.database.entities.UPCredentialsEntity
+import com.jfpsolucoes.unipplus2.core.database.entities.UPNetworkEntity
 import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
@@ -28,9 +30,10 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 @Database(
     entities = [
         UPCredentialsEntity::class,
-        UPSettingsEntity::class
+        UPSettingsEntity::class,
+        UPNetworkEntity::class
     ],
-    version = 6
+    version = 7
 )
 abstract class EncryptedDataBase : RoomDatabase() {
 
@@ -38,6 +41,8 @@ abstract class EncryptedDataBase : RoomDatabase() {
     abstract fun credentialsDao(): UPCredentialsDao
 
     abstract fun settingsDao(): UPSettingsDao
+
+    abstract fun networkDao(): UPNetworkDao
 
     companion object {
         private const val DATABASE_NAME = "unipplus_encrypted.db"
@@ -103,4 +108,3 @@ abstract class EncryptedDataBase : RoomDatabase() {
         }
     }
 }
-

@@ -8,5 +8,5 @@ data class UPCredentialsEntity(
     @PrimaryKey(autoGenerate = false)
     val id: Long = 0,
     val rg: String = "",
-    val password: String = ""
+    val password: String = "",
 )

@@ -10,6 +10,7 @@ import com.jfpsolucoes.unipplus2.core.database.entities.UPSettingsEntity
 import com.jfpsolucoes.unipplus2.core.database.entities.UPUserProfileEntity
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectAsMutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.collectToFlow
+import com.jfpsolucoes.unipplus2.core.utils.extensions.firstOrNullFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.mutableStateFlow
 import com.jfpsolucoes.unipplus2.core.utils.extensions.toUIStateFlow
 import com.jfpsolucoes.unipplus2.modules.signin.domain.UPPostSignInUseCase
@@ -28,20 +29,28 @@ class UPSignInViewModel(
     val remoteDataBase: UPFirebaseDatabase = UPFirebaseDatabase,
     val postSignInUseCase: UPPostSignInUseCase = UPPostSignInUseCase()
 ): ViewModel() {
-    private val _userProfile = remoteDataBase.userProfile
+    private val _storedSettings = localDatabase.settingsDao().get()
+        .firstOrNullFlow()
+        .map { it ?: UPSettingsEntity() }
+
+    private val _storedCredentials = localDatabase.credentialsDao().get()
+        .filterNotNull()
+        .map(::credentialsChangedListener)
+
+    private val _storedUserProfile = remoteDataBase.userProfile
         .map { it ?: UPUserProfileEntity() }
+
+    private val _screedUIState = _storedUserProfile
         .toUIStateFlow()
 
-    val userProfile = _userProfile
+    val screenUIState = _screedUIState
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = UIState.UIStateLoading()
         )
 
-    private val _credentials = localDatabase.credentialsDao().get()
-        .filterNotNull()
-        .map(::credentialsChangedListener)
+    private val _credentials = _storedCredentials
         .collectAsMutableStateFlow(
             scope = viewModelScope,
             initialValue = UPCredentialsEntity()
@@ -57,8 +66,7 @@ class UPSignInViewModel(
     val password = _password
         .asStateFlow()
 
-    private val _settings = localDatabase.settingsDao().get()
-        .filterNotNull()
+    private val _settings = _storedSettings
         .collectAsMutableStateFlow(
             scope = viewModelScope,
             initialValue = UPSettingsEntity()
@@ -68,7 +76,7 @@ class UPSignInViewModel(
         .asStateFlow()
 
     private val _passwordFieldVisible = _settings
-        .map { !it.autoSignIn.or(it.biometricEnabled) }
+        .map { !it.biometricEnabled }
         .collectAsMutableStateFlow(
             scope = viewModelScope,
             initialValue = true
@@ -98,10 +106,6 @@ class UPSignInViewModel(
     }
 
     fun updateSettings(settings: UPSettingsEntity) = viewModelScope.launch {
-        // Prevent auto signIn with empty password
-        if (settings.autoSignIn && _credentials.value.password.isEmpty()) {
-            return@launch
-        }
         // Disable biometric if auto sign in is enabled
         if (settings.autoSignIn.and(settings.biometricEnabled)) {
             _settings.update { settings.copy(biometricEnabled = false) }
