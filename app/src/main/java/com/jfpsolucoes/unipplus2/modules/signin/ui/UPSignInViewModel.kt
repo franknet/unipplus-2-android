@@ -2,6 +2,7 @@ package com.jfpsolucoes.unipplus2.modules.signin.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jfpsolucoes.unipplus2.HOME_NAVIGATION_ROUTE
 import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
 import com.jfpsolucoes.unipplus2.core.database.EncryptedDataBase
 import com.jfpsolucoes.unipplus2.core.database.UPFirebaseDatabase
@@ -22,32 +23,36 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 class UPSignInViewModel(
     val localDatabase: EncryptedDataBase = EncryptedDataBase.shared,
-    val remoteDataBase: UPFirebaseDatabase = UPFirebaseDatabase,
+    remoteDataBase: UPFirebaseDatabase = UPFirebaseDatabase,
     val postSignInUseCase: UPPostSignInUseCase = UPPostSignInUseCase()
 ): ViewModel() {
-    private val _storedSettings = localDatabase.settingsDao().get()
-        .firstOrNullFlow()
-        .map { it ?: UPSettingsEntity() }
-
     private val _storedCredentials = localDatabase.credentialsDao().get()
         .filterNotNull()
-        .map(::credentialsChangedListener)
 
     private val _storedUserProfile = remoteDataBase.userProfile
-        .map { it ?: UPUserProfileEntity() }
 
-    private val _screedUIState = _storedUserProfile
+    val userProfile = _storedUserProfile
+        .asStateFlow()
+
+    private val _screedUIState = localDatabase.settingsDao().get()
+        .map { it ?: UPSettingsEntity() }
+        .map(::settingsChangeListener)
+        .zip(_storedUserProfile, { settings, userProfile ->
+            settings to userProfile
+        })
         .toUIStateFlow()
+        .map(::screenUIStateChangeListener)
 
     val screenUIState = _screedUIState
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = UIState.UIStateLoading()
+            initialValue = UIState.UIStateNone()
         )
 
     private val _credentials = _storedCredentials
@@ -66,11 +71,7 @@ class UPSignInViewModel(
     val password = _password
         .asStateFlow()
 
-    private val _settings = _storedSettings
-        .collectAsMutableStateFlow(
-            scope = viewModelScope,
-            initialValue = UPSettingsEntity()
-        )
+    private val _settings = UPSettingsEntity().mutableStateFlow
 
     val settings = _settings
         .asStateFlow()
@@ -95,6 +96,26 @@ class UPSignInViewModel(
     val snackBarMessage = _snackBarMessage
         .asStateFlow()
 
+    private val _navigationRouteDestination = "".mutableStateFlow
+
+    val navigationRouteDestination = _navigationRouteDestination
+        .asStateFlow()
+
+    private val _showBiometricAuthentication = false.mutableStateFlow
+
+    val showBiometricAuthentication = _showBiometricAuthentication
+        .asStateFlow()
+
+    private val _autoSignInChecked = false.mutableStateFlow
+
+    val autoSignInChecked = _autoSignInChecked
+        .asStateFlow()
+
+    fun updateAuthSignInChecked(checked: Boolean) {
+        _autoSignInChecked.update { checked }
+        _settings.update { it.copy(autoSignIn = checked, biometricEnabled = !checked) }
+    }
+
     fun updateRgText(text: String) {
         _rgText.update { text }
         _credentials.update { it.copy(rg = text) }
@@ -105,17 +126,9 @@ class UPSignInViewModel(
         _credentials.update { it.copy(password = text) }
     }
 
-    fun updateSettings(settings: UPSettingsEntity) = viewModelScope.launch {
-        // Disable biometric if auto sign in is enabled
-        if (settings.autoSignIn.and(settings.biometricEnabled)) {
-            _settings.update { settings.copy(biometricEnabled = false) }
-            return@launch
-        }
-        _settings.update { settings }
-    }
-
     fun resetSingInState() = viewModelScope.launch {
         _sinInUIState.update { UIState.UIStateNone() }
+        _navigationRouteDestination.update { "" }
     }
 
     fun performSignIn() = viewModelScope.launch {
@@ -123,6 +136,7 @@ class UPSignInViewModel(
         if (credentials.password.isEmpty()) {
             return@launch
         }
+        _showBiometricAuthentication.update { false }
         postSignInUseCase(credentials)
             .map(::signInStateChangedListener)
             .collectToFlow(_sinInUIState)
@@ -136,23 +150,31 @@ class UPSignInViewModel(
         UPAnalyticsManager.trackScreenView("UPSignInView")
     }
 
-    private fun credentialsChangedListener(credentials: UPCredentialsEntity): UPCredentialsEntity {
-        // Start listening to remote user profile if there is stored credentials
-        if (credentials.rg.isNotEmpty()) {
-            remoteDataBase.startListeningUser(userRg = credentials.rg)
-        }
-        return credentials
-    }
-
     fun resetAndShowPasswordField() {
         _settings.update { it.copy(autoSignIn = false) }
         _credentials.update { it.copy(password = "") }
         _passwordFieldVisible.update { true }
     }
+    private fun settingsChangeListener(settings: UPSettingsEntity): UPSettingsEntity {
+        _settings.value = settings
+        _autoSignInChecked.value = settings.autoSignIn
+        _showBiometricAuthentication.value = settings.biometricEnabled
+        return settings
+    }
+    private fun screenUIStateChangeListener(state: UIState<Pair<UPSettingsEntity, UPUserProfileEntity?>>): UIState<Pair<UPSettingsEntity, UPUserProfileEntity?>> {
+        state.data?.first?.let { settings ->
+            if (settings.autoSignIn) {
+                _navigationRouteDestination.update { HOME_NAVIGATION_ROUTE }
+            }
+        }
+        return state
+    }
+
     private suspend fun signInStateChangedListener(state: UIState<UPUserProfileEntity>): UIState<UPUserProfileEntity> {
         val settings = _settings.value
         if (state.success) {
             localDatabase.settingsDao().insert(settings)
+            _navigationRouteDestination.update { HOME_NAVIGATION_ROUTE }
         }
         if (state.failure) {
             resetAndShowPasswordField()

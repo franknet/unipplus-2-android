@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 class UPStudentRecordsViewModel(
     val getDisciplinesUseCase: UPStudentRecordsGetDisciplinesUseCase = UPStudentRecordsGetDisciplinesUseCase()
 ): ViewModel() {
-
     private val _disciplinesUIState = getDisciplinesUseCase()
         .collectAsMutableStateFlow(viewModelScope, UIState.UIStateNone())
     val disciplinesUIState = _disciplinesUIState.asStateFlow()

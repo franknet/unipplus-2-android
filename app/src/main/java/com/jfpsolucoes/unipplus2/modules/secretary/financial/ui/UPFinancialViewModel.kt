@@ -26,7 +26,7 @@ class UPFinancialViewModel(
     val featuresUIState = _featuresUIState
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Lazily,
+            started = SharingStarted.Eagerly,
             initialValue = UIState.UIStateNone()
         )
     val periodSelected = _periodSelected.asStateFlow()

@@ -52,23 +52,16 @@ fun UPSignInView(
     val rgText by viewModel.rgText.collectAsStateWithLifecycle()
     val password by viewModel.password.collectAsStateWithLifecycle()
     val showPasswordField by viewModel.passwordFieldVisible.collectAsStateWithLifecycle()
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val screenUIState by viewModel.screenUIState.collectAsStateWithLifecycle()
     val signInUIState by viewModel.singInUIState.collectAsStateWithLifecycle()
     val snackBarMessage by viewModel.snackBarMessage.collectAsStateWithLifecycle()
+    val navigationRoute by viewModel.navigationRouteDestination.collectAsStateWithLifecycle()
+    val showBiometricAuthentication by viewModel.showBiometricAuthentication.collectAsStateWithLifecycle()
+    val autoSignInChecked by viewModel.autoSignInChecked.collectAsStateWithLifecycle()
+    val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        navController?.addOnDestinationChangedListener { _, _, _ ->
-            viewModel.resetSingInState()
-        }
-    }
-
-    RememberLaunchedEffect {
-        viewModel.trackScreenView()
-    }
-
-    LaunchedEffect(settings) {
-        if (settings.biometricEnabled) {
+    LaunchedEffect(showBiometricAuthentication) {
+        if (showBiometricAuthentication) {
             UPBiometricManagerImpl.authenticate(
                 activity,
                 onSuccess = viewModel::performSignIn,
@@ -83,10 +76,20 @@ fun UPSignInView(
         }
     }
 
-    LaunchedEffect(signInUIState) {
-        if (signInUIState.success) {
-            navController?.navigate(HOME_NAVIGATION_ROUTE)
+    LaunchedEffect(navigationRoute) {
+        if (navigationRoute.isNotEmpty()) {
+            navController?.navigate(navigationRoute)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        navController?.addOnDestinationChangedListener { _, _, _ ->
+            viewModel.resetSingInState()
+        }
+    }
+
+    RememberLaunchedEffect {
+        viewModel.trackScreenView()
     }
 
     LaunchedEffect(snackBarMessage) {
@@ -117,7 +120,8 @@ fun UPSignInView(
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-    ) { _, userProfile ->
+    ) { _, _ ->
+
         BoxWithConstraints(
             modifier = Modifier.safeGesturesPadding()
         ) {
@@ -135,18 +139,16 @@ fun UPSignInView(
                 item {
                     SignInCredentials(
                         modifier = Modifier.height(itemHigh),
-                        userName = userProfile.name,
-                        userCourse = userProfile.academic?.course?.name,
+                        userName = userProfile?.name,
+                        userCourse = userProfile?.academic?.course?.name,
                         onLoading = signInUIState.loading,
                         raText = rgText,
                         onEditRa = viewModel::updateRgText,
                         passwordText = password,
                         onEditPassword = viewModel::updatePassword,
                         showPasswordField = showPasswordField,
-                        autoSignChecked = settings.autoSignIn,
-                        onAutoSignInChange = {
-                            viewModel.updateSettings(settings.copy(autoSignIn = it))
-                        },
+                        autoSignChecked = autoSignInChecked,
+                        onAutoSignInChange = viewModel::updateAuthSignInChecked,
                         onClickSignIn = viewModel::performSignIn
                     )
                 }
