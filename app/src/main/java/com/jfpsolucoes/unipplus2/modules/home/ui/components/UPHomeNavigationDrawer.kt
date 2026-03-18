@@ -116,7 +116,6 @@ fun UPHomeNavigationDrawer(
                 label = { Text("Sair") },
                 colors = itemColors
             )
-
         }
     }
 

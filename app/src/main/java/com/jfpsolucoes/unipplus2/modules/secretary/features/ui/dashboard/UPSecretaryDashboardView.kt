@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +37,7 @@ fun UPSecretaryDashboardView(
     modifier: Modifier = Modifier,
     viewModel: UPSecretaryDashboardViewModel = viewModel(),
     features: List<UPSecretaryFeature>?,
+    bottomBarSpace: Dp = 0.dp,
     onSelectFeature: (UPSecretaryFeature) -> Unit = {}
 ) {
     val activity = activity
@@ -96,7 +98,7 @@ fun UPSecretaryDashboardView(
                 }
             }
 
-            item { VerticalSpacer(0.dp) }
+            item { VerticalSpacer(bottomBarSpace) }
         }
     }
 }

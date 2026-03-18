@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,7 +46,8 @@ fun UPFinancialExtractView(
     modifier: Modifier = Modifier,
     period: String? = null,
     viewModel: UPFinancialExtractViewModel = viewModel(),
-    bottomSheetState: SheetState = rememberModalBottomSheetState()
+    bottomSheetState: SheetState = rememberModalBottomSheetState(),
+    bottomBarSpace: Dp = 0.dp,
 ) {
     val extractUIState by viewModel.extractUIState.collectAsStateWithLifecycle()
     val selectedPayment by viewModel.selectedPayment.collectAsStateWithLifecycle()
@@ -148,6 +150,11 @@ fun UPFinancialExtractView(
                     // Bottom spacing
                     item {
                         VerticalSpacer()
+                    }
+
+                    // BottomBar spacing
+                    item {
+                        VerticalSpacer(bottomBarSpace)
                     }
                 }
             }

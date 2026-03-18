@@ -5,10 +5,14 @@ package com.jfpsolucoes.unipplus2.modules.home.ui
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -129,6 +134,7 @@ fun UPHomeView(
     }
 
     UPUIStateScaffold(
+        modifier = Modifier.safeDrawingPadding(),
         state = systemsState,
         loadingContent = { UPLoadingView() },
         errorContent = { _, error ->
@@ -159,20 +165,13 @@ fun UPHomeView(
         bottomBar = {
             if (isAdEnabled) {
                 ADBanner(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            bottom = systemBarsPadding.calculateBottomPadding()
-                        )
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         content = { padding, data ->
             UPHomeNavigationSuite(
-                modifier = Modifier.padding(
-                    top = padding.calculateTopPadding(),
-                    bottom = padding.calculateBottomPadding()
-                ),
+                modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
                 drawerState = drawerState,
                 layoutType = navigationLayoutType,
                 data = data,
@@ -181,14 +180,15 @@ fun UPHomeView(
                 onClickExit = {
                     coroutineScope.perform(viewModel::onSignOut)
                 },
-                onClickOpenDrawer = { coroutineScope.perform(drawerState::open) }
-            ) {
+                onClickOpenDrawer = { coroutineScope.perform(drawerState::open) },
+            ) { _ ->
                 CompositionLocalProvider(LocalNavigationLayoutType provides navigationLayoutType) {
                     coroutineScope.perform(drawerState::close)
                     selectedSystem?.let { system ->
                         if (system.type == UPSystemType.WEB) {
                             val settings = PortalWebViewSettings(url = system.url.value)
                             PortalWebView(
+                                modifier = Modifier.padding(padding),
                                 webSettings = settings
                             ) {
                                 navController?.popBackStack()
@@ -196,10 +196,13 @@ fun UPHomeView(
                         }
                         when (system.deeplink) {
                             UPSystemDeeplink.SECRETARY -> {
-                                UPSecretaryView()
+                                UPSecretaryView(
+                                    parentPadding = padding
+                                )
                             }
                             UPSystemDeeplink.SETTINGS -> {
                                 UPSettingsView(
+                                    modifier = Modifier.padding(padding),
                                     title = system.description.value
                                 )
                             }

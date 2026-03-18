@@ -19,8 +19,8 @@ android {
         applicationId = "com.jfpsolucoes.unipplus2"
         minSdk = 24
         targetSdk = 36
-        versionCode = 135
-        versionName = "1.3.5"
+        versionCode = 140
+        versionName = "1.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

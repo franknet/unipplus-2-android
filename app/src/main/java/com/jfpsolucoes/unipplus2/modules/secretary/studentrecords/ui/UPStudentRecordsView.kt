@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfpsolucoes.unipplus2.core.analytics.UPAnalyticsManager
@@ -41,6 +42,7 @@ fun UPStudentRecordsView(
     viewModel: UPStudentRecordsViewModel = viewModel(),
     feature: UPSecretaryFeature,
     navigationButtonEnabled: Boolean = true,
+    bottomBarSpace: Dp = 0.dp,
     onClickBack: () -> Unit
 ) {
     val disciplinesUIState by viewModel.disciplinesUIState.collectAsState()
@@ -121,6 +123,9 @@ fun UPStudentRecordsView(
 
                 // Bottom spacing
                 item { VerticalSpacer() }
+
+                // BottomBar spacing
+                item { VerticalSpacer(bottomBarSpace) }
             }
         }
     )

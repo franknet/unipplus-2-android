@@ -2,9 +2,12 @@ package com.jfpsolucoes.unipplus2.modules.home.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
@@ -16,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPHomeSystemsResponse
 import com.jfpsolucoes.unipplus2.modules.home.domain.models.UPSystem
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UPHomeNavigationSuite(
     modifier: Modifier = Modifier,
@@ -26,7 +30,8 @@ fun UPHomeNavigationSuite(
     onSelectSystem: (UPSystem) -> Unit,
     onClickExit: () -> Unit = {},
     onClickOpenDrawer: () -> Unit,
-    content: @Composable () -> Unit
+    bottomBar: @Composable () -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -67,7 +72,14 @@ fun UPHomeNavigationSuite(
                 }
             }
         ) {
-            content()
+            Scaffold(
+                bottomBar = {
+                    bottomBar.invoke()
+                },
+                containerColor = Color.Transparent
+            ) { parentPadding ->
+                content(parentPadding)
+            }
         }
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,7 +58,8 @@ fun UPFinancialDebtsView(
     ),
     snackbarState: SnackbarHostState = SnackbarHostState(),
     navController: NavHostController? = LocalNavController.current,
-    mainActivity: Activity? = activity
+    mainActivity: Activity? = activity,
+    bottomBarSpace: Dp = 0.dp,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -163,7 +165,7 @@ fun UPFinancialDebtsView(
                 showDivider = true,
                 items = data.debts,
                 header = { VerticalSpacer() },
-                footer = { VerticalSpacer() }
+                footer = { VerticalSpacer(bottomBarSpace + 16.dp) }
             ) { debtPayment ->
                 item {
                     val topCorderRadius = if (data.debts.first() == debtPayment) 16.dp else 0.dp

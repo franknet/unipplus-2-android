@@ -1,6 +1,7 @@
 package com.jfpsolucoes.unipplus2.modules.secretary.features.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
@@ -38,7 +39,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun UPSecretaryView(
     modifier: Modifier = Modifier,
-    viewModel: UPSecretaryViewModel = viewModel()
+    viewModel: UPSecretaryViewModel = viewModel(),
+    parentPadding: PaddingValues
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -51,7 +53,6 @@ fun UPSecretaryView(
     }
 
     UPUIStateScaffold(
-        modifier = modifier,
         state = featuresUIState,
         loadingContent = { _ ->
             UPLoadingView()
@@ -76,7 +77,8 @@ fun UPSecretaryView(
                 scaffoldState = navigator.scaffoldState,
                 mainPane = {
                     UPSecretaryDashboardView(
-                        features = data.features
+                        features = data.features,
+                        bottomBarSpace = parentPadding.calculateBottomPadding()
                     ) { feature ->
                         coroutineScope.launch {
                             navigator.navigateTo(SupportingPaneScaffoldRole.Supporting, feature)
@@ -90,12 +92,14 @@ fun UPSecretaryView(
                                 SECRETARY_STUDENT_RECORDS_DEEPLINK -> UPStudentRecordsView(
                                     feature = system,
                                     navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
-                                    onClickBack = { coroutineScope.perform(navigator::navigateBack) }
+                                    onClickBack = { coroutineScope.perform(navigator::navigateBack) },
+                                    bottomBarSpace = parentPadding.calculateBottomPadding()
                                 )
                                 SECRETARY_FINANCIAL_DEEPLINK -> UPFinancialView(
                                     title = system.description.orEmpty(),
                                     navigationButtonEnabled = !navigator.scaffoldValue.isMainPaneExpanded,
-                                    onClickBack = { coroutineScope.perform(navigator::navigateBack) }
+                                    onClickBack = { coroutineScope.perform(navigator::navigateBack) },
+                                    bottomBarSpace = parentPadding.calculateBottomPadding()
                                 )
                                 else -> {}
                             }
