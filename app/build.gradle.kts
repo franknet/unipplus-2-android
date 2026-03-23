@@ -41,14 +41,18 @@ android {
         val BASE_URL_FIELD = "BASE_URL"
         val API_AUTH_FIELD = "API_AUTH"
         val API_SECRETARY_FIELD = "API_SECRETARY"
+        val API_REMOTE_CLASSES_FIELD = "API_REMOTE_CLASSES"
+
 
         val REMOTE_BASE_URL = "\"https://southamerica-east1-unip-plus-2-a3fa1.cloudfunctions.net\""
         val REMOTE_API_AUTH = "\"api/auth\""
         val REMOTE_API_SECRETARY = "\"api/secretary\""
+        val REMOTE_API_REMOTE_CLASSES = "\"api/remote_classes\""
 
         val LOCAL_BASE_URL = "\"http://10.0.2.2:5001\""
         val LOCAL_API_AUTH = "\"/unip-plus-2-a3fa1/southamerica-east1/api/auth\""
         val LOCAL_API_SECRETARY = "\"/unip-plus-2-a3fa1/southamerica-east1/api/secretary\""
+        val LOCAL_API_REMOTE_CLASSES = "\"/unip-plus-2-a3fa1/southamerica-east1/api/remote_classes\""
 
         release {
             isMinifyEnabled = true
@@ -65,6 +69,7 @@ android {
             buildConfigField("String", BASE_URL_FIELD, REMOTE_BASE_URL)
             buildConfigField("String", API_AUTH_FIELD, REMOTE_API_AUTH)
             buildConfigField("String", API_SECRETARY_FIELD, REMOTE_API_SECRETARY)
+            buildConfigField("String", API_REMOTE_CLASSES_FIELD, REMOTE_API_REMOTE_CLASSES)
         }
         debug {
             proguardFiles(
@@ -74,6 +79,7 @@ android {
             buildConfigField("String", BASE_URL_FIELD, REMOTE_BASE_URL)
             buildConfigField("String", API_AUTH_FIELD, REMOTE_API_AUTH)
             buildConfigField("String", API_SECRETARY_FIELD, REMOTE_API_SECRETARY)
+            buildConfigField("String", API_REMOTE_CLASSES_FIELD, REMOTE_API_REMOTE_CLASSES)
         }
         create("debug_local") {
             initWith(getByName("debug"))
@@ -82,6 +88,7 @@ android {
             buildConfigField("String", BASE_URL_FIELD, LOCAL_BASE_URL)
             buildConfigField("String", API_AUTH_FIELD, LOCAL_API_AUTH)
             buildConfigField("String", API_SECRETARY_FIELD, LOCAL_API_SECRETARY)
+            buildConfigField("String", API_REMOTE_CLASSES_FIELD, LOCAL_API_REMOTE_CLASSES)
         }
     }
     compileOptions {

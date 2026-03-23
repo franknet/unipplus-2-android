@@ -28,4 +28,12 @@ object UPApiEndpoints {
         }
 
     }
+
+    object RemoteClasses {
+        const val REMOTE_CLASSES_API = BuildConfig.API_REMOTE_CLASSES
+
+        object Calendar {
+            const val CALENDAR = "$REMOTE_CLASSES_API/calendar"
+        }
+    }
 }
